@@ -446,27 +446,39 @@ flutter test test/recommendation_test.dart
 
 ## 9. Đóng gói ứng dụng (Packaging & Distribution)
 
-### Đóng gói Web Application
+### 9.1. Tải về bản cài đặt phát hành chính thức (Official Releases)
+
+Để phục vụ công tác chấm điểm và cài đặt thử nghiệm nhanh chóng, Nhóm 10 đã đóng gói và phát hành chính thức toàn bộ sản phẩm trên GitHub Release:
+
+- 📦 **Tải về gói cài đặt Android APK**: [studydoc-manager-v2.0.0-android.apk](https://github.com/tungcorn/project-ptuddd/releases/download/v2.0.0-nhom10/studydoc-manager-v2.0.0-android.apk)
+- 🌐 **Tải về gói Web Application (.zip)**: [studydoc-manager-v2.0.0-web.zip](https://github.com/tungcorn/project-ptuddd/releases/download/v2.0.0-nhom10/studydoc-manager-v2.0.0-web.zip)
+- 🔗 **Trang quản lý phiên bản Release**: [GitHub Release v2.0.0-nhom10](https://github.com/tungcorn/project-ptuddd/releases/tag/v2.0.0-nhom10)
+
+#### Bảng mã kiểm tra tính toàn vẹn (SHA-256 Checksums)
+| Tên tệp tin | Dung lượng | Mã băm SHA-256 |
+|---|:---:|---|
+| `studydoc-manager-v2.0.0-android.apk` | ~67.6 MB | `F24AA7E106AA7B33F7791D8B27957C802769641E2C44BE6B08D9AE91BAA3D7E6` |
+| `studydoc-manager-v2.0.0-web.zip` | ~14.8 MB | `F4238CCFF82E93D017E9B2E79659242FB3657ADB96998354528BE621DA023FB4` |
+
+### 9.2. Script tự động hóa đóng gói 1-click
+Nhóm cung cấp script tự động tại [`nhom10-65ktpm/scripts/build_app.ps1`](../scripts/build_app.ps1) giúp tự động kiểm tra `flutter analyze` (0 issue), `flutter test` (29/29 pass) và đóng gói Web zip chỉ với 1 câu lệnh:
+```powershell
+./nhom10-65ktpm/scripts/build_app.ps1
+```
+
+### 9.3. Lệnh đóng gói thủ công bằng Flutter CLI
+
+**Đóng gói Web Application:**
 ```powershell
 flutter build web --release --dart-define-from-file=firebase_config.json
 # Sản phẩm đầu ra tại: build/web/
 ```
 
-### Đóng gói Android Release APK
+**Đóng gói Android Release APK:**
 ```powershell
 flutter build apk --release --dart-define-from-file=firebase_config.json
 # Sản phẩm đầu ra tại: build/app/outputs/flutter-apk/app-release.apk
 ```
-
-### Quy trình tự động hóa CI/CD (GitHub Actions)
-Hệ thống tích hợp luồng tự động hóa hoàn chỉnh tại [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml):
-1. **Kiểm tra chất lượng (Continuous Integration)**: Tự động chạy `flutter analyze` và `flutter test` khi có commit hoặc Pull Request vào nhánh `master`.
-2. **Biên dịch & Đóng gói (Automated Build)**: Tự động biên dịch tệp `app-release.apk` và nén `web-build.zip`, lưu trữ artifacts trên GitHub Actions.
-3. **Tự động phát hành (Continuous Delivery)**: Khi hợp nhất vào nhánh `master` hoặc gắn thẻ tag, hệ thống tự động tạo **GitHub Release** bằng tiếng Việt, bao gồm:
-   - Ngày giờ khởi tạo theo múi giờ Việt Nam (`GMT+7`).
-   - Báo cáo chi tiết các thay đổi (Changelog) từ commit trước.
-   - Báo cáo chất lượng kiểm thử (Quality Gates đạt 100%).
-   - Đính kèm sẵn tệp cài đặt `app-release.apk` và gói `web-build.zip` để tải về trực tiếp.
 
 ---
 
