@@ -460,11 +460,23 @@ flutter test test/recommendation_test.dart
 | `studydoc-manager-v2.0.0-android.apk` | ~67.6 MB | `F24AA7E106AA7B33F7791D8B27957C802769641E2C44BE6B08D9AE91BAA3D7E6` |
 | `studydoc-manager-v2.0.0-web.zip` | ~14.8 MB | `F4238CCFF82E93D017E9B2E79659242FB3657ADB96998354528BE621DA023FB4` |
 
-### 9.2. Script tự động hóa đóng gói 1-click
-Nhóm cung cấp script tự động tại [`nhom10-65ktpm/scripts/build_app.ps1`](../scripts/build_app.ps1) giúp tự động kiểm tra `flutter analyze` (0 issue), `flutter test` (29/29 pass) và đóng gói Web zip chỉ với 1 câu lệnh:
+### 9.2. Quy trình CD tự động hóa phát hành Release (Local CD Pipeline)
+
+Để tự động hóa hoàn toàn quy trình đóng gói và phát hành mà không cần tệp `.github/workflows` ở thư mục gốc (tuân thủ 100% quy định của Giảng viên), nhóm triển khai pipeline tự động tại [`nhom10-65ktpm/scripts/publish_release.ps1`](../scripts/publish_release.ps1).
+
+Chỉ với **1 câu lệnh duy nhất**:
 ```powershell
-./nhom10-65ktpm/scripts/build_app.ps1
+./nhom10-65ktpm/scripts/publish_release.ps1
 ```
+**Hệ thống sẽ tự động thực hiện tuần tự từ A - Z:**
+1. **Kiểm tra môi trường**: Xác thực GitHub CLI (`gh auth status`), kiểm tra nhánh Git `nhom/nhom10-65ktpm`.
+2. **Quản lý phiên bản**: Tự đọc phiên bản ứng dụng từ `pubspec.yaml` (ví dụ `v2.0.0-nhom10`).
+3. **Quality Gates (CI)**: Tự động chạy `flutter analyze` (bắt buộc 0 issue) và `flutter test` (bắt buộc 29/29 tests passed). Nếu phát sinh lỗi, pipeline lập tức dừng lại để bảo vệ chất lượng.
+4. **Đóng gói phát hành (CD)**: Tự động biên dịch Web Release và nén thành `studydoc-manager-2.0.0-web.zip`.
+5. **Kiểm tra toàn vẹn**: Tự động tính toán mã băm SHA-256 cho toàn bộ các gói phát hành (APK và Web zip).
+6. **Xuất bản lên GitHub Release**: Tự động soạn Release Notes chi tiết theo chuẩn, khởi tạo Git Tag và tải các gói binary lên GitHub Release thông qua `gh release create / upload`.
+
+*(Ngoài ra, nhóm vẫn duy trì script đóng gói nhanh tại [`nhom10-65ktpm/scripts/build_app.ps1`](../scripts/build_app.ps1) khi chỉ cần kiểm tra build cục bộ).*
 
 ### 9.3. Lệnh đóng gói thủ công bằng Flutter CLI
 
