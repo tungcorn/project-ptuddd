@@ -549,6 +549,21 @@ flutter test
 4. Nhóm trưởng tiến hành Review, kiểm tra diff và tiến hành Merge vào nhánh `nhom/nhom10-65ktpm`.
 5. Khi hoàn thiện đợt nộp bài: Nhóm trưởng tạo Pull Request tổng hợp từ nhánh `nhom/nhom10-65ktpm` (tại repo cá nhân fork) gửi về nhánh chính của Giảng viên (`oanhcuongdo/project-ptuddd`).
 
+### 11.7. Tự động hóa đồng bộ với kho gốc của Giảng viên (Sync Upstream Automation)
+Để đảm bảo nhánh `main` và nhánh nhóm `nhom/nhom10-65ktpm` luôn cập nhật kịp thời khi Thầy có thay đổi mới mà không tốn công gõ nhiều lệnh thủ công, nhóm thiết lập **Git Alias** tự động hóa:
+
+**1. Cấu hình phím tắt (chỉ cần chạy một lần duy nhất tại máy):**
+```powershell
+git config alias.sync-upstream "!git checkout main && git pull upstream main && git push origin main && git checkout nhom/nhom10-65ktpm && git merge main"
+```
+
+**2. Sử dụng khi cần đồng bộ:**
+Mỗi khi Giảng viên cập nhật đề bài, tài liệu hoặc merge bài của lớp trên kho gốc (`upstream/main`), chỉ cần đứng tại thư mục dự án và gõ đúng 1 lệnh:
+```powershell
+git sync-upstream
+```
+*Lệnh này sẽ tự động: Chuyển sang `main` ➔ Kéo code mới nhất từ Giảng viên (`upstream main`) ➔ Đẩy lên GitHub cá nhân (`origin main`) ➔ Quay về lại nhánh nhóm `nhom/nhom10-65ktpm` ➔ Hợp nhất (merge) thay đổi vào nhánh làm việc của nhóm.*
+
 ---
 
 ## 12. Giấy phép (License)
