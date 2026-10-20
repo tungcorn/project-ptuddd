@@ -106,7 +106,7 @@ if ($SkipTests) {
 # ------------------------------------------------------------------------------
 Write-Host "`n[4/6] Dong goi san pham phat hanh..." -ForegroundColor Yellow
 $buildDir = Join-Path $srcDir "build"
-$webZipPath = Join-Path $buildDir "studydoc-manager-$versionClean-web.zip"
+$webZipPath = Join-Path $buildDir "studydoc-manager-v$versionClean-web.zip"
 
 if (-not $SkipBuildWeb) {
     Write-Host "  -> [CD 1/2] Bien dich Web Release (flutter build web)..." -ForegroundColor Gray
@@ -140,7 +140,7 @@ if ($ApkPath -and (Test-Path $ApkPath)) {
 
 $finalApkPath = ""
 if ($candidateApk -and (Test-Path $candidateApk)) {
-    $finalApkPath = Join-Path $buildDir "studydoc-manager-$versionClean-android.apk"
+    $finalApkPath = Join-Path $buildDir "studydoc-manager-v$versionClean-android.apk"
     Copy-Item $candidateApk $finalApkPath -Force
     Write-Host "  -> [APK] Su dung ban APK phat hanh tai: $finalApkPath" -ForegroundColor Green
 } else {
@@ -189,8 +189,8 @@ $notesList.Add("- **Giang vien huong dan**: Thay Do Oanh Cuong")
 $notesList.Add("- **Thoi gian khoi tao**: $nowStr")
 $notesList.Add("")
 $notesList.Add("#### Danh sach tap tin dinh kem:")
-$notesList.Add("1. `studydoc-manager-$versionClean-android.apk` (Dung luong: ~$apkSize MB)")
-$notesList.Add("2. `studydoc-manager-$versionClean-web.zip` (Dung luong: ~$webSize MB)")
+$notesList.Add("1. ``studydoc-manager-v$versionClean-android.apk`` (Dung luong: ~$apkSize MB)")
+$notesList.Add("2. ``studydoc-manager-v$versionClean-web.zip`` (Dung luong: ~$webSize MB)")
 $notesList.Add("")
 $notesList.Add("#### Bang ma bam toan ven (SHA-256 Checksums):")
 $notesList.Add("- **Android APK**: $apkHash")
