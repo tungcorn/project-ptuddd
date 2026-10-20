@@ -462,11 +462,11 @@ flutter test test/recommendation_test.dart
 
 ### 9.2. Quy trình CD tự động hóa phát hành Release (Local CD Pipeline)
 
-Để tự động hóa hoàn toàn quy trình đóng gói và phát hành mà không cần tệp `.github/workflows` ở thư mục gốc (tuân thủ 100% quy định của Giảng viên), nhóm triển khai pipeline tự động tại [`nhom10-65ktpm/scripts/publish_release.ps1`](../scripts/publish_release.ps1).
+Để tự động hóa hoàn toàn quy trình đóng gói và phát hành mà không cần tệp `.github/workflows` ở thư mục gốc (tuân thủ 100% quy định của Giảng viên), nhóm triển khai pipeline tự động tại [`scripts/publish_release.ps1`](scripts/publish_release.ps1).
 
-Chỉ với **1 câu lệnh duy nhất**:
+Chỉ với **1 câu lệnh duy nhất** (chạy tại thư mục `nhom10-65ktpm/src/`):
 ```powershell
-./nhom10-65ktpm/scripts/publish_release.ps1
+./scripts/publish_release.ps1
 ```
 **Hệ thống sẽ tự động thực hiện tuần tự từ A - Z:**
 1. **Kiểm tra môi trường**: Xác thực GitHub CLI (`gh auth status`), kiểm tra nhánh Git `nhom/nhom10-65ktpm`.
@@ -476,7 +476,7 @@ Chỉ với **1 câu lệnh duy nhất**:
 5. **Kiểm tra toàn vẹn**: Tự động tính toán mã băm SHA-256 cho toàn bộ các gói phát hành (APK và Web zip).
 6. **Xuất bản lên GitHub Release**: Tự động soạn Release Notes chi tiết theo chuẩn, khởi tạo Git Tag và tải các gói binary lên GitHub Release thông qua `gh release create / upload`.
 
-*(Ngoài ra, nhóm vẫn duy trì script đóng gói nhanh tại [`nhom10-65ktpm/scripts/build_app.ps1`](../scripts/build_app.ps1) khi chỉ cần kiểm tra build cục bộ).*
+*(Ngoài ra, nhóm vẫn duy trì script đóng gói nhanh tại [`scripts/build_app.ps1`](scripts/build_app.ps1) khi chỉ cần kiểm tra build cục bộ).*
 
 ### 9.3. Lệnh đóng gói thủ công bằng Flutter CLI
 
@@ -515,11 +515,26 @@ flutter build apk --release --dart-define-from-file=firebase_config.json
 
 Để đảm bảo tiến độ, tính toàn vẹn mã nguồn và tránh xung đột khi làm việc nhóm trên repository chung, toàn thể thành viên Nhóm 10 tuân thủ nghiêm ngặt các quy định sau:
 
-### 11.1. Phạm vi thao tác và cấu trúc thư mục
-- **Toàn bộ mã nguồn, tài nguyên, kiểm thử và tài liệu của nhóm phải nằm 100% bên trong thư mục `nhom10-65ktpm/`**:
-  - [`nhom10-65ktpm/danhsachnhom.md`](../danhsachnhom.md): Danh sách thành viên, phân công nhiệm vụ và tiến độ hoàn thành.
-  - [`nhom10-65ktpm/PULL_REQUEST_TEMPLATE.md`](../PULL_REQUEST_TEMPLATE.md): Mẫu nội dung chuẩn khi mở Pull Request nội bộ.
-  - `nhom10-65ktpm/src/`: Toàn bộ mã nguồn ứng dụng Flutter, cơ sở dữ liệu và tài liệu kỹ thuật chi tiết.
+### 11.1. Phạm vi thao tác và cấu trúc thư mục (Theo đúng chuẩn mẫu Giảng viên)
+Cấu trúc thư mục của nhóm tuân thủ nghiêm ngặt 100% theo sơ đồ mẫu của Giảng viên (chỉ gồm `danhsachnhom.md` và `src/` trực tiếp dưới thư mục nhóm):
+```text
+project-ptuddd/
+├── README.md
+├── .gitignore
+└── nhom10-65ktpm/
+    ├── danhsachnhom.md
+    └── src/
+        ├── lib/
+        ├── test/
+        ├── docs/
+        │   └── PULL_REQUEST_TEMPLATE.md
+        ├── scripts/
+        │   ├── publish_release.ps1
+        │   └── build_app.ps1
+        └── README.md
+```
+- [`nhom10-65ktpm/danhsachnhom.md`](../danhsachnhom.md): Danh sách thành viên, phân công nhiệm vụ và tiến độ hoàn thành.
+- `nhom10-65ktpm/src/`: Toàn bộ mã nguồn ứng dụng Flutter, cơ sở dữ liệu, scripts và tài liệu kỹ thuật chi tiết.
 - **Quy tắc tuyệt đối**: Tuyệt đối **không thêm, sửa hoặc xóa** bất kỳ tệp tin hay thư mục nào bên ngoài thư mục `nhom10-65ktpm/` (đặc biệt là thư mục gốc của repository) nhằm tránh tạo ra xung đột (merge conflicts) với các nhóm khác và repository gốc của giảng viên.
 
 ### 11.2. Quy ước đặt tên nhánh (Branching Convention)
@@ -569,7 +584,7 @@ flutter test
 ### 11.6. Quy trình mở Pull Request (PR Workflow)
 1. Đẩy nhánh làm việc cá nhân lên remote: `git push origin nhom10-<tên-thành-viên>`.
 2. Tạo Pull Request trên GitHub với nhánh đích (Base branch) là **`nhom/nhom10-65ktpm`**.
-3. Điền đầy đủ thông tin theo mẫu sẵn tại [`nhom10-65ktpm/PULL_REQUEST_TEMPLATE.md`](../PULL_REQUEST_TEMPLATE.md).
+3. Điền đầy đủ thông tin theo mẫu sẵn tại [`docs/PULL_REQUEST_TEMPLATE.md`](docs/PULL_REQUEST_TEMPLATE.md).
 4. Nhóm trưởng tiến hành Review, kiểm tra diff và tiến hành Merge vào nhánh `nhom/nhom10-65ktpm`.
 5. Khi hoàn thiện đợt nộp bài: Nhóm trưởng tạo Pull Request tổng hợp từ nhánh `nhom/nhom10-65ktpm` (tại repo cá nhân fork) gửi về nhánh chính của Giảng viên (`oanhcuongdo/project-ptuddd`).
 

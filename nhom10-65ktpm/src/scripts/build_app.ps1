@@ -1,4 +1,4 @@
-# nhom10-65ktpm/scripts/build_app.ps1
+# nhom10-65ktpm/src/scripts/build_app.ps1
 # Script tự động kiểm tra chất lượng và đóng gói ứng dụng cho Nhóm 10 - 65KTPM
 param(
     [string]$ConfigPath = "firebase_config.json"
@@ -10,7 +10,7 @@ Write-Host "   HE THONG DONG GOI UNG DUNG - NHOM 10 (65KTPM)" -ForegroundColor C
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$srcDir = Join-Path $scriptDir "..\src"
+$srcDir = Split-Path -Parent $scriptDir
 Set-Location $srcDir
 
 Write-Host "`n[1/3] Chay phan tich cu phap tinh (flutter analyze)..." -ForegroundColor Yellow

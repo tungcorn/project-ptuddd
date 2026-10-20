@@ -29,8 +29,8 @@ Write-Host "   LOCAL CD PIPELINE: AUTOMATED RELEASE - NHOM 10 (65KTPM)" -Foregro
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$projectRoot = Split-Path -Parent $scriptDir
-$srcDir = Join-Path $projectRoot "src"
+$srcDir = Split-Path -Parent $scriptDir
+$nhomRoot = Split-Path -Parent $srcDir
 
 if (-not (Test-Path $srcDir)) {
     Write-Error "Khong tim thay thu muc ma nguon: $srcDir"
@@ -58,7 +58,7 @@ try {
 }
 
 # Kiem tra branch hien tai
-$currentBranch = (git -C $projectRoot branch --show-current 2>$null)
+$currentBranch = (git -C $nhomRoot branch --show-current 2>$null)
 Write-Host "  -> Nhanh Git hien tai: $currentBranch" -ForegroundColor Gray
 
 # ------------------------------------------------------------------------------
