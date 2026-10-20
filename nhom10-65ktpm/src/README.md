@@ -487,6 +487,70 @@ Hệ thống tích hợp luồng tự động hóa hoàn chỉnh tại [`.github
 
 ---
 
-## 11. Giấy phép (License)
+## 11. Quy chuẩn làm việc nhóm & Git Workflow (Theo yêu cầu Giảng viên)
+
+Để đảm bảo tiến độ, tính toàn vẹn mã nguồn và tránh xung đột khi làm việc nhóm trên repository chung, toàn thể thành viên Nhóm 10 tuân thủ nghiêm ngặt các quy định sau:
+
+### 11.1. Phạm vi thao tác và cấu trúc thư mục
+- **Toàn bộ mã nguồn, tài nguyên, kiểm thử và tài liệu của nhóm phải nằm 100% bên trong thư mục `nhom10-65ktpm/`**:
+  - [`nhom10-65ktpm/danhsachnhom.md`](../danhsachnhom.md): Danh sách thành viên, phân công nhiệm vụ và tiến độ hoàn thành.
+  - [`nhom10-65ktpm/PULL_REQUEST_TEMPLATE.md`](../PULL_REQUEST_TEMPLATE.md): Mẫu nội dung chuẩn khi mở Pull Request nội bộ.
+  - `nhom10-65ktpm/src/`: Toàn bộ mã nguồn ứng dụng Flutter, cơ sở dữ liệu và tài liệu kỹ thuật chi tiết.
+- **Quy tắc tuyệt đối**: Tuyệt đối **không thêm, sửa hoặc xóa** bất kỳ tệp tin hay thư mục nào bên ngoài thư mục `nhom10-65ktpm/` (đặc biệt là thư mục gốc của repository) nhằm tránh tạo ra xung đột (merge conflicts) với các nhóm khác và repository gốc của giảng viên.
+
+### 11.2. Quy ước đặt tên nhánh (Branching Convention)
+- **Nhánh chính của nhóm**: `nhom/nhom10-65ktpm` (tất cả thành viên đóng góp code và mở PR hướng về nhánh này).
+- **Nhánh làm việc cá nhân / tính năng**: Được tạo từ nhánh `nhom/nhom10-65ktpm` theo quy ước:
+  - Theo tên thành viên: `nhom10-<tên-thành-viên>` (Ví dụ: `nhom10-tung`, `nhom10-ninh`, `nhom10-dinh`, `nhom10-bach`).
+  - Hoặc theo tính năng: `nhom10/<loại-thay-đổi>-<mô-tả-ngắn>` (Ví dụ: `nhom10/feat-recommendation`, `nhom10/fix-socket-port`).
+
+### 11.3. Quy chuẩn thông điệp Commit (Commit Message Convention)
+Mọi commit phải tuân thủ nghiêm ngặt chuẩn Conventional Commits có gắn tiền tố mã định danh nhóm `nhom10`:
+```text
+<type>(nhom10): <thông điệp tóm tắt nội dung thay đổi>
+```
+**Các loại tiền tố (Type) hợp lệ:**
+- `feat(nhom10): ...` - Bổ sung tính năng mới (Ví dụ: `feat(nhom10): tich hop ban do openstreetmap`)
+- `fix(nhom10): ...` - Sửa lỗi mã nguồn hoặc logic (Ví dụ: `fix(nhom10): sua loi socket exception cong 7357`)
+- `docs(nhom10): ...` - Cập nhật tài liệu, README, danh sách nhóm (Ví dụ: `docs(nhom10): cap nhat quy che commit va mau pr`)
+- `test(nhom10): ...` - Bổ sung hoặc cập nhật ca kiểm thử tự động (Ví dụ: `test(nhom10): them test case cho recommendation engine`)
+- `refactor(nhom10): ...` - Tái cấu trúc mã nguồn, tối ưu hóa code mà không thay đổi tính năng
+- `style(nhom10): ...` - Căn chỉnh giao diện UI/UX, responsive theo Material 3
+
+### 11.4. Quy trình Stage và Commit an toàn (Safe Staging)
+- **Chỉ định rõ phạm vi thư mục nhóm khi stage thay đổi**:
+  ```powershell
+  # CHỈ stage trong phạm vi thư mục nhóm:
+  git add nhom10-65ktpm/
+
+  # HOẶC stage từng tệp cụ thể cần commit:
+  git add nhom10-65ktpm/src/lib/services/document_service.dart
+
+  # TUYỆT ĐỐI TRÁNH: Lệnh 'git add .' hoặc 'git add -A' khi đang đứng ở thư mục gốc repo.
+  ```
+- **Không commit tệp rác và tệp sinh tự động**:
+  - Không commit các thư mục: `build/`, `.dart_tool/`, `.idea/`, `.vscode/`.
+  - Không commit tệp cấu hình chứa thông tin bí mật thực tế (`.env`, keystore cá nhân, private API keys).
+
+### 11.5. Tiêu chuẩn chất lượng trước khi mở Pull Request (Quality Gates)
+Trước khi đẩy code và tạo Pull Request vào nhánh `nhom/nhom10-65ktpm`, thành viên bắt buộc phải kiểm tra tại thư mục `nhom10-65ktpm/src/`:
+```powershell
+# 1. Phân tích cú pháp tĩnh: Bắt buộc đạt 0 issues (không có lỗi hay cảnh báo)
+flutter analyze
+
+# 2. Chạy toàn bộ bài kiểm thử tự động: Bắt buộc đạt 100% tests passed (29/29 tests)
+flutter test
+```
+
+### 11.6. Quy trình mở Pull Request (PR Workflow)
+1. Đẩy nhánh làm việc cá nhân lên remote: `git push origin nhom10-<tên-thành-viên>`.
+2. Tạo Pull Request trên GitHub với nhánh đích (Base branch) là **`nhom/nhom10-65ktpm`**.
+3. Điền đầy đủ thông tin theo mẫu sẵn tại [`nhom10-65ktpm/PULL_REQUEST_TEMPLATE.md`](../PULL_REQUEST_TEMPLATE.md).
+4. Nhóm trưởng tiến hành Review, kiểm tra diff và tiến hành Merge vào nhánh `nhom/nhom10-65ktpm`.
+5. Khi hoàn thiện đợt nộp bài: Nhóm trưởng tạo Pull Request tổng hợp từ nhánh `nhom/nhom10-65ktpm` (tại repo cá nhân fork) gửi về nhánh chính của Giảng viên (`oanhcuongdo/project-ptuddd`).
+
+---
+
+## 12. Giấy phép (License)
 
 Dự án được phát hành theo giấy phép [MIT License](LICENSE). Mã nguồn mở phục vụ mục đích học tập và nghiên cứu học thuật.
