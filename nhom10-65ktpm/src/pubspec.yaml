@@ -1,0 +1,22 @@
+name: nhom10_app
+description: "Du an Bai tap lon hoc phan Phat Trien Ung Dung Di Dong - Nhom 10 - 65KTPM"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
