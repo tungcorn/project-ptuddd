@@ -37,3 +37,7 @@ flutter run -d <device-id>
 ```
 
 Thay `<device-id>` bằng ID thiết bị Android từ `flutter devices`.
+
+### 3. Trạng thái ứng dụng
+
+Cập nhật 16/11/2026: mọi chức năng trong đề cương đã có code. Unit/widget test đạt, ứng dụng đã chạy thật trên Android emulator và Chrome ở chế độ demo (dữ liệu lưu trên máy). Chế độ Firebase và một số chức năng phần cứng chưa được kiểm chứng; chi tiết ở mục 1 và mục 5 của [README](README.md).
