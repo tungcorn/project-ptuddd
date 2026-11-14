@@ -1,0 +1,11 @@
+# Firebase config passed with --dart-define-from-file (never commit real keys)
+firebase.env.json
+**/firebase.env.json
+# Cloud Functions dependencies
+firebase/functions/node_modules/
+# Local tooling state
+.omc/
+**/.omc/
+
+# Nguon ban thu goc (lon), chi dung de sinh assets
+tools/recordings_src/

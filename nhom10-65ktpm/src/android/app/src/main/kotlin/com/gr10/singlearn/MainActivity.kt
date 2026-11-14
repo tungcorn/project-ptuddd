@@ -1,5 +1,7 @@
 package com.gr10.singlearn
 
-import io.flutter.embedding.android.FlutterActivity
+import com.ryanheise.audioservice.AudioServiceActivity
 
-class MainActivity : FlutterActivity()
+// AudioServiceActivity keeps the Flutter engine shared with the background
+// audio service so playback continues and lock-screen controls work.
+class MainActivity : AudioServiceActivity()
