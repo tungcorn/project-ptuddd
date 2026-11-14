@@ -1,0 +1,28 @@
+{
+  "id": "danny-boy",
+  "title": "Danny Boy",
+  "artist": "Fred Weatherly (1913)",
+  "level": "B2",
+  "topics": ["love", "feelings"],
+  "genre": "ballad",
+  "lyricsSource": "Fred Weatherly, \"Danny Boy\" (1913), set to the traditional \"Londonderry Air\" – public domain (published before 1929)",
+  "lines": [
+    {"en": "Oh Danny boy, the pipes, the pipes are calling,", "vi": "Ôi Danny, tiếng sáo túi, tiếng sáo túi đang gọi,"},
+    {"en": "From glen to glen, and down the mountain side.", "vi": "từ thung lũng này sang thung lũng khác, xuống sườn núi."},
+    {"en": "The summer's gone, and all the roses falling,", "vi": "Mùa hè đã qua, và hoa hồng đều rơi rụng,"},
+    {"en": "'Tis you, 'tis you must go and I must bide.", "vi": "chính con, chính con phải đi còn ta phải ở lại."},
+    {"en": "But come ye back when summer's in the meadow,", "vi": "Nhưng hãy trở về khi mùa hè ngập đồng cỏ,"},
+    {"en": "Or when the valley's hushed and white with snow,", "vi": "hoặc khi thung lũng lặng im và trắng xóa tuyết,"},
+    {"en": "'Tis I'll be here in sunshine or in shadow,", "vi": "ta sẽ ở đây, dưới nắng hay trong bóng tối,"},
+    {"en": "Oh Danny boy, oh Danny boy, I love you so.", "vi": "Ôi Danny, ôi Danny, ta yêu con biết nhường nào."},
+    {"en": "But if ye come, and all the flowers are dying,", "vi": "Nhưng nếu con trở về khi muôn hoa đang tàn,"},
+    {"en": "If I am dead, as dead I well may be,", "vi": "nếu ta đã chết, như rất có thể là vậy,"},
+    {"en": "Ye'll come and find the place where I am lying,", "vi": "con hãy đến tìm nơi ta nằm xuống,"},
+    {"en": "And kneel and say an Ave there for me.", "vi": "quỳ xuống và đọc một kinh Kính Mừng cho ta."},
+    {"en": "And I shall hear, though soft you tread above me,", "vi": "Ta sẽ nghe thấy, dù con bước nhẹ trên đầu ta,"},
+    {"en": "And all my grave will warm and sweeter be,", "vi": "và cả nấm mộ của ta sẽ ấm áp và dịu ngọt hơn,"},
+    {"en": "For you will bend and tell me that you love me,", "vi": "vì con sẽ cúi xuống và nói rằng con yêu ta,"},
+    {"en": "And I shall sleep in peace until you come to me.", "vi": "và ta sẽ ngủ yên cho đến khi con đến với ta."}
+  ],
+  "keywords": ["pipe", "glen", "mountain", "meadow", "valley", "shadow", "kneel", "grave"]
+}

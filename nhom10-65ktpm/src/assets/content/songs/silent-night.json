@@ -1,0 +1,56 @@
+{
+  "id": "silent-night",
+  "title": "Silent Night",
+  "artist": "Franz Xaver Gruber (1818), English lyrics John Freeman Young (1859)",
+  "level": "A1",
+  "topics": [
+    "festival",
+    "feelings"
+  ],
+  "genre": "holiday",
+  "lyricsSource": "Joseph Mohr / J. F. Young English translation (1859) – public domain",
+  "lines": [
+    {
+      "en": "Silent night,",
+      "vi": "Đêm yên lặng,"
+    },
+    {
+      "en": "Holy night,",
+      "vi": "đêm thánh thiêng,"
+    },
+    {
+      "en": "All is calm,",
+      "vi": "mọi thứ đều êm đềm,"
+    },
+    {
+      "en": "All is bright",
+      "vi": "mọi thứ đều rạng ngời"
+    },
+    {
+      "en": "Round yon Virgin, Mother and Child.",
+      "vi": "quanh Đức Mẹ đồng trinh và Hài Nhi."
+    },
+    {
+      "en": "Holy Infant so tender and mild,",
+      "vi": "Hài Nhi thánh thiện thật dịu dàng và hiền hòa,"
+    },
+    {
+      "en": "Sleep in heavenly peace,",
+      "vi": "hãy ngủ trong bình yên của thiên đàng,"
+    },
+    {
+      "en": "Sleep in heavenly peace.",
+      "vi": "hãy ngủ trong bình yên của thiên đàng."
+    }
+  ],
+  "keywords": [
+    "silent",
+    "night",
+    "calm",
+    "bright",
+    "mother",
+    "child",
+    "sleep",
+    "peace"
+  ]
+}
