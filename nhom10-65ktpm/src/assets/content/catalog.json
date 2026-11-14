@@ -1,0 +1,367 @@
+{
+ "version": 1,
+ "songs": [
+  {
+   "id": "silent-night",
+   "cover": "assets/covers/silent-night.png",
+   "lrc": "assets/lyrics/silent-night.lrc",
+   "color": "#33721c",
+   "title": "Silent Night",
+   "artist": "Franz Xaver Gruber (1818), English lyrics John Freeman Young (1859)",
+   "level": "A1",
+   "topics": [
+    "festival",
+    "feelings"
+   ],
+   "genre": "holiday",
+   "durationMs": 115905,
+   "audio": "assets/audio/silent-night.mp3",
+   "license": "Lời: Joseph Mohr / J. F. Young English translation (1859) – public domain. Bản thu: Singing Sergeants – United States Air Force Band (1990) – Public domain (https://commons.wikimedia.org/wiki/File:Silent_Night_(1990)_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3).",
+   "recording": {
+    "performer": "Singing Sergeants – United States Air Force Band (1990)",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Silent_Night_(1990)_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3"
+   },
+   "translations": [
+    "Đêm yên lặng,",
+    "đêm thánh thiêng,",
+    "mọi thứ đều êm đềm,",
+    "mọi thứ đều rạng ngời",
+    "quanh Đức Mẹ đồng trinh và Hài Nhi.",
+    "Hài Nhi thánh thiện thật dịu dàng và hiền hòa,",
+    "hãy ngủ trong bình yên của thiên đàng,",
+    "hãy ngủ trong bình yên của thiên đàng."
+   ],
+   "keywords": [
+    "silent",
+    "night",
+    "calm",
+    "bright",
+    "mother",
+    "child",
+    "sleep",
+    "peace"
+   ]
+  },
+  {
+   "id": "my-bonnie-lies-over-the-ocean",
+   "title": "My Bonnie Lies Over the Ocean",
+   "artist": "Traditional (Scottish folk song, 19th century)",
+   "level": "A2",
+   "topics": [
+    "love",
+    "travel"
+   ],
+   "genre": "folk",
+   "durationMs": 141618,
+   "audio": "assets/audio/my-bonnie-lies-over-the-ocean.mp3",
+   "lrc": "assets/lyrics/my-bonnie-lies-over-the-ocean.lrc",
+   "cover": "assets/covers/my-bonnie-lies-over-the-ocean.png",
+   "color": "#681c72",
+   "license": "Lời: Traditional Scottish song, published 1881 and earlier – public domain. Bản thu: Haydn Quartet (1901), Library of Congress National Jukebox – Public domain (https://commons.wikimedia.org/wiki/File:My_Bonnie_lies_over_the_ocean_(Haydn_Quartet,_1901).mp3).",
+   "keywords": [
+    "ocean",
+    "sea",
+    "lie",
+    "bring",
+    "back",
+    "pillow",
+    "dream"
+   ],
+   "translations": [
+    "Bonnie của tôi ở bên kia đại dương,",
+    "Bonnie của tôi ở bên kia biển cả,",
+    "Bonnie của tôi ở bên kia đại dương,",
+    "Ôi, hãy đưa Bonnie của tôi trở về bên tôi.",
+    "Đưa về đây, đưa về đây,",
+    "Đưa Bonnie của tôi về bên tôi, bên tôi,",
+    "Đưa về đây, đưa về đây,",
+    "Ôi, hãy đưa Bonnie của tôi trở về bên tôi.",
+    "Đêm qua khi tôi nằm trên gối,",
+    "Đêm qua khi tôi nằm trên giường,",
+    "Đêm qua khi tôi nằm trên gối,",
+    "Tôi mơ thấy Bonnie của tôi đã chết."
+   ],
+   "recording": {
+    "performer": "Haydn Quartet (1901), Library of Congress National Jukebox",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:My_Bonnie_lies_over_the_ocean_(Haydn_Quartet,_1901).mp3"
+   }
+  },
+  {
+   "id": "america-the-beautiful",
+   "cover": "assets/covers/america-the-beautiful.png",
+   "lrc": "assets/lyrics/america-the-beautiful.lrc",
+   "color": "#1c7242",
+   "title": "America the Beautiful",
+   "artist": "Katharine Lee Bates (1895), music Samuel A. Ward (1882)",
+   "level": "B1",
+   "topics": [
+    "nature",
+    "feelings"
+   ],
+   "genre": "folk",
+   "durationMs": 141453,
+   "audio": "assets/audio/america-the-beautiful.mp3",
+   "license": "Lời: Katharine Lee Bates, final version 1911 – public domain. Bản thu: Singing Sergeants – United States Air Force Band (1995) – Public domain (https://commons.wikimedia.org/wiki/File:America_the_Beautiful_(1995)_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3).",
+   "recording": {
+    "performer": "Singing Sergeants – United States Air Force Band (1995)",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:America_the_Beautiful_(1995)_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3"
+   },
+   "translations": [
+    "Ôi đẹp thay những bước chân người hành hương,",
+    "những bước chân nghiêm nghị và đầy nhiệt huyết",
+    "đã giẫm nên con đường lớn cho tự do",
+    "xuyên qua miền hoang dã!",
+    "Nước Mỹ! Nước Mỹ!",
+    "xin Chúa hàn gắn mọi khiếm khuyết của người,",
+    "củng cố tâm hồn người bằng sự tự chủ,",
+    "tự do của người trong khuôn khổ luật pháp!",
+    "và tôn vinh điều tốt đẹp của người bằng tình huynh đệ",
+    "từ biển này đến biển kia lấp lánh!"
+   ],
+   "keywords": [
+    "beautiful",
+    "pilgrim",
+    "freedom",
+    "wilderness",
+    "soul",
+    "liberty",
+    "brotherhood",
+    "sea"
+   ]
+  },
+  {
+   "id": "o-little-town-of-bethlehem",
+   "cover": "assets/covers/o-little-town-of-bethlehem.png",
+   "lrc": "assets/lyrics/o-little-town-of-bethlehem.lrc",
+   "color": "#20721c",
+   "title": "O Little Town of Bethlehem",
+   "artist": "Phillips Brooks (1868), music Lewis H. Redner (1868)",
+   "level": "B1",
+   "topics": [
+    "festival",
+    "nature"
+   ],
+   "genre": "holiday",
+   "durationMs": 70347,
+   "audio": "assets/audio/o-little-town-of-bethlehem.mp3",
+   "license": "Lời: Phillips Brooks (1868) – public domain. Bản thu: Singing Sergeants – United States Air Force Band – Public domain (https://commons.wikimedia.org/wiki/File:O_Little_Town_of_Bethlehem_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3).",
+   "recording": {
+    "performer": "Singing Sergeants – United States Air Force Band",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:O_Little_Town_of_Bethlehem_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3"
+   },
+   "translations": [
+    "Ôi thị trấn nhỏ Bethlehem,",
+    "ta thấy người nằm yên lặng biết bao!",
+    "phía trên giấc ngủ sâu không mộng mị của người",
+    "những vì sao lặng lẽ trôi qua;",
+    "thế nhưng trên những con phố tối của người vẫn chiếu sáng",
+    "Ánh Sáng muôn đời;",
+    "những hy vọng và nỗi sợ của bao năm tháng",
+    "đều gặp nhau nơi người đêm nay."
+   ],
+   "keywords": [
+    "little",
+    "town",
+    "still",
+    "deep",
+    "sleep",
+    "silent",
+    "star",
+    "light"
+   ]
+  },
+  {
+   "id": "take-me-out-to-the-ball-game",
+   "title": "Take Me Out to the Ball Game",
+   "artist": "Jack Norworth (1908)",
+   "level": "B1",
+   "topics": [
+    "friendship",
+    "daily-life"
+   ],
+   "genre": "folk",
+   "durationMs": 155548,
+   "audio": "assets/audio/take-me-out-to-the-ball-game.mp3",
+   "lrc": "assets/lyrics/take-me-out-to-the-ball-game.lrc",
+   "cover": "assets/covers/take-me-out-to-the-ball-game.png",
+   "color": "#1c5a72",
+   "license": "Lời: Jack Norworth, \"Take Me Out to the Ball Game\" (1908) – public domain (published before 1929). Bản thu: Male vocal solo with orchestra (Columbia 3917, c. 1908), Library of Congress National Jukebox – Public domain (https://commons.wikimedia.org/wiki/File:Take_me_out_to_the_ball_game-Master-mbrsrs-mbrsjukebox-ucsb_col_3917_01_t3917_02-ucsb_col_3917_01_t3917_02.wav).",
+   "keywords": [
+    "baseball",
+    "fever",
+    "root",
+    "crowd",
+    "peanut",
+    "team",
+    "win",
+    "shame"
+   ],
+   "translations": [
+    "Katie Casey mê bóng chày phát cuồng,",
+    "cô bị cơn sốt ấy hành hạ rất nặng.",
+    "Chỉ để cổ vũ cho đội nhà,",
+    "Katie tiêu sạch từng đồng xu.",
+    "Một ngày thứ Bảy, chàng trai của cô",
+    "ghé qua hỏi cô có muốn đi",
+    "xem một buổi diễn không, nhưng cô Katie nói \"Không,",
+    "để em nói anh nghe điều em muốn biết,\"",
+    "Hãy đưa em đến trận bóng chày,",
+    "đưa em đến cùng đám đông;",
+    "mua cho em ít đậu phộng và kẹo Cracker Jack,",
+    "em chẳng quan tâm nếu không bao giờ về nữa.",
+    "Hãy để em cổ vũ, cổ vũ, cổ vũ cho đội nhà,",
+    "nếu họ không thắng thì thật đáng tiếc.",
+    "Vì một, hai, ba lần trượt là anh bị loại,",
+    "tại trận bóng chày quen thuộc này."
+   ],
+   "recording": {
+    "performer": "Male vocal solo with orchestra (Columbia 3917, c. 1908), Library of Congress National Jukebox",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Take_me_out_to_the_ball_game-Master-mbrsrs-mbrsjukebox-ucsb_col_3917_01_t3917_02-ucsb_col_3917_01_t3917_02.wav"
+   }
+  },
+  {
+   "id": "amazing-grace",
+   "title": "Amazing Grace",
+   "artist": "John Newton (1779)",
+   "level": "B2",
+   "topics": [
+    "feelings"
+   ],
+   "genre": "hymn",
+   "durationMs": 130298,
+   "audio": "assets/audio/amazing-grace.mp3",
+   "lrc": "assets/lyrics/amazing-grace.lrc",
+   "cover": "assets/covers/amazing-grace.png",
+   "color": "#721c72",
+   "license": "Lời: John Newton, \"Amazing Grace\" (1779), verses 1–3 – public domain. Bản thu: Southern Aire – United States Air Force Reserve Band – Public domain (https://commons.wikimedia.org/wiki/File:Amazing_Grace_(vocalist_with_guitar)_-_Southern_Aire_-_United_States_Air_Force_Reserve_Band.mp3).",
+   "keywords": [
+    "grace",
+    "wretch",
+    "blind",
+    "fear",
+    "precious",
+    "believe",
+    "shine",
+    "praise"
+   ],
+   "translations": [
+    "Ân sủng diệu kỳ! Âm thanh ngọt ngào làm sao",
+    "đã cứu một kẻ khốn cùng như tôi!",
+    "Tôi từng lạc lối, nhưng nay đã được tìm thấy,",
+    "từng mù lòa, nhưng nay đã thấy.",
+    "Chính ân sủng dạy lòng tôi biết kính sợ,",
+    "và ân sủng cũng xoa dịu nỗi sợ của tôi;",
+    "Ân sủng ấy hiện ra quý giá biết bao",
+    "vào giờ phút tôi lần đầu tin.",
+    "Khi ta đã ở nơi ấy mười ngàn năm,",
+    "rạng ngời sáng chói như mặt trời,",
+    "ta vẫn còn trọn những ngày để hát ngợi khen Chúa",
+    "như khi ta vừa mới bắt đầu."
+   ],
+   "recording": {
+    "performer": "Southern Aire – United States Air Force Reserve Band",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Amazing_Grace_(vocalist_with_guitar)_-_Southern_Aire_-_United_States_Air_Force_Reserve_Band.mp3"
+   }
+  },
+  {
+   "id": "danny-boy",
+   "title": "Danny Boy",
+   "artist": "Fred Weatherly (1913)",
+   "level": "B2",
+   "topics": [
+    "love",
+    "feelings"
+   ],
+   "genre": "ballad",
+   "durationMs": 218644,
+   "audio": "assets/audio/danny-boy.mp3",
+   "lrc": "assets/lyrics/danny-boy.lrc",
+   "cover": "assets/covers/danny-boy.png",
+   "color": "#351c72",
+   "license": "Lời: Fred Weatherly, \"Danny Boy\" (1913), set to the traditional \"Londonderry Air\" – public domain (published before 1929). Bản thu: Celtic Aire – United States Air Force Band (2014) – Public domain (https://commons.wikimedia.org/wiki/File:Danny_Boy_-_Celtic_Aire_-_United_States_Air_Force_Band.mp3).",
+   "keywords": [
+    "pipe",
+    "glen",
+    "mountain",
+    "meadow",
+    "valley",
+    "shadow",
+    "kneel",
+    "grave"
+   ],
+   "translations": [
+    "Ôi Danny, tiếng sáo túi, tiếng sáo túi đang gọi,",
+    "từ thung lũng này sang thung lũng khác, xuống sườn núi.",
+    "Mùa hè đã qua, và hoa hồng đều rơi rụng,",
+    "chính con, chính con phải đi còn ta phải ở lại.",
+    "Nhưng hãy trở về khi mùa hè ngập đồng cỏ,",
+    "hoặc khi thung lũng lặng im và trắng xóa tuyết,",
+    "ta sẽ ở đây, dưới nắng hay trong bóng tối,",
+    "Ôi Danny, ôi Danny, ta yêu con biết nhường nào.",
+    "Nhưng nếu con trở về khi muôn hoa đang tàn,",
+    "nếu ta đã chết, như rất có thể là vậy,",
+    "con hãy đến tìm nơi ta nằm xuống,",
+    "quỳ xuống và đọc một kinh Kính Mừng cho ta.",
+    "Ta sẽ nghe thấy, dù con bước nhẹ trên đầu ta,",
+    "và cả nấm mộ của ta sẽ ấm áp và dịu ngọt hơn,",
+    "vì con sẽ cúi xuống và nói rằng con yêu ta,",
+    "và ta sẽ ngủ yên cho đến khi con đến với ta."
+   ],
+   "recording": {
+    "performer": "Celtic Aire – United States Air Force Band (2014)",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Danny_Boy_-_Celtic_Aire_-_United_States_Air_Force_Band.mp3"
+   }
+  },
+  {
+   "id": "hark-the-herald-angels-sing",
+   "cover": "assets/covers/hark-the-herald-angels-sing.png",
+   "lrc": "assets/lyrics/hark-the-herald-angels-sing.lrc",
+   "color": "#723b1c",
+   "title": "Hark! The Herald Angels Sing",
+   "artist": "Charles Wesley (1739), music Felix Mendelssohn (1840)",
+   "level": "B2",
+   "topics": [
+    "festival",
+    "feelings"
+   ],
+   "genre": "holiday",
+   "durationMs": 114546,
+   "audio": "assets/audio/hark-the-herald-angels-sing.mp3",
+   "license": "Lời: Charles Wesley (1739), adapted by George Whitefield (1753) – public domain. Bản thu: Singing Sergeants and Concert Band – United States Air Force Band – Public domain (https://commons.wikimedia.org/wiki/File:Hark_the_Herald_Angels_Sing_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3).",
+   "recording": {
+    "performer": "Singing Sergeants and Concert Band – United States Air Force Band",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hark_the_Herald_Angels_Sing_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3"
+   },
+   "translations": [
+    "Nghe kìa! Các thiên thần báo tin đang hát,",
+    "\"Vinh danh vị Vua mới giáng sinh;",
+    "Bình an dưới thế, lòng thương xót dịu hiền,",
+    "Thiên Chúa và người tội lỗi được hòa giải!\"",
+    "Hỡi muôn dân, hãy vui mừng đứng dậy,",
+    "hòa vào niềm hân hoan của bầu trời;",
+    "cùng đạo binh thiên thần loan báo,",
+    "\"Chúa Kitô đã sinh ra tại Bethlehem!\"",
+    "Nghe kìa! Các thiên thần báo tin đang hát,",
+    "\"Vinh danh vị Vua mới giáng sinh!\""
+   ],
+   "keywords": [
+    "angel",
+    "glory",
+    "king",
+    "peace",
+    "earth",
+    "joyful",
+    "nation",
+    "born"
+   ]
+  }
+ ]
+}

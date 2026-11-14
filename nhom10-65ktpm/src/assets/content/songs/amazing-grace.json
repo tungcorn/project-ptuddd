@@ -1,0 +1,71 @@
+{
+  "id": "amazing-grace",
+  "title": "Amazing Grace",
+  "artist": "John Newton (1779)",
+  "level": "B2",
+  "topics": [
+    "feelings"
+  ],
+  "genre": "hymn",
+  "lyricsSource": "John Newton, \"Amazing Grace\" (1779), verses 1–3 – public domain",
+  "lines": [
+    {
+      "en": "Amazing grace! How sweet the sound",
+      "vi": "Ân sủng diệu kỳ! Âm thanh ngọt ngào làm sao"
+    },
+    {
+      "en": "That saved a wretch like me!",
+      "vi": "đã cứu một kẻ khốn cùng như tôi!"
+    },
+    {
+      "en": "I once was lost, but now am found,",
+      "vi": "Tôi từng lạc lối, nhưng nay đã được tìm thấy,"
+    },
+    {
+      "en": "Was blind, but now I see.",
+      "vi": "từng mù lòa, nhưng nay đã thấy."
+    },
+    {
+      "en": "'Twas grace that taught my heart to fear,",
+      "vi": "Chính ân sủng dạy lòng tôi biết kính sợ,"
+    },
+    {
+      "en": "And grace my fears relieved;",
+      "vi": "và ân sủng cũng xoa dịu nỗi sợ của tôi;"
+    },
+    {
+      "en": "How precious did that grace appear",
+      "vi": "Ân sủng ấy hiện ra quý giá biết bao"
+    },
+    {
+      "en": "The hour I first believed.",
+      "vi": "vào giờ phút tôi lần đầu tin."
+    },
+    {
+      "en": "When we've been there ten thousand years,",
+      "vi": "Khi ta đã ở nơi ấy mười ngàn năm,"
+    },
+    {
+      "en": "Bright shining as the sun,",
+      "vi": "rạng ngời sáng chói như mặt trời,"
+    },
+    {
+      "en": "We've no less days to sing God's praise",
+      "vi": "ta vẫn còn trọn những ngày để hát ngợi khen Chúa"
+    },
+    {
+      "en": "Than when we'd first begun.",
+      "vi": "như khi ta vừa mới bắt đầu."
+    }
+  ],
+  "keywords": [
+    "grace",
+    "wretch",
+    "blind",
+    "fear",
+    "precious",
+    "believe",
+    "shine",
+    "praise"
+  ]
+}
