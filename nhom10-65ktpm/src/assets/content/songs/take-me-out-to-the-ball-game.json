@@ -1,0 +1,28 @@
+{
+  "id": "take-me-out-to-the-ball-game",
+  "title": "Take Me Out to the Ball Game",
+  "artist": "Jack Norworth (1908)",
+  "level": "B1",
+  "topics": ["friendship", "daily-life"],
+  "genre": "folk",
+  "lyricsSource": "Jack Norworth, \"Take Me Out to the Ball Game\" (1908) – public domain (published before 1929)",
+  "lines": [
+    {"en": "Katie Casey was baseball mad,", "vi": "Katie Casey mê bóng chày phát cuồng,"},
+    {"en": "Had the fever and had it bad.", "vi": "cô bị cơn sốt ấy hành hạ rất nặng."},
+    {"en": "Just to root for the home town crew,", "vi": "Chỉ để cổ vũ cho đội nhà,"},
+    {"en": "Every sou, Katie blew.", "vi": "Katie tiêu sạch từng đồng xu."},
+    {"en": "On a Saturday, her young beau", "vi": "Một ngày thứ Bảy, chàng trai của cô"},
+    {"en": "Called to see if she'd like to go", "vi": "ghé qua hỏi cô có muốn đi"},
+    {"en": "To see a show, but Miss Katie said \"No,", "vi": "xem một buổi diễn không, nhưng cô Katie nói \"Không,"},
+    {"en": "Let me tell you what I'd like to know,\"", "vi": "để em nói anh nghe điều em muốn biết,\""},
+    {"en": "Take me out to the ball game,", "vi": "Hãy đưa em đến trận bóng chày,"},
+    {"en": "Take me out with the crowd;", "vi": "đưa em đến cùng đám đông;"},
+    {"en": "Buy me some peanuts and Cracker Jack,", "vi": "mua cho em ít đậu phộng và kẹo Cracker Jack,"},
+    {"en": "I don't care if I never get back.", "vi": "em chẳng quan tâm nếu không bao giờ về nữa."},
+    {"en": "Let me root, root, root for the home team,", "vi": "Hãy để em cổ vũ, cổ vũ, cổ vũ cho đội nhà,"},
+    {"en": "If they don't win, it's a shame.", "vi": "nếu họ không thắng thì thật đáng tiếc."},
+    {"en": "For it's one, two, three strikes, you're out,", "vi": "Vì một, hai, ba lần trượt là anh bị loại,"},
+    {"en": "At the old ball game.", "vi": "tại trận bóng chày quen thuộc này."}
+  ],
+  "keywords": ["baseball", "fever", "root", "crowd", "peanut", "team", "win", "shame"]
+}
