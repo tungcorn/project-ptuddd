@@ -1,0 +1,12 @@
+# Commit the wrapper scripts/JAR for reproducible project-local Gradle startup.
+/.gradle
+/captures/
+/local.properties
+GeneratedPluginRegistrant.java
+.cxx/
+
+# Remember to never publicly share your keystore.
+# See https://flutter.dev/to/reference-keystore
+key.properties
+**/*.keystore
+**/*.jks

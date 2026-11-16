@@ -1,0 +1,4 @@
+# Keep the POSIX wrapper runnable after checkout with Windows autocrlf enabled.
+gradlew text eol=lf
+gradlew.bat text eol=crlf
+*.jar binary
