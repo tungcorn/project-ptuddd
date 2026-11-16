@@ -76,14 +76,14 @@ Thay `<device-id>` bằng ID thiết bị Android từ `flutter devices`. Bản 
 
 Build lại bằng `flutter build apk --debug` tại `src/`. APK và cache Gradle bị Git bỏ qua, không đưa vào kho nộp bài. Cấu hình release hiện còn dùng debug signing của template, chưa sẵn sàng phát hành.
 
-## 4. Phân công
+## 4. Thành viên và phân công
 
-| Thành viên | Phụ trách chính | Giai đoạn sau luồng cốt lõi |
-| --- | --- | --- |
-| **Ngô Quang Tùng – M1, nhóm trưởng** | Thư viện, trình phát/LRC, nghe lại câu; khung app và điều phối tích hợp | Phát nền, màn hình khóa, tải offline, lặp A–B |
-| **Nguyễn Hải Ninh – M2** | Tra/lưu từ, flashcard SM-2, lưu cục bộ và đồng bộ từ vựng | Quản trị nhập/sửa nội dung bài hát |
-| **Đào Ngọc Đình – M3** | Bài tập nghe, chấm/tổng kết phiên, luyện phát âm | Thử thách đoán tên bài hát |
-| **Phạm Ngọc Bách – M4** | Xác thực/hồ sơ, trang chủ, XP/streak/huy hiệu, thống kê và nhắc học | Bạn bè và bảng xếp hạng |
+| Thành viên | GitHub | Phụ trách chính | Giai đoạn sau luồng cốt lõi |
+| --- | --- | --- | --- |
+| **Ngô Quang Tùng – M1, nhóm trưởng** | [tungcorn](https://github.com/tungcorn) | Thư viện, trình phát/LRC, nghe lại câu; khung app và điều phối tích hợp | Phát nền, màn hình khóa, tải offline, lặp A–B |
+| **Nguyễn Hải Ninh – M2** | [HaiNinh1](https://github.com/HaiNinh1) | Tra/lưu từ, flashcard SM-2, lưu cục bộ và đồng bộ từ vựng | Quản trị nhập/sửa nội dung bài hát |
+| **Đào Ngọc Đình – M3** | [DaoNgocDinh](https://github.com/DaoNgocDinh) | Bài tập nghe, chấm/tổng kết phiên, luyện phát âm | Thử thách đoán tên bài hát |
+| **Phạm Ngọc Bách – M4** | [phamngocbach05-debug](https://github.com/phamngocbach05-debug) | Xác thực/hồ sơ, trang chủ, XP/streak/huy hiệu, thống kê và nhắc học | Bạn bè và bảng xếp hạng |
 
 Mỗi người phụ trách cả giao diện, logic, dữ liệu, kiểm thử và phần báo cáo/demo của mình. Cả nhóm chuẩn bị nội dung bài hát và review chéo; nhóm trưởng điều phối tích hợp, không mặc định làm thay các mô-đun. Phạm vi và mốc nghiệm thu chi tiết nằm ở mục 9–10 của đề cương.
 
