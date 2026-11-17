@@ -1,0 +1,1398 @@
+{
+ "forms": {
+  "remember": "remember",
+  "ride": "ride",
+  "right": "right",
+  "ring": "ring",
+  "river": "river",
+  "roam": "roam",
+  "roaming": "roam",
+  "rolling": "roll",
+  "root": "root",
+  "rosemary": "rosemary",
+  "roses": "rose",
+  "round": "round",
+  "row": "row",
+  "rule": "rule",
+  "safe": "safe",
+  "sage": "sage",
+  "said": "say",
+  "salt": "salt",
+  "sandals": "sandals",
+  "saturday": "saturday",
+  "saved": "save",
+  "saw": "see",
+  "say": "say",
+  "scarborough": "scarborough",
+  "school": "school",
+  "sea": "sea",
+  "seam": "seam",
+  "seat": "seat",
+  "see": "see",
+  "seldom": "seldom",
+  "seven": "seven",
+  "shadow": "shadow",
+  "shall": "shall",
+  "shame": "shame",
+  "shan't": "shan't",
+  "she": "she",
+  "she'd": "she'd",
+  "she'll": "she'll",
+  "sheep": "sheep",
+  "shenandoah": "shenandoah",
+  "shines": "shine",
+  "shirt": "shirt",
+  "shoe": "shoe",
+  "shoes": "shoe",
+  "shoulders": "shoulder",
+  "shout": "shout",
+  "show": "show",
+  "side": "side",
+  "simple": "simple",
+  "simplicity": "simplicity",
+  "since": "since",
+  "sing": "sing",
+  "sir": "sir",
+  "sit": "sit",
+  "six": "six",
+  "skies": "sky",
+  "skip": "skip",
+  "sky": "sky",
+  "sleep": "sleep",
+  "sleigh": "sleigh",
+  "sleighing": "sleigh",
+  "smile": "smile",
+  "snares": "snare",
+  "snow": "snow",
+  "so": "so",
+  "soft": "soft",
+  "some": "some",
+  "song": "song",
+  "sorry": "sorry",
+  "sou": "sou",
+  "sound": "sound",
+  "spider": "spider",
+  "spirits": "spirit",
+  "splinter": "splinter",
+  "spout": "spout",
+  "star": "star",
+  "stars": "star",
+  "stomp": "stomp",
+  "stood": "stand",
+  "strand": "strand",
+  "stream": "stream",
+  "strikes": "strike",
+  "struck": "strike",
+  "stylish": "stylish",
+  "summer's": "summer",
+  "sun": "sun",
+  "sunshine": "sunshine",
+  "sure": "sure",
+  "susanna": "susanna",
+  "sweet": "sweet",
+  "sweeter": "sweet",
+  "take": "take",
+  "takes": "take",
+  "taking": "take",
+  "taught": "teach",
+  "team": "team",
+  "tell": "tell",
+  "than": "than",
+  "that": "that",
+  "the": "the",
+  "their": "their",
+  "then": "then",
+  "there": "there",
+  "they": "they",
+  "this": "this",
+  "though": "though",
+  "three": "three",
+  "through": "through",
+  "thumb": "thumb",
+  "thus": "thus",
+  "thyme": "thyme",
+  "tidings": "tidings",
+  "till": "till",
+  "tis": "tis",
+  "to": "to",
+  "toes": "toe",
+  "toils": "toil",
+  "tonight": "tonight",
+  "topses": "topses",
+  "town": "town",
+  "tread": "tread",
+  "true": "true",
+  "turn": "turn",
+  "turning": "turn",
+  "twas": "twas",
+  "twill": "twill",
+  "twinkle": "twinkle",
+  "two": "two",
+  "until": "until",
+  "up": "up",
+  "upon": "upon",
+  "us": "us",
+  "valley": "valley",
+  "valley's": "valley",
+  "violets": "violet",
+  "wagered": "wager",
+  "want": "want",
+  "warm": "warm",
+  "was": "be",
+  "wash": "wash",
+  "washed": "wash",
+  "water": "water",
+  "way": "way",
+  "we": "we",
+  "we'll": "we'll",
+  "weather": "weather",
+  "well": "well",
+  "went": "go",
+  "were": "be",
+  "what": "what",
+  "what'll": "what'll",
+  "whatever": "whatever",
+  "whee": "whee",
+  "when": "when",
+  "where": "where",
+  "which": "which",
+  "while": "while",
+  "white": "white",
+  "who": "who",
+  "wide": "wide",
+  "wife": "wife",
+  "will": "will",
+  "win": "win",
+  "wind": "wind",
+  "wish": "wish",
+  "with": "with",
+  "without": "without",
+  "won't": "won't",
+  "wonder": "wonder",
+  "wood": "wood",
+  "wool": "wool",
+  "word": "word",
+  "world": "world",
+  "would": "would",
+  "wretch": "wretch",
+  "writing": "write",
+  "wrong": "wrong",
+  "ye": "ye",
+  "ye'll": "ye'll",
+  "year": "year",
+  "years": "year",
+  "yes": "yes",
+  "you": "you",
+  "you'll": "you'll",
+  "you're": "you're",
+  "young": "young",
+  "your": "your",
+  "yours": "yours"
+ },
+ "entries": {
+  "remember": {
+   "ipa": "/rɪˈmem.bər/",
+   "pos": "verb",
+   "vi": "nhớ, nhớ lại",
+   "example": "Remember to call me.",
+   "exampleVi": "Hãy nhớ gọi cho tôi."
+  },
+  "ride": {
+   "ipa": "/raɪd/",
+   "pos": "verb",
+   "vi": "cưỡi, đi (xe, ngựa)",
+   "example": "I ride a horse.",
+   "exampleVi": "Tôi cưỡi ngựa."
+  },
+  "right": {
+   "ipa": "/raɪt/",
+   "pos": "adjective",
+   "vi": "đúng, phải; bên phải",
+   "example": "Turn right at the corner.",
+   "exampleVi": "Rẽ phải ở góc đường."
+  },
+  "ring": {
+   "ipa": "/rɪŋ/",
+   "pos": "verb",
+   "vi": "reo, rung (chuông); chiếc nhẫn",
+   "example": "The bell will ring.",
+   "exampleVi": "Chuông sẽ reo."
+  },
+  "river": {
+   "ipa": "/ˈrɪv.ər/",
+   "pos": "noun",
+   "vi": "dòng sông",
+   "example": "The river is wide.",
+   "exampleVi": "Dòng sông rất rộng."
+  },
+  "roam": {
+   "ipa": "/rəʊm/",
+   "pos": "verb",
+   "vi": "đi lang thang, ngao du",
+   "example": "Deer roam in the forest.",
+   "exampleVi": "Hươu lang thang trong rừng."
+  },
+  "roll": {
+   "ipa": "/rəʊl/",
+   "pos": "verb",
+   "vi": "lăn, cuộn",
+   "example": "The ball will roll down.",
+   "exampleVi": "Quả bóng sẽ lăn xuống."
+  },
+  "root": {
+   "ipa": "/ruːt/",
+   "pos": "noun",
+   "vi": "rễ cây, gốc",
+   "example": "The tree has deep roots.",
+   "exampleVi": "Cái cây có rễ sâu."
+  },
+  "rosemary": {
+   "ipa": "/ˈrəʊz.mer.i/",
+   "pos": "noun",
+   "vi": "cây hương thảo (một loại thảo mộc)",
+   "example": "Rosemary smells nice.",
+   "exampleVi": "Hương thảo có mùi thơm."
+  },
+  "rose": {
+   "ipa": "/rəʊz/",
+   "pos": "noun",
+   "vi": "hoa hồng",
+   "example": "She gave me a red rose.",
+   "exampleVi": "Cô ấy tặng tôi một bông hồng đỏ."
+  },
+  "round": {
+   "ipa": "/raʊnd/",
+   "pos": "adverb",
+   "vi": "vòng quanh, tròn",
+   "example": "The wheels go round and round.",
+   "exampleVi": "Bánh xe quay vòng vòng."
+  },
+  "row": {
+   "ipa": "/rəʊ/",
+   "pos": "verb",
+   "vi": "chèo (thuyền); hàng",
+   "example": "Row the boat gently.",
+   "exampleVi": "Hãy chèo thuyền nhẹ nhàng."
+  },
+  "rule": {
+   "ipa": "/ruːl/",
+   "pos": "noun",
+   "vi": "quy tắc, luật lệ",
+   "example": "Follow the rule.",
+   "exampleVi": "Hãy tuân theo quy tắc."
+  },
+  "safe": {
+   "ipa": "/seɪf/",
+   "pos": "adjective",
+   "vi": "an toàn",
+   "example": "The baby is safe.",
+   "exampleVi": "Em bé được an toàn."
+  },
+  "sage": {
+   "ipa": "/seɪdʒ/",
+   "pos": "noun",
+   "vi": "cây xô thơm (thảo mộc); nhà hiền triết",
+   "example": "Add some sage to the soup.",
+   "exampleVi": "Thêm chút xô thơm vào súp."
+  },
+  "say": {
+   "ipa": "/seɪ/",
+   "pos": "verb",
+   "vi": "nói",
+   "example": "What did you say?",
+   "exampleVi": "Bạn đã nói gì?"
+  },
+  "salt": {
+   "ipa": "/sɔːlt/",
+   "pos": "noun",
+   "vi": "muối",
+   "example": "Pass the salt, please.",
+   "exampleVi": "Làm ơn đưa muối cho tôi."
+  },
+  "sandals": {
+   "ipa": "/ˈsæn.dəlz/",
+   "pos": "noun",
+   "vi": "dép xăng-đan",
+   "example": "She wears sandals in summer.",
+   "exampleVi": "Cô ấy đi dép xăng-đan vào mùa hè."
+  },
+  "saturday": {
+   "ipa": "/ˈsæt.ə.deɪ/",
+   "pos": "proper noun",
+   "vi": "thứ Bảy",
+   "example": "We play on Saturday.",
+   "exampleVi": "Chúng tôi chơi vào thứ Bảy."
+  },
+  "save": {
+   "ipa": "/seɪv/",
+   "pos": "verb",
+   "vi": "cứu, tiết kiệm",
+   "example": "Firefighters save lives.",
+   "exampleVi": "Lính cứu hỏa cứu mạng người."
+  },
+  "see": {
+   "ipa": "/siː/",
+   "pos": "verb",
+   "vi": "thấy, nhìn thấy",
+   "example": "I can see the moon.",
+   "exampleVi": "Tôi có thể thấy mặt trăng."
+  },
+  "scarborough": {
+   "ipa": "/ˈskɑː.brə/",
+   "pos": "proper noun",
+   "vi": "Scarborough, thị trấn ven biển ở Anh (trong bài Scarborough Fair)",
+   "example": "Scarborough is by the sea.",
+   "exampleVi": "Scarborough nằm cạnh biển."
+  },
+  "school": {
+   "ipa": "/skuːl/",
+   "pos": "noun",
+   "vi": "trường học",
+   "example": "I walk to school.",
+   "exampleVi": "Tôi đi bộ đến trường."
+  },
+  "sea": {
+   "ipa": "/siː/",
+   "pos": "noun",
+   "vi": "biển",
+   "example": "The sea is blue.",
+   "exampleVi": "Biển có màu xanh."
+  },
+  "seam": {
+   "ipa": "/siːm/",
+   "pos": "noun",
+   "vi": "đường may",
+   "example": "The shirt has a seam.",
+   "exampleVi": "Chiếc áo có một đường may."
+  },
+  "seat": {
+   "ipa": "/siːt/",
+   "pos": "noun",
+   "vi": "chỗ ngồi, ghế",
+   "example": "Take a seat.",
+   "exampleVi": "Mời bạn ngồi."
+  },
+  "seldom": {
+   "ipa": "/ˈsel.dəm/",
+   "pos": "adverb",
+   "vi": "hiếm khi",
+   "example": "He seldom eats meat.",
+   "exampleVi": "Anh ấy hiếm khi ăn thịt."
+  },
+  "seven": {
+   "ipa": "/ˈsev.ən/",
+   "pos": "determiner",
+   "vi": "bảy, số 7",
+   "example": "I have seven books.",
+   "exampleVi": "Tôi có bảy quyển sách."
+  },
+  "shadow": {
+   "ipa": "/ˈʃæd.əʊ/",
+   "pos": "noun",
+   "vi": "cái bóng",
+   "example": "My shadow follows me.",
+   "exampleVi": "Cái bóng đi theo tôi."
+  },
+  "shall": {
+   "ipa": "/ʃæl/",
+   "pos": "verb",
+   "vi": "sẽ (trợ động từ, trang trọng); nên",
+   "example": "We shall overcome.",
+   "exampleVi": "Chúng ta sẽ vượt qua."
+  },
+  "shame": {
+   "ipa": "/ʃeɪm/",
+   "pos": "noun",
+   "vi": "sự xấu hổ; điều đáng tiếc",
+   "example": "What a shame!",
+   "exampleVi": "Thật đáng tiếc!"
+  },
+  "shan't": {
+   "ipa": "/ʃɑːnt/",
+   "pos": "contraction",
+   "vi": "shall not: sẽ không",
+   "example": "I shan't be late.",
+   "exampleVi": "Tôi sẽ không đến muộn."
+  },
+  "she": {
+   "ipa": "/ʃiː/",
+   "pos": "pronoun",
+   "vi": "cô ấy, bà ấy",
+   "example": "She sings well.",
+   "exampleVi": "Cô ấy hát hay."
+  },
+  "she'd": {
+   "ipa": "/ʃiːd/",
+   "pos": "contraction",
+   "vi": "she would / she had: cô ấy sẽ / cô ấy đã",
+   "example": "She'd like some tea.",
+   "exampleVi": "Cô ấy muốn một ít trà."
+  },
+  "she'll": {
+   "ipa": "/ʃiːl/",
+   "pos": "contraction",
+   "vi": "she will: cô ấy sẽ",
+   "example": "She'll come soon.",
+   "exampleVi": "Cô ấy sẽ đến sớm."
+  },
+  "sheep": {
+   "ipa": "/ʃiːp/",
+   "pos": "noun",
+   "vi": "con cừu",
+   "example": "The sheep eat grass.",
+   "exampleVi": "Những con cừu ăn cỏ."
+  },
+  "shenandoah": {
+   "ipa": "/ˌʃen.ənˈdəʊ.ə/",
+   "pos": "proper noun",
+   "vi": "Shenandoah, tên một thung lũng/dòng sông ở Mỹ (trong bài Oh Shenandoah)",
+   "example": "Shenandoah is a valley in Virginia.",
+   "exampleVi": "Shenandoah là một thung lũng ở Virginia."
+  },
+  "shine": {
+   "ipa": "/ʃaɪn/",
+   "pos": "verb",
+   "vi": "chiếu sáng, tỏa sáng",
+   "example": "The sun will shine.",
+   "exampleVi": "Mặt trời sẽ chiếu sáng."
+  },
+  "shirt": {
+   "ipa": "/ʃɜːt/",
+   "pos": "noun",
+   "vi": "áo sơ mi",
+   "example": "He wears a white shirt.",
+   "exampleVi": "Anh ấy mặc áo sơ mi trắng."
+  },
+  "shoe": {
+   "ipa": "/ʃuː/",
+   "pos": "noun",
+   "vi": "chiếc giày",
+   "example": "I lost my shoe.",
+   "exampleVi": "Tôi làm mất chiếc giày."
+  },
+  "shoulder": {
+   "ipa": "/ˈʃəʊl.dər/",
+   "pos": "noun",
+   "vi": "vai",
+   "example": "He carried it on his shoulder.",
+   "exampleVi": "Anh ấy vác nó trên vai."
+  },
+  "shout": {
+   "ipa": "/ʃaʊt/",
+   "pos": "verb",
+   "vi": "hét, la lớn",
+   "example": "Do not shout.",
+   "exampleVi": "Đừng la lớn."
+  },
+  "show": {
+   "ipa": "/ʃəʊ/",
+   "pos": "verb",
+   "vi": "cho xem, chỉ; buổi biểu diễn",
+   "example": "Show me the way.",
+   "exampleVi": "Hãy chỉ đường cho tôi."
+  },
+  "side": {
+   "ipa": "/saɪd/",
+   "pos": "noun",
+   "vi": "bên, phía",
+   "example": "Stand by my side.",
+   "exampleVi": "Hãy đứng bên cạnh tôi."
+  },
+  "simple": {
+   "ipa": "/ˈsɪm.pəl/",
+   "pos": "adjective",
+   "vi": "đơn giản",
+   "example": "It is a simple song.",
+   "exampleVi": "Đó là một bài hát đơn giản."
+  },
+  "simplicity": {
+   "ipa": "/sɪmˈplɪs.ə.ti/",
+   "pos": "noun",
+   "vi": "sự đơn giản, giản dị",
+   "example": "I love the simplicity of this song.",
+   "exampleVi": "Tôi thích sự giản dị của bài hát này."
+  },
+  "since": {
+   "ipa": "/sɪns/",
+   "pos": "conjunction",
+   "vi": "kể từ khi; vì",
+   "example": "I have lived here since 2020.",
+   "exampleVi": "Tôi sống ở đây từ năm 2020."
+  },
+  "sing": {
+   "ipa": "/sɪŋ/",
+   "pos": "verb",
+   "vi": "hát",
+   "example": "Let us sing together.",
+   "exampleVi": "Chúng ta hãy cùng hát."
+  },
+  "sir": {
+   "ipa": "/sɜːr/",
+   "pos": "noun",
+   "vi": "ngài, ông (cách gọi lịch sự)",
+   "example": "Yes, sir.",
+   "exampleVi": "Vâng, thưa ngài."
+  },
+  "sit": {
+   "ipa": "/sɪt/",
+   "pos": "verb",
+   "vi": "ngồi",
+   "example": "Please sit down.",
+   "exampleVi": "Xin mời ngồi."
+  },
+  "six": {
+   "ipa": "/sɪks/",
+   "pos": "determiner",
+   "vi": "sáu, số 6",
+   "example": "There are six eggs.",
+   "exampleVi": "Có sáu quả trứng."
+  },
+  "sky": {
+   "ipa": "/skaɪ/",
+   "pos": "noun",
+   "vi": "bầu trời",
+   "example": "The sky is blue.",
+   "exampleVi": "Bầu trời xanh."
+  },
+  "skip": {
+   "ipa": "/skɪp/",
+   "pos": "verb",
+   "vi": "nhảy chân sáo; bỏ qua",
+   "example": "The children skip along.",
+   "exampleVi": "Lũ trẻ nhảy chân sáo."
+  },
+  "sleep": {
+   "ipa": "/sliːp/",
+   "pos": "verb",
+   "vi": "ngủ",
+   "example": "The baby will sleep.",
+   "exampleVi": "Em bé sẽ ngủ."
+  },
+  "sleigh": {
+   "ipa": "/sleɪ/",
+   "pos": "noun",
+   "vi": "xe trượt tuyết (do ngựa kéo); đi xe trượt tuyết",
+   "example": "We rode in a sleigh.",
+   "exampleVi": "Chúng tôi đi xe trượt tuyết."
+  },
+  "smile": {
+   "ipa": "/smaɪl/",
+   "pos": "noun",
+   "vi": "nụ cười; mỉm cười",
+   "example": "She has a lovely smile.",
+   "exampleVi": "Cô ấy có nụ cười đáng yêu."
+  },
+  "snare": {
+   "ipa": "/sneər/",
+   "pos": "noun",
+   "vi": "cạm bẫy",
+   "example": "The bird escaped the snare.",
+   "exampleVi": "Con chim thoát khỏi cái bẫy."
+  },
+  "snow": {
+   "ipa": "/snəʊ/",
+   "pos": "noun",
+   "vi": "tuyết",
+   "example": "The snow is white.",
+   "exampleVi": "Tuyết màu trắng."
+  },
+  "so": {
+   "ipa": "/səʊ/",
+   "pos": "adverb",
+   "vi": "rất, quá; vì vậy",
+   "example": "I am so happy.",
+   "exampleVi": "Tôi rất vui."
+  },
+  "soft": {
+   "ipa": "/sɒft/",
+   "pos": "adjective",
+   "vi": "mềm, nhẹ nhàng",
+   "example": "The bed is soft.",
+   "exampleVi": "Chiếc giường mềm."
+  },
+  "some": {
+   "ipa": "/sʌm/",
+   "pos": "determiner",
+   "vi": "một vài, một ít",
+   "example": "I want some water.",
+   "exampleVi": "Tôi muốn một ít nước."
+  },
+  "song": {
+   "ipa": "/sɒŋ/",
+   "pos": "noun",
+   "vi": "bài hát",
+   "example": "This is my favorite song.",
+   "exampleVi": "Đây là bài hát yêu thích của tôi."
+  },
+  "sorry": {
+   "ipa": "/ˈsɒr.i/",
+   "pos": "adjective",
+   "vi": "xin lỗi, hối tiếc",
+   "example": "I am sorry.",
+   "exampleVi": "Tôi xin lỗi."
+  },
+  "sou": {
+   "ipa": "/suː/",
+   "pos": "noun",
+   "vi": "đồng xu nhỏ (tiền Pháp xưa); đồng xu",
+   "example": "He does not have a sou.",
+   "exampleVi": "Anh ấy không có một xu."
+  },
+  "sound": {
+   "ipa": "/saʊnd/",
+   "pos": "noun",
+   "vi": "âm thanh",
+   "example": "I hear a strange sound.",
+   "exampleVi": "Tôi nghe thấy một âm thanh lạ."
+  },
+  "spider": {
+   "ipa": "/ˈspaɪ.dər/",
+   "pos": "noun",
+   "vi": "con nhện",
+   "example": "A spider made a web.",
+   "exampleVi": "Con nhện giăng tơ."
+  },
+  "spirit": {
+   "ipa": "/ˈspɪr.ɪt/",
+   "pos": "noun",
+   "vi": "tinh thần, linh hồn",
+   "example": "He has a strong spirit.",
+   "exampleVi": "Anh ấy có tinh thần mạnh mẽ."
+  },
+  "splinter": {
+   "ipa": "/ˈsplɪn.tər/",
+   "pos": "noun",
+   "vi": "mảnh vụn, dằm (gỗ)",
+   "example": "I got a splinter in my finger.",
+   "exampleVi": "Tôi bị dằm gỗ đâm vào ngón tay."
+  },
+  "spout": {
+   "ipa": "/spaʊt/",
+   "pos": "noun",
+   "vi": "vòi (ống thoát nước)",
+   "example": "Water ran out of the spout.",
+   "exampleVi": "Nước chảy ra từ vòi."
+  },
+  "star": {
+   "ipa": "/stɑːr/",
+   "pos": "noun",
+   "vi": "ngôi sao",
+   "example": "Look at that star.",
+   "exampleVi": "Hãy nhìn ngôi sao kia."
+  },
+  "stomp": {
+   "ipa": "/stɒmp/",
+   "pos": "verb",
+   "vi": "dậm chân",
+   "example": "Stomp your feet.",
+   "exampleVi": "Hãy dậm chân đi."
+  },
+  "stand": {
+   "ipa": "/stænd/",
+   "pos": "verb",
+   "vi": "đứng",
+   "example": "Please stand up.",
+   "exampleVi": "Xin hãy đứng lên."
+  },
+  "strand": {
+   "ipa": "/strænd/",
+   "pos": "noun",
+   "vi": "bãi biển (cổ); sợi",
+   "example": "We walked along the strand.",
+   "exampleVi": "Chúng tôi đi dọc bãi biển."
+  },
+  "stream": {
+   "ipa": "/striːm/",
+   "pos": "noun",
+   "vi": "dòng suối",
+   "example": "A small stream runs here.",
+   "exampleVi": "Một dòng suối nhỏ chảy qua đây."
+  },
+  "strike": {
+   "ipa": "/straɪk/",
+   "pos": "verb",
+   "vi": "đánh, đập; (đồng hồ) điểm giờ",
+   "example": "The clock will strike twelve.",
+   "exampleVi": "Đồng hồ sẽ điểm mười hai giờ."
+  },
+  "stylish": {
+   "ipa": "/ˈstaɪ.lɪʃ/",
+   "pos": "adjective",
+   "vi": "sang trọng, hợp thời trang",
+   "example": "She wears stylish clothes.",
+   "exampleVi": "Cô ấy mặc quần áo hợp thời trang."
+  },
+  "summer": {
+   "ipa": "/ˈsʌm.ər/",
+   "pos": "noun",
+   "vi": "mùa hè",
+   "example": "Summer is hot.",
+   "exampleVi": "Mùa hè thì nóng."
+  },
+  "sun": {
+   "ipa": "/sʌn/",
+   "pos": "noun",
+   "vi": "mặt trời",
+   "example": "The sun is bright.",
+   "exampleVi": "Mặt trời rất sáng."
+  },
+  "sunshine": {
+   "ipa": "/ˈsʌn.ʃaɪn/",
+   "pos": "noun",
+   "vi": "ánh nắng",
+   "example": "I love the sunshine.",
+   "exampleVi": "Tôi yêu ánh nắng."
+  },
+  "sure": {
+   "ipa": "/ʃɔːr/",
+   "pos": "adjective",
+   "vi": "chắc chắn",
+   "example": "I am sure.",
+   "exampleVi": "Tôi chắc chắn."
+  },
+  "susanna": {
+   "ipa": "/suːˈzæn.ə/",
+   "pos": "proper noun",
+   "vi": "Susanna, tên nữ (trong bài Oh! Susanna)",
+   "example": "Susanna is a name.",
+   "exampleVi": "Susanna là một cái tên."
+  },
+  "sweet": {
+   "ipa": "/swiːt/",
+   "pos": "adjective",
+   "vi": "ngọt, ngọt ngào",
+   "example": "The cake is sweet.",
+   "exampleVi": "Chiếc bánh rất ngọt."
+  },
+  "take": {
+   "ipa": "/teɪk/",
+   "pos": "verb",
+   "vi": "lấy, mang đi, đưa đi",
+   "example": "Take me home.",
+   "exampleVi": "Hãy đưa tôi về nhà."
+  },
+  "teach": {
+   "ipa": "/tiːtʃ/",
+   "pos": "verb",
+   "vi": "dạy",
+   "example": "She will teach us English.",
+   "exampleVi": "Cô ấy sẽ dạy chúng tôi tiếng Anh."
+  },
+  "team": {
+   "ipa": "/tiːm/",
+   "pos": "noun",
+   "vi": "đội, nhóm",
+   "example": "Our team won.",
+   "exampleVi": "Đội chúng tôi đã thắng."
+  },
+  "tell": {
+   "ipa": "/tel/",
+   "pos": "verb",
+   "vi": "kể, nói cho biết",
+   "example": "Tell me a story.",
+   "exampleVi": "Hãy kể cho tôi một câu chuyện."
+  },
+  "than": {
+   "ipa": "/ðæn/",
+   "pos": "conjunction",
+   "vi": "hơn (so sánh)",
+   "example": "He is taller than me.",
+   "exampleVi": "Anh ấy cao hơn tôi."
+  },
+  "that": {
+   "ipa": "/ðæt/",
+   "pos": "pronoun",
+   "vi": "đó, kia; rằng",
+   "example": "That is my book.",
+   "exampleVi": "Đó là quyển sách của tôi."
+  },
+  "the": {
+   "ipa": "/ðə/",
+   "pos": "determiner",
+   "vi": "(mạo từ xác định) cái, con, những",
+   "example": "The cat is black.",
+   "exampleVi": "Con mèo màu đen."
+  },
+  "their": {
+   "ipa": "/ðeər/",
+   "pos": "determiner",
+   "vi": "của họ, của chúng",
+   "example": "This is their house.",
+   "exampleVi": "Đây là nhà của họ."
+  },
+  "then": {
+   "ipa": "/ðen/",
+   "pos": "adverb",
+   "vi": "sau đó, rồi thì",
+   "example": "Eat, then sleep.",
+   "exampleVi": "Ăn xong rồi ngủ."
+  },
+  "there": {
+   "ipa": "/ðeər/",
+   "pos": "adverb",
+   "vi": "ở đó, ở kia",
+   "example": "Put it over there.",
+   "exampleVi": "Hãy đặt nó ở đằng kia."
+  },
+  "they": {
+   "ipa": "/ðeɪ/",
+   "pos": "pronoun",
+   "vi": "họ, chúng nó",
+   "example": "They are playing.",
+   "exampleVi": "Họ đang chơi."
+  },
+  "this": {
+   "ipa": "/ðɪs/",
+   "pos": "pronoun",
+   "vi": "này, đây",
+   "example": "This is easy.",
+   "exampleVi": "Cái này dễ."
+  },
+  "though": {
+   "ipa": "/ðəʊ/",
+   "pos": "conjunction",
+   "vi": "mặc dù",
+   "example": "Though it rained, we went out.",
+   "exampleVi": "Mặc dù trời mưa, chúng tôi vẫn ra ngoài."
+  },
+  "three": {
+   "ipa": "/θriː/",
+   "pos": "determiner",
+   "vi": "ba, số 3",
+   "example": "I have three cats.",
+   "exampleVi": "Tôi có ba con mèo."
+  },
+  "through": {
+   "ipa": "/θruː/",
+   "pos": "preposition",
+   "vi": "xuyên qua, qua",
+   "example": "We walked through the park.",
+   "exampleVi": "Chúng tôi đi xuyên qua công viên."
+  },
+  "thumb": {
+   "ipa": "/θʌm/",
+   "pos": "noun",
+   "vi": "ngón tay cái",
+   "example": "He hurt his thumb.",
+   "exampleVi": "Anh ấy bị đau ngón tay cái."
+  },
+  "thus": {
+   "ipa": "/ðʌs/",
+   "pos": "adverb",
+   "vi": "do đó, như vậy",
+   "example": "He was tired, thus he slept.",
+   "exampleVi": "Anh ấy mệt nên đã ngủ."
+  },
+  "thyme": {
+   "ipa": "/taɪm/",
+   "pos": "noun",
+   "vi": "cây húng tây (thảo mộc)",
+   "example": "Thyme is a herb.",
+   "exampleVi": "Húng tây là một loại thảo mộc."
+  },
+  "tidings": {
+   "ipa": "/ˈtaɪ.dɪŋz/",
+   "pos": "noun",
+   "vi": "tin tức (cổ, trang trọng)",
+   "example": "They bring good tidings.",
+   "exampleVi": "Họ mang đến tin vui."
+  },
+  "till": {
+   "ipa": "/tɪl/",
+   "pos": "preposition",
+   "vi": "cho đến khi",
+   "example": "Wait till noon.",
+   "exampleVi": "Hãy đợi đến trưa."
+  },
+  "tis": {
+   "ipa": "/tɪz/",
+   "pos": "contraction",
+   "vi": "'tis = it is (cổ): đó là",
+   "example": "Tis a lovely day.",
+   "exampleVi": "Hôm nay là một ngày đẹp."
+  },
+  "to": {
+   "ipa": "/tuː/",
+   "pos": "preposition",
+   "vi": "đến, tới; để",
+   "example": "I go to school.",
+   "exampleVi": "Tôi đi đến trường."
+  },
+  "toe": {
+   "ipa": "/təʊ/",
+   "pos": "noun",
+   "vi": "ngón chân",
+   "example": "I hurt my toe.",
+   "exampleVi": "Tôi bị đau ngón chân."
+  },
+  "toil": {
+   "ipa": "/tɔɪl/",
+   "pos": "noun",
+   "vi": "sự lao nhọc, công việc vất vả",
+   "example": "After years of toil, he rested.",
+   "exampleVi": "Sau nhiều năm lao nhọc, ông nghỉ ngơi."
+  },
+  "tonight": {
+   "ipa": "/təˈnaɪt/",
+   "pos": "adverb",
+   "vi": "tối nay",
+   "example": "We sing tonight.",
+   "exampleVi": "Tối nay chúng ta hát."
+  },
+  "topses": {
+   "ipa": "/ˈtɒp.sɪz/",
+   "pos": "noun",
+   "vi": "nắp đậy (cách nói phương ngữ của \"tops\")",
+   "example": "The boxes have no topses.",
+   "exampleVi": "Những cái hộp không có nắp."
+  },
+  "town": {
+   "ipa": "/taʊn/",
+   "pos": "noun",
+   "vi": "thị trấn",
+   "example": "I live in a small town.",
+   "exampleVi": "Tôi sống ở một thị trấn nhỏ."
+  },
+  "tread": {
+   "ipa": "/tred/",
+   "pos": "verb",
+   "vi": "bước đi, giẫm lên",
+   "example": "Tread softly.",
+   "exampleVi": "Hãy bước đi nhẹ nhàng."
+  },
+  "true": {
+   "ipa": "/truː/",
+   "pos": "adjective",
+   "vi": "đúng, thật",
+   "example": "That is true.",
+   "exampleVi": "Điều đó là thật."
+  },
+  "turn": {
+   "ipa": "/tɜːn/",
+   "pos": "verb",
+   "vi": "quay, rẽ, xoay",
+   "example": "Turn left here.",
+   "exampleVi": "Rẽ trái ở đây."
+  },
+  "twas": {
+   "ipa": "/twɒz/",
+   "pos": "contraction",
+   "vi": "'twas = it was (cổ): đó đã là",
+   "example": "Twas the night before.",
+   "exampleVi": "Đó là đêm hôm trước."
+  },
+  "twill": {
+   "ipa": "/twɪl/",
+   "pos": "contraction",
+   "vi": "'twill = it will (cổ): nó sẽ",
+   "example": "Twill be fine.",
+   "exampleVi": "Mọi chuyện sẽ ổn."
+  },
+  "twinkle": {
+   "ipa": "/ˈtwɪŋ.kəl/",
+   "pos": "verb",
+   "vi": "lấp lánh, nhấp nháy",
+   "example": "Stars twinkle at night.",
+   "exampleVi": "Các vì sao lấp lánh vào ban đêm."
+  },
+  "two": {
+   "ipa": "/tuː/",
+   "pos": "determiner",
+   "vi": "hai, số 2",
+   "example": "I have two hands.",
+   "exampleVi": "Tôi có hai bàn tay."
+  },
+  "until": {
+   "ipa": "/ənˈtɪl/",
+   "pos": "preposition",
+   "vi": "cho đến khi",
+   "example": "Wait until I come back.",
+   "exampleVi": "Hãy đợi đến khi tôi quay lại."
+  },
+  "up": {
+   "ipa": "/ʌp/",
+   "pos": "adverb",
+   "vi": "lên, ở trên",
+   "example": "Look up at the sky.",
+   "exampleVi": "Hãy nhìn lên bầu trời."
+  },
+  "upon": {
+   "ipa": "/əˈpɒn/",
+   "pos": "preposition",
+   "vi": "trên, vào lúc (trang trọng)",
+   "example": "Once upon a time.",
+   "exampleVi": "Ngày xửa ngày xưa."
+  },
+  "us": {
+   "ipa": "/ʌs/",
+   "pos": "pronoun",
+   "vi": "chúng tôi, chúng ta (tân ngữ)",
+   "example": "Come with us.",
+   "exampleVi": "Hãy đi cùng chúng tôi."
+  },
+  "valley": {
+   "ipa": "/ˈvæl.i/",
+   "pos": "noun",
+   "vi": "thung lũng",
+   "example": "The valley is green.",
+   "exampleVi": "Thung lũng xanh mướt."
+  },
+  "violet": {
+   "ipa": "/ˈvaɪ.ə.lət/",
+   "pos": "noun",
+   "vi": "hoa tím, hoa violet",
+   "example": "Violets are blue-purple.",
+   "exampleVi": "Hoa violet có màu tím xanh."
+  },
+  "wager": {
+   "ipa": "/ˈweɪ.dʒər/",
+   "pos": "verb",
+   "vi": "đánh cược, đặt cược",
+   "example": "I wager ten dollars.",
+   "exampleVi": "Tôi đặt cược mười đô la."
+  },
+  "want": {
+   "ipa": "/wɒnt/",
+   "pos": "verb",
+   "vi": "muốn",
+   "example": "I want some water.",
+   "exampleVi": "Tôi muốn một ít nước."
+  },
+  "warm": {
+   "ipa": "/wɔːm/",
+   "pos": "adjective",
+   "vi": "ấm, ấm áp",
+   "example": "The room is warm.",
+   "exampleVi": "Căn phòng ấm áp."
+  },
+  "be": {
+   "ipa": "/biː/",
+   "pos": "verb",
+   "vi": "thì, là, ở (was/were là quá khứ)",
+   "example": "She was happy.",
+   "exampleVi": "Cô ấy đã vui."
+  },
+  "wash": {
+   "ipa": "/wɒʃ/",
+   "pos": "verb",
+   "vi": "rửa, giặt",
+   "example": "Wash your hands.",
+   "exampleVi": "Hãy rửa tay."
+  },
+  "water": {
+   "ipa": "/ˈwɔː.tər/",
+   "pos": "noun",
+   "vi": "nước",
+   "example": "I drink water.",
+   "exampleVi": "Tôi uống nước."
+  },
+  "way": {
+   "ipa": "/weɪ/",
+   "pos": "noun",
+   "vi": "con đường, cách",
+   "example": "Show me the way.",
+   "exampleVi": "Hãy chỉ đường cho tôi."
+  },
+  "we": {
+   "ipa": "/wiː/",
+   "pos": "pronoun",
+   "vi": "chúng tôi, chúng ta",
+   "example": "We love music.",
+   "exampleVi": "Chúng tôi yêu âm nhạc."
+  },
+  "we'll": {
+   "ipa": "/wiːl/",
+   "pos": "contraction",
+   "vi": "we will: chúng ta sẽ",
+   "example": "We'll sing together.",
+   "exampleVi": "Chúng ta sẽ hát cùng nhau."
+  },
+  "weather": {
+   "ipa": "/ˈweð.ər/",
+   "pos": "noun",
+   "vi": "thời tiết",
+   "example": "The weather is nice.",
+   "exampleVi": "Thời tiết đẹp."
+  },
+  "well": {
+   "ipa": "/wel/",
+   "pos": "adverb",
+   "vi": "tốt, giỏi; à, ừm",
+   "example": "She sings well.",
+   "exampleVi": "Cô ấy hát hay."
+  },
+  "go": {
+   "ipa": "/ɡəʊ/",
+   "pos": "verb",
+   "vi": "đi (went là quá khứ)",
+   "example": "I went home.",
+   "exampleVi": "Tôi đã về nhà."
+  },
+  "what": {
+   "ipa": "/wɒt/",
+   "pos": "pronoun",
+   "vi": "cái gì, gì",
+   "example": "What is this?",
+   "exampleVi": "Đây là cái gì?"
+  },
+  "what'll": {
+   "ipa": "/ˈwɒt.əl/",
+   "pos": "contraction",
+   "vi": "what will: cái gì sẽ",
+   "example": "What'll we do?",
+   "exampleVi": "Chúng ta sẽ làm gì?"
+  },
+  "whatever": {
+   "ipa": "/wɒtˈev.ər/",
+   "pos": "pronoun",
+   "vi": "bất cứ điều gì",
+   "example": "Do whatever you like.",
+   "exampleVi": "Hãy làm bất cứ điều gì bạn thích."
+  },
+  "whee": {
+   "ipa": "/wiː/",
+   "pos": "interjection",
+   "vi": "ôi! hoan hô! (tiếng reo vui)",
+   "example": "Whee, this is fun!",
+   "exampleVi": "Ôi, vui quá!"
+  },
+  "when": {
+   "ipa": "/wen/",
+   "pos": "conjunction",
+   "vi": "khi, lúc",
+   "example": "Call me when you arrive.",
+   "exampleVi": "Hãy gọi cho tôi khi bạn đến."
+  },
+  "where": {
+   "ipa": "/weər/",
+   "pos": "adverb",
+   "vi": "ở đâu, nơi mà",
+   "example": "Where do you live?",
+   "exampleVi": "Bạn sống ở đâu?"
+  },
+  "which": {
+   "ipa": "/wɪtʃ/",
+   "pos": "pronoun",
+   "vi": "cái nào, mà",
+   "example": "Which one do you like?",
+   "exampleVi": "Bạn thích cái nào?"
+  },
+  "while": {
+   "ipa": "/waɪl/",
+   "pos": "conjunction",
+   "vi": "trong khi",
+   "example": "Sing while you walk.",
+   "exampleVi": "Hãy hát trong khi bạn đi bộ."
+  },
+  "white": {
+   "ipa": "/waɪt/",
+   "pos": "adjective",
+   "vi": "trắng, màu trắng",
+   "example": "The snow is white.",
+   "exampleVi": "Tuyết màu trắng."
+  },
+  "who": {
+   "ipa": "/huː/",
+   "pos": "pronoun",
+   "vi": "ai, người mà",
+   "example": "Who is she?",
+   "exampleVi": "Cô ấy là ai?"
+  },
+  "wide": {
+   "ipa": "/waɪd/",
+   "pos": "adjective",
+   "vi": "rộng",
+   "example": "The river is wide.",
+   "exampleVi": "Dòng sông rất rộng."
+  },
+  "wife": {
+   "ipa": "/waɪf/",
+   "pos": "noun",
+   "vi": "vợ",
+   "example": "He loves his wife.",
+   "exampleVi": "Anh ấy yêu vợ mình."
+  },
+  "will": {
+   "ipa": "/wɪl/",
+   "pos": "verb",
+   "vi": "sẽ (trợ động từ)",
+   "example": "I will help you.",
+   "exampleVi": "Tôi sẽ giúp bạn."
+  },
+  "win": {
+   "ipa": "/wɪn/",
+   "pos": "verb",
+   "vi": "thắng, chiến thắng (won là quá khứ)",
+   "example": "We want to win.",
+   "exampleVi": "Chúng tôi muốn chiến thắng."
+  },
+  "wind": {
+   "ipa": "/wɪnd/",
+   "pos": "noun",
+   "vi": "gió",
+   "example": "The wind is cold.",
+   "exampleVi": "Gió rất lạnh."
+  },
+  "wish": {
+   "ipa": "/wɪʃ/",
+   "pos": "verb",
+   "vi": "ước, mong",
+   "example": "I wish you luck.",
+   "exampleVi": "Tôi chúc bạn may mắn."
+  },
+  "with": {
+   "ipa": "/wɪð/",
+   "pos": "preposition",
+   "vi": "cùng với, bằng",
+   "example": "Come with me.",
+   "exampleVi": "Hãy đi cùng tôi."
+  },
+  "without": {
+   "ipa": "/wɪˈðaʊt/",
+   "pos": "preposition",
+   "vi": "không có, thiếu",
+   "example": "Tea without sugar.",
+   "exampleVi": "Trà không đường."
+  },
+  "won't": {
+   "ipa": "/wəʊnt/",
+   "pos": "contraction",
+   "vi": "will not: sẽ không",
+   "example": "I won't forget.",
+   "exampleVi": "Tôi sẽ không quên."
+  },
+  "wonder": {
+   "ipa": "/ˈwʌn.dər/",
+   "pos": "verb",
+   "vi": "tự hỏi, băn khoăn; điều kỳ diệu",
+   "example": "I wonder where she is.",
+   "exampleVi": "Tôi tự hỏi cô ấy ở đâu."
+  },
+  "wood": {
+   "ipa": "/wʊd/",
+   "pos": "noun",
+   "vi": "gỗ; rừng nhỏ",
+   "example": "The table is made of wood.",
+   "exampleVi": "Cái bàn làm bằng gỗ."
+  },
+  "wool": {
+   "ipa": "/wʊl/",
+   "pos": "noun",
+   "vi": "len, lông cừu",
+   "example": "This sweater is made of wool.",
+   "exampleVi": "Chiếc áo len này làm từ len."
+  },
+  "word": {
+   "ipa": "/wɜːd/",
+   "pos": "noun",
+   "vi": "từ, lời",
+   "example": "Learn a new word.",
+   "exampleVi": "Hãy học một từ mới."
+  },
+  "world": {
+   "ipa": "/wɜːld/",
+   "pos": "noun",
+   "vi": "thế giới",
+   "example": "The world is big.",
+   "exampleVi": "Thế giới thật rộng lớn."
+  },
+  "would": {
+   "ipa": "/wʊd/",
+   "pos": "verb",
+   "vi": "sẽ, muốn (trợ động từ)",
+   "example": "I would like some tea.",
+   "exampleVi": "Tôi muốn một ít trà."
+  },
+  "wretch": {
+   "ipa": "/retʃ/",
+   "pos": "noun",
+   "vi": "kẻ khốn khổ, người đáng thương",
+   "example": "The poor wretch was lost.",
+   "exampleVi": "Kẻ khốn khổ ấy bị lạc."
+  },
+  "write": {
+   "ipa": "/raɪt/",
+   "pos": "verb",
+   "vi": "viết",
+   "example": "I write a letter.",
+   "exampleVi": "Tôi viết một lá thư."
+  },
+  "wrong": {
+   "ipa": "/rɒŋ/",
+   "pos": "adjective",
+   "vi": "sai, nhầm",
+   "example": "That answer is wrong.",
+   "exampleVi": "Câu trả lời đó sai."
+  },
+  "ye": {
+   "ipa": "/jiː/",
+   "pos": "pronoun",
+   "vi": "các ngươi, các bạn (cổ; nay là \"you\")",
+   "example": "Hear ye, all.",
+   "exampleVi": "Hãy nghe đây, tất cả mọi người."
+  },
+  "ye'll": {
+   "ipa": "/jiːl/",
+   "pos": "contraction",
+   "vi": "ye will (cổ): các bạn sẽ (nay là \"you will\")",
+   "example": "Ye'll see.",
+   "exampleVi": "Các bạn sẽ thấy."
+  },
+  "year": {
+   "ipa": "/jɪər/",
+   "pos": "noun",
+   "vi": "năm",
+   "example": "It is a new year.",
+   "exampleVi": "Đã sang năm mới."
+  },
+  "yes": {
+   "ipa": "/jes/",
+   "pos": "interjection",
+   "vi": "vâng, có",
+   "example": "Yes, I can.",
+   "exampleVi": "Vâng, tôi có thể."
+  },
+  "you": {
+   "ipa": "/juː/",
+   "pos": "pronoun",
+   "vi": "bạn, các bạn",
+   "example": "I love you.",
+   "exampleVi": "Tôi yêu bạn."
+  },
+  "you'll": {
+   "ipa": "/juːl/",
+   "pos": "contraction",
+   "vi": "you will: bạn sẽ",
+   "example": "You'll be fine.",
+   "exampleVi": "Bạn sẽ ổn thôi."
+  },
+  "you're": {
+   "ipa": "/jɔːr/",
+   "pos": "contraction",
+   "vi": "you are: bạn là, bạn đang",
+   "example": "You're my friend.",
+   "exampleVi": "Bạn là bạn của tôi."
+  },
+  "young": {
+   "ipa": "/jʌŋ/",
+   "pos": "adjective",
+   "vi": "trẻ, non",
+   "example": "He is young.",
+   "exampleVi": "Anh ấy còn trẻ."
+  },
+  "your": {
+   "ipa": "/jɔːr/",
+   "pos": "determiner",
+   "vi": "của bạn",
+   "example": "This is your book.",
+   "exampleVi": "Đây là sách của bạn."
+  },
+  "yours": {
+   "ipa": "/jɔːrz/",
+   "pos": "pronoun",
+   "vi": "của bạn (đại từ sở hữu)",
+   "example": "The book is yours.",
+   "exampleVi": "Quyển sách là của bạn."
+  }
+ }
+}
