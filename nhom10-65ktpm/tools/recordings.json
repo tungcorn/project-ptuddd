@@ -1,0 +1,62 @@
+[
+  {
+    "id": "amazing-grace",
+    "file": "tools/recordings_src/amazing-grace.mp3",
+    "performer": "Southern Aire – United States Air Force Reserve Band",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Amazing_Grace_(vocalist_with_guitar)_-_Southern_Aire_-_United_States_Air_Force_Reserve_Band.mp3"
+  },
+  {
+    "id": "danny-boy",
+    "file": "tools/recordings_src/danny-boy.mp3",
+    "performer": "Celtic Aire – United States Air Force Band (2014)",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Danny_Boy_-_Celtic_Aire_-_United_States_Air_Force_Band.mp3"
+  },
+  {
+    "id": "my-bonnie-lies-over-the-ocean",
+    "file": "tools/recordings_src/my-bonnie-lies-over-the-ocean.mp3",
+    "performer": "Haydn Quartet (1901), Library of Congress National Jukebox",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:My_Bonnie_lies_over_the_ocean_(Haydn_Quartet,_1901).mp3"
+  },
+  {
+    "id": "take-me-out-to-the-ball-game",
+    "file": "tools/recordings_src/take-me-out-to-the-ball-game.wav",
+    "performer": "Male vocal solo with orchestra (Columbia 3917, c. 1908), Library of Congress National Jukebox",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Take_me_out_to_the_ball_game-Master-mbrsrs-mbrsjukebox-ucsb_col_3917_01_t3917_02-ucsb_col_3917_01_t3917_02.wav"
+  },
+  {
+    "id": "silent-night",
+    "file": "tools/recordings_src/silent-night.mp3",
+    "performer": "Singing Sergeants – United States Air Force Band (1990)",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Silent_Night_(1990)_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3"
+  },
+  {
+    "id": "hark-the-herald-angels-sing",
+    "file": "tools/recordings_src/hark-the-herald-angels-sing.mp3",
+    "performer": "Singing Sergeants and Concert Band – United States Air Force Band",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hark_the_Herald_Angels_Sing_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3",
+    "noContext": true,
+    "vocalStart": 55
+  },
+  {
+    "id": "america-the-beautiful",
+    "file": "tools/recordings_src/america-the-beautiful.mp3",
+    "performer": "Singing Sergeants – United States Air Force Band (1995)",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:America_the_Beautiful_(1995)_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3",
+    "noContext": true,
+    "minMatch": 0.5
+  },
+  {
+    "id": "o-little-town-of-bethlehem",
+    "file": "tools/recordings_src/o-little-town-of-bethlehem.mp3",
+    "performer": "Singing Sergeants – United States Air Force Band",
+    "license": "Public domain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:O_Little_Town_of_Bethlehem_-_Singing_Sergeants_-_United_States_Air_Force_Band.mp3"
+  }
+]
