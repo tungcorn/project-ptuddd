@@ -21,6 +21,17 @@ Future<void> waitFor(WidgetTester tester, Finder f, {int seconds = 20}) async {
   final texts = find.byType(Text).evaluate().map((e) => (e.widget as Text).data ?? '').where((t) => t.isNotEmpty).take(40).join(' | ');
   // ignore: avoid_print
   print('E2E_TIMEOUT $f -- $texts');
+  final app = find.byType(SingLearnApp);
+  if (app.evaluate().isNotEmpty) {
+    final container = ProviderScope.containerOf(tester.element(app));
+    final dueState = container.read(dueWordsProvider);
+    final repo = container.read(vocabularyRepositoryProvider);
+    final words = await repo.words();
+    // ignore: avoid_print
+    print('E2E_DUE state=$dueState repositoryDue=${(await repo.due()).length} '
+        'now=${DateTime.now().toIso8601String()} '
+        'cards=${words.map((w) => '${w.id}:${w.sm2.dueAt.toIso8601String()}').join(',')}');
+  }
   throw TestFailure('Timed out waiting for $f -- Visible: $texts');
 }
 
@@ -102,7 +113,18 @@ void main() {
 
     // Keyword -> lookup -> save with the lyric line as context.
     // (Lyric words are TextSpans; the keyword chip is a stable tap target.)
-    await tester.tap(find.widgetWithText(ActionChip, 'peace'));
+    // Keywords are built lazily in a horizontal ListView. On a phone, 'peace'
+    // starts offscreen, so scroll the keyword row before trying to tap it.
+    final peaceChip = find.widgetWithText(ActionChip, 'peace');
+    await tester.scrollUntilVisible(
+      peaceChip,
+      160,
+      scrollable: find.byWidgetPredicate(
+        (widget) => widget is Scrollable &&
+            widget.axisDirection == AxisDirection.right,
+      ),
+    );
+    await tester.tap(peaceChip);
     await waitFor(tester, find.byKey(const Key('lookup-save')));
     expect(find.byKey(const Key('lookup-meaning')), findsOneWidget);
     await tester.tap(find.byKey(const Key('lookup-save')));
@@ -125,8 +147,11 @@ void main() {
     // Review the saved card.
     container.read(routerProvider).go(Routes.vocabulary);
     await tester.pump(const Duration(seconds: 1));
-    await waitFor(tester, find.byKey(const Key('start-review')));
-    await tester.tap(find.byKey(const Key('start-review')));
+    final startReview = find.byKey(const Key('start-review'));
+    // The FAB animates into place when the paused due query resumes. Its
+    // presence in the tree alone does not mean its tap target is ready.
+    await waitFor(tester, startReview.hitTestable());
+    await tester.tap(startReview);
     await waitFor(tester, find.byKey(const Key('show-answer')));
     await tester.tap(find.byKey(const Key('show-answer')));
     await tester.pump(const Duration(milliseconds: 600));
