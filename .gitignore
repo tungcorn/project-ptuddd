@@ -40,3 +40,6 @@ Pods/
 *~
 .DS_Store
 Thumbs.db
+
+.omc/
+.omx/
