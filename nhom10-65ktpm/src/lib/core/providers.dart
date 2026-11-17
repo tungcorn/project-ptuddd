@@ -65,9 +65,23 @@ final downloadServiceProvider = Provider<DownloadService>(
 
 /// Re-runs [load] initially and every time [changes] fires.
 Stream<T> liveQuery<T>(Stream<void> changes, Future<T> Function() load) async* {
-  yield await load();
-  await for (final _ in changes) {
-    yield await load();
+  // Listen before the first result is yielded. An offscreen tab can pause
+  // the query at that yield; delaying the subscription until afterwards
+  // would lose storage changes made while the learner is on another screen.
+  final pending = StreamController<void>();
+  final subscription = changes.listen(
+    pending.add,
+    onError: pending.addError,
+    onDone: pending.close,
+  );
+  pending.add(null);
+  try {
+    await for (final _ in pending.stream) {
+      yield await load();
+    }
+  } finally {
+    await subscription.cancel();
+    await pending.close();
   }
 }
 
