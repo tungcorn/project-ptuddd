@@ -398,13 +398,23 @@ class _LineTileState extends State<_LineTile> {
   }
 }
 
-class _Controls extends ConsumerWidget {
+class _Controls extends ConsumerStatefulWidget {
   const _Controls({required this.song});
 
   final Song song;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Controls> createState() => _ControlsState();
+}
+
+class _ControlsState extends ConsumerState<_Controls> {
+  /// Thumb position while the user drags the seek bar; the seek itself is
+  /// sent once on release so playback position updates don't fight the drag.
+  double? _dragMs;
+
+  @override
+  Widget build(BuildContext context) {
+    final song = widget.song;
     final st = ref.watch(playerControllerProvider);
     final ctrl = ref.read(playerControllerProvider.notifier);
     final c = Theme.of(context).colorScheme;
@@ -421,14 +431,26 @@ class _Controls extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(children: [
-                SizedBox(width: 44, child: Text(formatDuration(pos), textAlign: TextAlign.center)),
+                SizedBox(
+                  width: 44,
+                  child: Text(
+                    formatDuration(_dragMs != null ? Duration(milliseconds: _dragMs!.round()) : pos),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
                 Expanded(
                   child: Slider(
-                    value: pos.inMilliseconds.toDouble().clamp(0, total.inMilliseconds.toDouble().clamp(1, double.infinity)),
+                    key: const Key('seek-bar'),
+                    value: (_dragMs ?? pos.inMilliseconds.toDouble())
+                        .clamp(0, total.inMilliseconds.toDouble().clamp(1, double.infinity)),
                     max: total.inMilliseconds.toDouble().clamp(1, double.infinity),
                     secondaryTrackValue: null,
-                    onChanged: enabled
-                        ? (v) => ctrl.seek(Duration(milliseconds: v.round()))
+                    onChanged: enabled ? (v) => setState(() => _dragMs = v) : null,
+                    onChangeEnd: enabled
+                        ? (v) async {
+                            await ctrl.seek(Duration(milliseconds: v.round()));
+                            if (mounted) setState(() => _dragMs = null);
+                          }
                         : null,
                   ),
                 ),

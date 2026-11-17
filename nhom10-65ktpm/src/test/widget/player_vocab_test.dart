@@ -63,6 +63,44 @@ void main() {
     await settleIo(tester);
   });
 
+  testWidgets('dragging the seek bar seeks once on release and keeps playing there',
+      (tester) async {
+    bigScreen(tester);
+    final c = await app.pumpScreen(tester, const PlayerScreen(songId: songId));
+    await settleIo(tester, rounds: 10);
+    expect(c.read(playerControllerProvider).playing, isTrue);
+    app.audio.log.clear();
+
+    final bar = find.byKey(const Key('seek-bar'));
+    final box = tester.getRect(bar);
+    // Slider track has ~24 px padding on each side; drag from the start to
+    // roughly 3/4 of the track.
+    final gesture = await tester.startGesture(Offset(box.left + 24, box.center.dy));
+    await tester.pump();
+    for (var i = 0; i < 10; i++) {
+      await gesture.moveBy(Offset((box.width - 48) * 0.075, 0));
+      await tester.pump();
+    }
+    // A playback tick while dragging must not move the thumb back.
+    app.audio.advance(const Duration(seconds: 1));
+    await tester.pump();
+    expect(app.audio.log.where((l) => l.startsWith('seek:')), isEmpty,
+        reason: 'no seek while the user is still dragging');
+    await gesture.up();
+    await settleIo(tester);
+
+    final seeks = app.audio.log.where((l) => l.startsWith('seek:')).toList();
+    expect(seeks, hasLength(1), reason: 'exactly one seek on release');
+    final target = int.parse(seeks.single.substring(5));
+    final total = c.read(playerControllerProvider).duration.inMilliseconds;
+    expect(target, inInclusiveRange((total * 0.65).round(), (total * 0.85).round()));
+    final st = c.read(playerControllerProvider);
+    expect(st.position.inMilliseconds, target, reason: 'does not jump back to 0:00');
+    expect(st.playing, isTrue);
+    expect(app.audio.log.any((l) => l.startsWith('load:')), isFalse,
+        reason: 'seeking must not reload the song');
+  });
+
   testWidgets('opening another song stops the old one first, then plays the new one',
       (tester) async {
     bigScreen(tester);
