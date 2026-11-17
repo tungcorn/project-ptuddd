@@ -9,3 +9,7 @@ firebase/functions/node_modules/
 
 # Nguon ban thu goc (lon), chi dung de sinh assets
 tools/recordings_src/
+
+# Python cache
+__pycache__/
+*.pyc

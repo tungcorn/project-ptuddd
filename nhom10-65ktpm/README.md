@@ -85,13 +85,15 @@ flutter test integration_test/app_e2e_test.dart -d <android-device-id>
 
 **Chế độ Firebase:** tạo project Firebase, sao chép `firebase/firebase.env.example.json` thành `firebase.env.json`, điền giá trị rồi chạy `flutter run --dart-define-from-file=firebase.env.json`. Triển khai `firebase/firestore.rules`, `storage.rules` và `functions/` bằng Firebase CLI. Không commit `firebase.env.json`.
 
+**Chạy bản build web:** sau `flutter build web`, dùng `python tools/serve_web.py` rồi mở http://127.0.0.1:8765. Không dùng `python -m http.server` vì server này không hỗ trợ HTTP Range, khiến Chrome không tua được nhạc và tự quay về 0:00.
+
 **Giới hạn của bản web:** không có thông báo nhắc học, dịch máy ML Kit hay tải bài offline; app hiện thông báo khi người dùng chạm vào các chức năng này. Bản web chỉ dùng để kiểm thử nhanh, sản phẩm chính vẫn là Android.
 
 ### Kết quả kiểm tra (16/11/2026)
 
 - `flutter analyze`: **No issues found**.
 - Unit test: **87/87 đạt**. Có test kiểm tra nội dung từng bài: LRC khớp lời, có bản dịch, mọi từ trong lời đều có trong từ điển, có audio và ảnh bìa, giấy phép có ghi nguồn.
-- Widget test: **28/28 đạt** (luồng app, trình phát/từ vựng, chuyển bài, luyện tập, phát âm, xã hội, quản trị). Mỗi file được chạy riêng.
+- Widget test: **29/29 đạt** (luồng app, trình phát/từ vựng, chuyển bài, kéo thanh tua, luyện tập, phát âm, xã hội, quản trị). Mỗi file được chạy riêng.
 - `flutter build apk --debug` và `flutter build web`: **thành công**.
 - Trên Android emulator (API 36), test end-to-end đạt các bước: đăng ký → xếp trình độ A2 → tìm bài → **nhạc phát thật, lời chạy theo** → 0,75x → lặp câu → tra và lưu từ → XP ≥ 10, streak 1. Bước ôn flashcard trước đó lỗi do cách test chuyển tab; test đã được sửa nhưng chưa chạy lại trên emulator.
 - Trên Chrome (bản build web, chạy thủ công): đăng ký, xếp trình độ, trang chủ, phát nhạc kèm lời, lưu từ, ôn flashcard SM-2, điền từ, các màn luyện tập, thống kê, bảng xếp hạng và quản trị đều chạy, console không có lỗi.
