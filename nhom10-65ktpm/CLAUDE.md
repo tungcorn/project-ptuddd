@@ -31,6 +31,19 @@
 - PR nộp bài cho giảng viên là quy trình riêng, không tự mở khi được yêu cầu tạo PR nội bộ. Đóng PR không có nghĩa đã merge.
 - Sau push/merge, kiểm tra trạng thái local và remote rồi báo đúng nhánh, commit và kết quả. Không tự mở PR chỉ vì GitHub in ra liên kết gợi ý sau push.
 
+## Cập nhật tiến độ GitHub Project
+
+- Bảng tiến độ chung: https://github.com/users/tungcorn/projects/2. Khi thực hiện công việc được giao, AI phải kiểm tra issue/PR liên quan và cập nhật tiến độ trên bảng theo kết quả thực tế; không chỉ sửa code rồi bỏ quên bảng. Chỉ cập nhật item thuộc công việc đang xử lý, không tự thay đổi tiến độ hoặc người phụ trách của thành viên khác.
+- Các mốc cần cập nhật: bắt đầu triển khai, có PR sẵn sàng review, có yêu cầu sửa làm công việc quay lại triển khai, và hoàn tất tích hợp/nghiệm thu. Không cập nhật sau từng lệnh hoặc tạo comment lặp lại khi không có tiến triển.
+- Dùng đúng các trạng thái hiện có; không tự tạo/đổi field hoặc workflow của Project:
+  - `Todo`: chưa bắt đầu.
+  - `In progress`: đã bắt đầu; còn triển khai, kiểm thử, xử lý góp ý hoặc phụ thuộc chưa giải quyết. Draft PR chưa phải sẵn sàng review.
+  - `In review`: phạm vi công việc của item đã sẵn sàng review và có PR tương ứng. Nếu PR chỉ giải quyết một phần của issue lớn còn việc khác, giữ issue ở `In progress` và ghi rõ PR/phần việc đang chờ review.
+  - `Done`: toàn bộ tiêu chí của item đã có bằng chứng nghiệm thu và các PR cần thiết đã merge. PR được mở, được approve, bị đóng không merge, hoặc chỉ một PR thành phần được merge không đủ để đánh dấu toàn bộ issue là Done.
+- Khi có tiến triển đáng kể, cập nhật issue với phần đã làm, PR liên quan, kết quả kiểm thử và phần còn lại/blocker. Kiểm tra item đã có trên Project trước khi thêm issue liên quan đang thiếu; không tạo item trùng. Xác minh lại trạng thái sau khi cập nhật.
+- Nếu tài khoản/CLI thiếu quyền truy cập hoặc ghi Project, báo rõ cập nhật nào chưa thực hiện được; không tự nâng quyền, đổi tài khoản, công khai bảng hoặc báo đã cập nhật khi chưa thành công.
+- Việc cập nhật tiến độ trong phạm vi được giao không thay thế quyền commit, push, tạo/merge PR, publish hoặc deploy; các thao tác đó vẫn theo quy định và yêu cầu cho phép ở trên. Nếu người dùng yêu cầu chỉ đọc/đánh giá thì không ghi lên issue/Project.
+
 ## Kiểm thử và báo cáo
 
 - Làm trực tiếp các tác vụ vừa sức; không mặc định gọi subagent hoặc nhiều AI cho mỗi bước.
