@@ -157,8 +157,18 @@ Ca kiểm thử để xác nhận tương thích:
 
 ## 6. Project, review và bằng chứng
 
+### Chia issue thành các PR nhỏ
+
+- Áp dụng cho cả M1–M4: **một issue có thể được giải quyết qua nhiều PR**, không cần chờ hoàn thành toàn bộ issue mới mở PR. Owner ghi phần việc nhỏ dự định làm trên issue trước khi triển khai.
+- Mỗi PR tập trung một phần việc có ý nghĩa, có thể review và kiểm thử riêng, ví dụ sửa một tình huống lỗi kèm test hồi quy. Không chia vụn theo số dòng hoặc tạo PR chỉ để đủ số lượng; không tách test cần thiết khỏi bản sửa để merge code chưa được kiểm chứng.
+- PR giải quyết một phần ghi `Liên quan #<issue>`, liệt kê tiêu chí/phần việc đã xử lý, kết quả kiểm thử, phần còn lại và PR phụ thuộc nếu có. **Không dùng `Closes`, `Fixes`, `Resolves` cho issue chưa hoàn thành.** Chỉ đóng issue khi toàn bộ tiêu chí có bằng chứng và các PR cần thiết đã merge.
+- Nếu muốn nhận góp ý sớm khi phần việc chưa sẵn sàng, mở Draft PR và ghi rõ điều còn thiếu; chỉ chuyển sẵn sàng review khi phạm vi PR đã đủ điều kiện kiểm tra. Có thể còn phần khác của issue chưa làm.
+- Mỗi PR nhỏ dùng nhánh tính năng có tên theo phần việc; tiếp tục commit trên cùng nhánh khi sửa theo review. Sau merge, phần việc tiếp theo tạo nhánh từ `nhom10-65ktpm` mới nhất; không mặc định lấy nhánh chưa merge làm base.
+
+### Theo dõi tiến độ và bằng chứng
+
 - Board: **Todo → In progress → In review → Done**. Tạo issue không đồng nghĩa đã bắt đầu hoặc hoàn thành.
-- Todo: đã có phạm vi/assignee; In progress: người làm xác nhận bắt đầu; In review: có PR sẵn sàng review; Done: PR được merge và tiêu chí nghiệm thu có bằng chứng. Nếu chia nhiều PR thì chỉ đóng issue khi toàn bộ phạm vi đạt.
+- Todo: đã có phạm vi/assignee; In progress: người làm xác nhận bắt đầu; In review: phần việc hiện tại có PR sẵn sàng review, không có nghĩa toàn bộ issue đã xong. PR một phần được merge mà issue còn việc thì giữ/mở lại In progress và ghi tiến độ; Done: toàn bộ tiêu chí nghiệm thu có bằng chứng và các PR cần thiết đã merge. Không đóng issue chỉ vì một PR thành phần đã merge.
 - Người bị chặn ghi comment nêu trở ngại và phụ thuộc; không chuyển Done để làm đẹp tiến độ.
 - Reviewer dự kiến theo bảng M1–M3, M2–M4. Người tạo PR không tự duyệt; phản hồi phải có kiểm tra thực tế, không tạo bình luận giả.
 - Mỗi người tự cập nhật issue/PR và phản hồi review bằng tài khoản của mình; AI hỗ trợ không thay thế hiểu code và trách nhiệm kiểm chứng.
