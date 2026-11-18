@@ -105,7 +105,10 @@ void main() {
     FakeAudioEngine? audio,
   }) async {
     final container = ProviderContainer(overrides: [
-      ...app.overrides,
+      // Replace the harness audio override when a test needs a delayed engine.
+      ...app.overrides.where(
+        (override) => audio == null || override.origin != audioEngineProvider,
+      ),
       if (audio != null) audioEngineProvider.overrideWithValue(audio),
       speechRecognizerProvider.overrideWithValue(recognizer),
     ]);
@@ -388,12 +391,25 @@ void main() {
     await tester.ensureVisible(find.text('Thử lại'));
     await tester.tap(find.text('Thử lại'));
     await tester.pump();
+    expect(rec.permissionRequests, 2);
+    expect(rec.initializeRequests, 1);
+    // Retry is below the microphone in a lazy ListView. Scroll back before
+    // asserting its spinner; an offscreen child may no longer be built.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('mic-button')),
+      -200,
+      duration: Duration.zero,
+    );
     permission.complete(MicPermission.granted);
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    await tester.pump(const Duration(seconds: 30));
+    await tester.pump(const Duration(seconds: 29));
+    expect(find.text('Chuẩn bị micro quá lâu'), findsNothing);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
     expect(find.text('Chuẩn bị micro quá lâu'), findsOneWidget);
+    expect(rec.cancelRequests, 2);
     initialization.complete(true);
     await tester.pump();
     expect(rec.listenRequests, 0);
