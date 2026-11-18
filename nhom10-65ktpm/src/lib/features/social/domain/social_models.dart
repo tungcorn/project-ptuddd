@@ -46,6 +46,9 @@ class PublicProfile {
         streak: (j['streak'] as num?)?.toInt() ?? 0,
       );
 
+  /// Cloud profiles are readable by other learners; keep e-mail private.
+  Map<String, dynamic> toCloudJson() => toJson()..remove('email');
+
   Map<String, dynamic> toJson() => {
         'uid': uid,
         'displayName': displayName,

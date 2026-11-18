@@ -119,7 +119,7 @@ class _AppLifecycleHostState extends ConsumerState<AppLifecycleHost>
     _challengesPrimed = false;
     _seenChallenges.clear();
     unawaited(_syncNow());
-    if (AppConfig.isFirebaseConfigured) {
+    if (AppConfig.messagingEnabled) {
       unawaited(CloudMessaging.register(user.uid).catchError(
           (Object e) => debugPrint('FCM registration skipped: $e')));
     }

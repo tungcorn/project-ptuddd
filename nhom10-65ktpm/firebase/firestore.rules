@@ -1,61 +1,99 @@
 rules_version = '2';
-// SingLearn – Cloud Firestore security rules (section 4.2 / 8 of the outline).
-// - Every learner reads/writes only their own data under users/{uid}.
-// - Songs are readable by signed-in users; only content admins (custom claim
-//   `admin: true`) may create/update them.
-// - Public profiles are readable by signed-in users (friend search,
-//   leaderboard); each user writes only their own.
-// - Friendships/challenges are readable and writable only by their members.
+// SingLearn: own learning data; public profiles never contain private e-mail.
+// XP and quiz scores are client-reported, not a trusted anti-cheat mechanism.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function isAdmin() { return signedIn() && request.auth.token.admin == true; }
     function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
+    function shortName(value) {
+      return value is string && value.size() > 0 && value.size() <= 40;
+    }
+    function validProfile(uid) {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['uid', 'displayName', 'userCode', 'xp', 'weekXp', 'weekKey', 'level', 'streak'])
+        && d.keys().hasAll(['uid', 'displayName', 'userCode'])
+        && d.uid == uid && shortName(d.displayName)
+        && d.userCode is string && d.userCode.matches('^[A-Z0-9]{6}$')
+        && (!('xp' in d) || (d.xp is int && d.xp >= 0))
+        && (!('weekXp' in d) || (d.weekXp is int && d.weekXp >= 0))
+        && (!('weekKey' in d) || d.weekKey is string)
+        && (!('level' in d) || (d.level is int && d.level >= 1))
+        && (!('streak' in d) || (d.streak is int && d.streak >= 0));
+    }
+    function validFriendship(id) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['members', 'requestedBy', 'status', 'updatedAt'])
+        && d.keys().hasOnly(['members', 'requestedBy', 'status', 'updatedAt'])
+        && d.members is list && d.members.size() == 2
+        && d.members[0] is string && d.members[1] is string
+        && d.members[0] != d.members[1]
+        && id == d.members[0] + '_' + d.members[1]
+        && d.requestedBy in d.members && d.updatedAt is int;
+    }
+    function areFriends(a, b) {
+      let forward = /databases/$(database)/documents/friendships/$(a + '_' + b);
+      let backward = /databases/$(database)/documents/friendships/$(b + '_' + a);
+      return (exists(forward) && get(forward).data.status == 'accepted')
+        || (exists(backward) && get(backward).data.status == 'accepted');
+    }
+    function validChallenge(id) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['id', 'fromUid', 'fromName', 'toUid', 'toName', 'members', 'questions', 'fromScore', 'toScore', 'status', 'createdAt', 'updatedAt'])
+        && d.keys().hasOnly(['id', 'fromUid', 'fromName', 'toUid', 'toName', 'members', 'questions', 'fromScore', 'toScore', 'status', 'createdAt', 'updatedAt'])
+        && d.id == id && d.fromUid is string && d.toUid is string
+        && d.fromUid != d.toUid && d.members == [d.fromUid, d.toUid]
+        && shortName(d.fromName) && shortName(d.toName)
+        && d.questions is list && d.questions.size() > 0 && d.questions.size() <= 20
+        && d.fromScore is int && d.fromScore >= 0 && d.fromScore <= d.questions.size()
+        && d.createdAt is int && d.updatedAt is int;
+    }
 
     match /songs/{songId} {
       allow read: if signedIn();
       allow write: if isAdmin();
     }
-
     match /users/{uid} {
       allow read, write: if isSelf(uid);
       match /{sub=**} {
         allow read, write: if isSelf(uid);
       }
     }
-
     match /publicProfiles/{uid} {
       allow read: if signedIn();
-      allow write: if isSelf(uid);
+      allow create, update: if isSelf(uid) && validProfile(uid);
+      allow delete: if isSelf(uid);
     }
-
     match /friendships/{id} {
       allow read: if signedIn() && request.auth.uid in resource.data.members;
-      allow create: if signedIn()
+      allow create: if signedIn() && validFriendship(id)
         && request.resource.data.requestedBy == request.auth.uid
         && request.auth.uid in request.resource.data.members
-        && request.resource.data.status == 'pending'
-        && request.resource.data.members.size() == 2;
-      // Only the invited member may accept; either member may delete.
-      allow update: if signedIn()
+        && request.resource.data.status == 'pending';
+      allow update: if signedIn() && validFriendship(id)
         && request.auth.uid in resource.data.members
         && request.auth.uid != resource.data.requestedBy
-        && request.resource.data.members == resource.data.members
-        && request.resource.data.status == 'accepted';
+        && resource.data.status == 'pending'
+        && request.resource.data.status == 'accepted'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt']);
       allow delete: if signedIn() && request.auth.uid in resource.data.members;
     }
-
     match /challenges/{id} {
       allow read: if signedIn() && request.auth.uid in resource.data.members;
-      allow create: if signedIn()
+      allow create: if signedIn() && validChallenge(id)
         && request.resource.data.fromUid == request.auth.uid
-        && request.resource.data.status == 'waiting';
-      // The receiver submits their score once.
-      allow update: if signedIn()
+        && request.resource.data.status == 'waiting'
+        && request.resource.data.toScore == null
+        && areFriends(request.resource.data.fromUid, request.resource.data.toUid);
+      allow update: if signedIn() && validChallenge(id)
         && request.auth.uid == resource.data.toUid
         && resource.data.status == 'waiting'
-        && request.resource.data.fromScore == resource.data.fromScore
-        && request.resource.data.questions == resource.data.questions;
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['toScore', 'status', 'updatedAt'])
+        && ((request.resource.data.status == 'completed'
+          && request.resource.data.toScore is int
+          && request.resource.data.toScore >= 0
+          && request.resource.data.toScore <= resource.data.questions.size())
+          || (request.resource.data.status == 'declined' && request.resource.data.toScore == null));
     }
   }
 }

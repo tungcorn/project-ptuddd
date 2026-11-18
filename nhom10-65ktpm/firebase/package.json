@@ -1,0 +1,10 @@
+{
+  "name": "singlearn-firebase-tests",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": { "test:rules": "node --test test/firestore.rules.test.cjs" },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.0",
+    "firebase": "12.19.0"
+  }
+}

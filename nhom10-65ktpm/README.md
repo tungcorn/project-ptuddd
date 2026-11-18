@@ -5,6 +5,7 @@
 - **Học phần:** Phát triển ứng dụng cho thiết bị di động.
 - **Giảng viên hướng dẫn:** ThS. Đỗ Oanh Cường.
 - **Thành viên:** [Danh sách nhóm](danhsachnhom.md).
+- **Mẫu PR nội bộ nhóm:** [PR template](docs/PR_TEMPLATE.md) — dành cho nhánh tính năng → `nhom10-65ktpm`; sao chép thủ công hoặc dùng `--body-file`, không tự điền trên GitHub.
 - **Đề cương, phân công chi tiết và kế hoạch:** [TH4 – SingLearn](docs/TH4_DeCuong_Project_SingLearn.md) · [Bản Word](docs/TH4_DeCuong_Project_SingLearn.docx).
 
 ## 1. Giới thiệu và trạng thái (cập nhật 16/11/2026)
@@ -26,7 +27,8 @@ Mọi chức năng trong đề cương đều đã có code. Mức kiểm chứn
 | Bảng xếp hạng tuần, bạn bè, thử thách đoán bài (cục bộ) | ✅ | ✅ | ✅ Chrome (bảng xếp hạng); bạn bè/thử thách mới qua widget test |
 | Quản trị bài hát, căn lại mốc thời gian lời | ✅ | ✅ | ✅ Chrome (danh sách bài hát); chọn file chưa thử thật |
 | Nhắc học hằng ngày, phát nền và điều khiển ở màn hình khóa | ✅ | ❌ | ❌ chưa kiểm chứng |
-| Firebase: Auth, Google, quên mật khẩu, Firestore, Storage, FCM, Rules | ✅ code + `firebase/` | Chỉ đồng bộ (với máy chủ giả lập) | ❌ chưa có project Firebase |
+| Firebase Auth email/mật khẩu, Firestore và Rules (cập nhật 18/11/2026) | ✅ project riêng, không liên kết billing | ✅ 15 kiểm thử rules trên emulator | ✅ smoke test cloud bằng JS SDK; chưa chạy bản cloud trên Android |
+| Firebase Google sign-in, gửi email quên mật khẩu, Storage, FCM | Có code tùy chọn | Chưa kiểm chứng đầy đủ | Google/Storage/FCM chưa bật; chưa thử gửi email reset |
 
 ### Lưu ý về nội dung
 
@@ -83,7 +85,7 @@ flutter run -d chrome                          # chạy thử nhanh trên Chrome
 flutter test integration_test/app_e2e_test.dart -d <android-device-id>
 ```
 
-**Chế độ Firebase:** tạo project Firebase, sao chép `firebase/firebase.env.example.json` thành `firebase.env.json`, điền giá trị rồi chạy `flutter run --dart-define-from-file=firebase.env.json`. Triển khai `firebase/firestore.rules`, `storage.rules` và `functions/` bằng Firebase CLI. Không commit `firebase.env.json`.
+**Chế độ Firebase (18/11/2026):** đã thiết lập project riêng `singlearn-nhom10-65ktpm`, Auth email/mật khẩu và Firestore tại Singapore, không liên kết billing. Từ `src/`, chạy `flutter run --dart-define-from-file=firebase.env.json -d <android-device-id>`. Máy khác sao chép `../firebase/firebase.env.example.json` thành `firebase.env.json` rồi điền cấu hình ứng dụng Android. Không commit tệp cấu hình cục bộ. Storage, Functions, FCM và Google sign-in chưa bật; audio/LRC/ảnh vẫn nằm trong assets. Xem [hướng dẫn Firebase và kiểm thử](firebase/README.md).
 
 **Chạy bản build web:** sau `flutter build web`, dùng `python tools/serve_web.py` rồi mở http://127.0.0.1:8765. Không dùng `python -m http.server` vì server này không hỗ trợ HTTP Range, khiến Chrome không tua được nhạc và tự quay về 0:00.
 
@@ -116,7 +118,7 @@ Mỗi người phụ trách cả giao diện, logic, dữ liệu, kiểm thử v
 
 **Chưa kiểm chứng hoặc đang bị chặn (cần nhóm tự làm):**
 
-1. Tạo project Firebase thật, rồi kiểm thử đăng nhập Google, email quên mật khẩu, đồng bộ Firestore, upload Storage, FCM và Security Rules.
+1. Kiểm thử bản Firebase trên Android: đăng nhập, đồng bộ hai thiết bị, offline và gửi email quên mật khẩu. Backend Auth/Firestore đã qua smoke test cloud, rules đạt 15/15 kiểm thử emulator; không coi đó là bằng chứng đã chạy Flutter cloud trên điện thoại. Google/Storage/FCM là phần tùy chọn chưa bật, không yêu cầu liên kết billing để chạy luồng học cốt lõi.
 2. Trên điện thoại Android thật: quyền micro và chấm phát âm, phát nền và điều khiển ở màn hình khóa, thông báo nhắc học, tải mô hình dịch ML Kit, chọn file trong màn quản trị.
 3. Chạy lại `integration_test/app_e2e_test.dart` trên thiết bị sau khi sửa bước ôn flashcard.
 4. (Tuỳ chọn) Thay audio TTS bằng bản hát thật có giấy phép.

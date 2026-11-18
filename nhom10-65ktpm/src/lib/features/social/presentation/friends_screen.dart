@@ -35,8 +35,11 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
   Future<void> _search() async {
     final q = _query.text.trim();
     FocusScope.of(context).unfocus();
+    final cloud = ref.read(currentUserProvider)?.isCloud ?? false;
     if (q.isEmpty) {
-      setState(() => _searchError = 'Nhập email hoặc mã 6 ký tự của bạn bè');
+      setState(() => _searchError = cloud
+          ? 'Nhập mã 6 ký tự của bạn bè'
+          : 'Nhập email hoặc mã 6 ký tự của bạn bè');
       return;
     }
     if (!q.contains('@') && q.length != 6) {
@@ -236,7 +239,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
             onSubmitted: (_) => _search(),
             decoration: InputDecoration(
               labelText: 'Tìm bạn bè',
-              hintText: 'Email hoặc mã 6 ký tự',
+              hintText: me.isCloud ? 'Mã bạn bè 6 ký tự' : 'Email hoặc mã 6 ký tự',
               prefixIcon: const Icon(Icons.person_search_outlined),
               errorText: _searchError,
               suffixIcon: _searching

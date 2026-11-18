@@ -170,7 +170,7 @@ class FirestoreSocialRepository extends SocialRepository {
   @override
   Future<void> upsertProfile(PublicProfile profile) => _db
       .doc('publicProfiles/${profile.uid}')
-      .set(profile.toJson(), SetOptions(merge: true));
+      .set(profile.toCloudJson(), SetOptions(merge: true));
 
   @override
   Future<PublicProfile?> profile(String uid) async {
@@ -182,11 +182,12 @@ class FirestoreSocialRepository extends SocialRepository {
   Future<PublicProfile?> find(String query) async {
     final q = query.trim();
     if (q.isEmpty) return null;
-    final field = q.contains('@') ? 'email' : 'userCode';
-    final value = q.contains('@') ? q.toLowerCase() : q.toUpperCase();
+    if (q.contains('@')) {
+      throw StateError('Chế độ Firebase chỉ tìm bạn bằng mã 6 ký tự để bảo vệ email.');
+    }
     final snap = await _db
         .collection('publicProfiles')
-        .where(field, isEqualTo: value)
+        .where('userCode', isEqualTo: q.toUpperCase())
         .limit(1)
         .get();
     if (snap.docs.isEmpty) return null;
