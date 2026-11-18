@@ -124,3 +124,121 @@ Mỗi người phụ trách cả giao diện, logic, dữ liệu, kiểm thử v
 4. (Tuỳ chọn) Thay audio TTS bằng bản hát thật có giấy phép.
 5. Bổ sung email của Ninh, Đình, Bách; viết báo cáo cuối kỳ, slide và video demo.
 6. Cấu hình ký bản release (keystore riêng) trước khi phát hành.
+
+## 6. Quy trình Git nội bộ nhóm
+
+Các lệnh Git dưới đây chạy từ **thư mục gốc kho `project-ptuddd`**. `origin` là
+`https://github.com/tungcorn/project-ptuddd.git`. Nhánh tích hợp của nhóm là
+`nhom10-65ktpm`; thành viên làm trên nhánh tính năng rồi mở PR vào nhánh này.
+Không commit/push trực tiếp vào `main`, không sửa tệp gốc hoặc thư mục nhóm khác.
+
+### 6.1. Lấy mã nguồn và tạo nhánh làm việc
+
+Lần đầu, sau khi chấp nhận lời mời cộng tác:
+
+```bash
+git clone https://github.com/tungcorn/project-ptuddd.git
+cd project-ptuddd
+git switch --track origin/nhom10-65ktpm
+```
+
+Trước mỗi đầu việc mới, bảo đảm công việc cũ đã được commit hoặc cất riêng;
+không bỏ thay đổi chưa lưu chỉ để chuyển nhánh. Nếu đã có nhánh nhóm trên máy:
+
+```bash
+git switch nhom10-65ktpm
+git pull --ff-only origin nhom10-65ktpm
+git switch -c feature/nhom10-65ktpm/on-flashcard
+```
+
+Tên nhánh theo mẫu `feature/nhom10-65ktpm/<dau-viec>`, viết thường, không dấu,
+không khoảng trắng; ví dụ `feature/nhom10-65ktpm/sua-tim-ban`.
+Mỗi đầu việc dùng một nhánh riêng xuất phát từ nhánh nhóm mới nhất, không từ
+`main` hoặc nhánh tính năng chưa merge của người khác. Nếu `pull --ff-only`
+báo lịch sử phân kỳ, dừng kiểm tra với nhóm trưởng, không dùng reset/force push.
+
+### 6.2. Nội dung commit và kiểm tra trước khi push
+
+**Mọi commit mới của thành viên** dùng mẫu đã thống nhất theo README học phần:
+
+```text
+<loai-thay-doi>(nhom10-65ktpm): <mo-ta-ngan-gon>
+```
+
+| Loại | Khi dùng | Ví dụ |
+| --- | --- | --- |
+| `feat` | Thêm chức năng | `feat(nhom10-65ktpm): them loc bai hat theo trinh do` |
+| `fix` | Sửa lỗi | `fix(nhom10-65ktpm): sua lich on flashcard` |
+| `docs` | Cập nhật tài liệu | `docs(nhom10-65ktpm): huong dan chay Firebase` |
+
+Mô tả rõ việc thực sự thay đổi, không ghi chung chung như `update`, `done`.
+Mỗi commit tập trung một đầu việc. Dùng danh tính Git của chính mình và email
+đã liên kết GitHub; không mượn danh tính thành viên khác.
+
+Sau khi sửa code, chạy kiểm tra trong thư mục Flutter:
+
+```bash
+cd nhom10-65ktpm/src
+flutter analyze
+flutter test
+cd ../..
+```
+
+Thêm kiểm thử thiết bị hoặc rules khi thay đổi liên quan. Nếu chỉ sửa tài liệu,
+kiểm tra nội dung/liên kết và ghi rõ không chạy kiểm thử ứng dụng.
+
+```bash
+git status
+git diff
+git add -- nhom10-65ktpm/
+git diff --cached --check
+git diff --cached
+git commit -m "fix(nhom10-65ktpm): sua lich on flashcard"
+git push -u origin feature/nhom10-65ktpm/on-flashcard
+```
+
+Thay tên nhánh và thông điệp ví dụ bằng đầu việc của mình. Chỉ stage tệp liên
+quan; có thể chỉ định từng tệp bên trong thư mục nhóm thay vì cả thư mục.
+Không dùng `git add .` ở gốc kho, không đưa cấu hình Firebase cục bộ, token,
+keystore, APK hoặc build/cache vào commit.
+
+### 6.3. Tạo PR nội bộ
+
+Sau khi push nhánh tính năng, vào kho **`tungcorn/project-ptuddd`** trên GitHub:
+
+1. Chọn **Pull requests → New pull request**.
+2. Chọn **base: `nhom10-65ktpm`**, **compare: nhánh tính năng của mình**;
+   cả hai đều thuộc kho nhóm, không chọn kho giảng viên hoặc base `main`.
+3. Đặt tiêu đề cùng mẫu commit, ví dụ `fix(nhom10-65ktpm): sua lich on flashcard`.
+4. Sao chép [mẫu PR nội bộ](docs/PR_TEMPLATE.md) vào phần mô tả, điền mục tiêu,
+   thay đổi, ảnh hưởng mô-đun khác, kết quả kiểm thử và cách review; bỏ placeholder.
+   GitHub **không tự điền** mẫu đặt trong thư mục nhóm.
+5. Kiểm tra **Files changed**: chỉ có tệp liên quan trong `nhom10-65ktpm/`,
+   không có khóa/cấu hình riêng hoặc tệp sinh tự động. Tạo PR và nhờ người khác review.
+
+Nếu dùng GitHub CLI, có thể mở trình tạo PR trên trình duyệt bằng lệnh sau
+(thay nhánh và tiêu đề cho đúng, rồi điền mô tả bằng mẫu trên):
+
+```bash
+gh pr create --repo tungcorn/project-ptuddd --base nhom10-65ktpm --head feature/nhom10-65ktpm/on-flashcard --title "fix(nhom10-65ktpm): sua lich on flashcard" --web
+```
+
+### 6.4. Cập nhật PR và merge
+
+- Thành viên không có quyền admin không push trực tiếp vào `nhom10-65ktpm`;
+  phải qua PR, có ít nhất **1 người khác duyệt** và giải quyết các trao đổi review.
+  Commit mới làm mất hiệu lực lượt duyệt cũ, cần review lại.
+- Sửa theo review rồi commit/push tiếp **trên cùng nhánh tính năng**, PR tự cập nhật;
+  không cần mở PR mới cho mỗi commit.
+- Nếu cần đồng bộ nhánh nhóm vào nhánh tính năng: khi working tree sạch, chạy
+  `git fetch origin` rồi `git merge origin/nhom10-65ktpm -m "fix(nhom10-65ktpm): dong bo nhanh nhom vao nhanh tinh nang"`
+  ngay trên nhánh tính năng. Không ghi đè code của người khác; sau khi xử lý
+  xung đột phải chạy lại kiểm thử ứng dụng trước khi commit hoàn tất merge và push.
+- Admin được phép push trực tiếp theo cấu hình bảo vệ hiện tại, nhưng nên dùng
+  PR cho thay đổi cần review. Không force push hoặc xóa nhánh nhóm.
+- Sau khi PR được merge, quay lại nhánh nhóm và `git pull --ff-only origin nhom10-65ktpm`;
+  đầu việc tiếp theo tạo nhánh mới. **Đóng (Close) PR không có nghĩa là đã merge**.
+
+PR nội bộ này khác PR **nộp bài cho giảng viên**: việc nộp bài do nhóm trưởng
+thực hiện riêng từ nhánh `nhom10-65ktpm` của kho nhóm vào `main` của kho giảng viên,
+theo [README học phần](../README.md). Không dùng mẫu nộp bài cho PR giữa các thành viên.
