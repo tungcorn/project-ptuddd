@@ -4,6 +4,23 @@ import 'package:singlearn/core/sync/sync_service.dart';
 
 import '../helpers.dart';
 
+/// Fake Firestore that, like the security rules, only lets the signed-in
+/// user write under `users/{uid}/...`.
+class SessionRemote extends FakeRemote {
+  String? signedIn;
+  int rejected = 0;
+
+  @override
+  Future<void> upsert(String path, Map<String, dynamic> data) async {
+    final parts = path.split('/');
+    if (parts.first == 'users' && parts[1] != signedIn) {
+      rejected++;
+      throw StateError('permission-denied: $path');
+    }
+    await super.upsert(path, data);
+  }
+}
+
 void main() {
   late LocalStore store;
   late FakeRemote remote;
@@ -56,6 +73,65 @@ void main() {
         reason: 'tombstones sync');
 
     expect(await sync.pull('users/u/words', 'words_u'), 0);
+  });
+
+  group('queue shared by several accounts on one device', () {
+    late SessionRemote cloud;
+    late SyncService shared;
+
+    setUp(() {
+      cloud = SessionRemote();
+      shared = SyncService(store, cloud);
+    });
+
+    test('ownerOf reads the uid from users/{uid}/... paths', () {
+      expect(SyncService.ownerOf('users/a/words/star'), 'a');
+      expect(SyncService.ownerOf('users/a'), 'a');
+      expect(SyncService.ownerOf('songs/twinkle'), isNull);
+    });
+
+    test('A queue does not block B and is never sent under B', () async {
+      // A saves offline, then signs out with ops still queued.
+      cloud.online = false;
+      await shared.enqueue('users/a/words/star', {'v': 'a1', 'updatedAt': 1});
+      await shared.enqueue('users/a/words/sky', {'v': 'a2', 'updatedAt': 2});
+      cloud.online = true;
+      cloud.signedIn = 'b';
+      await shared.enqueue('users/b/words/boat', {'v': 'b1', 'updatedAt': 3});
+      await shared.enqueue('songs/twinkle', {'v': 's', 'updatedAt': 4});
+
+      expect(await shared.pendingCount(uid: 'b'), 2);
+      expect(await shared.flush(uid: 'b'), 2);
+      expect(cloud.docs.keys,
+          unorderedEquals(['users/b/words/boat', 'songs/twinkle']));
+      expect(cloud.rejected, 0, reason: 'A ops are not even attempted');
+      expect(await shared.pendingCount(uid: 'b'), 0);
+      expect(await shared.pendingCount(uid: 'a'), 2, reason: 'A ops kept');
+      expect(await shared.pendingCount(), 2);
+    });
+
+    test('A signs back in and its queue resumes in order', () async {
+      cloud.online = false;
+      await shared.enqueue('users/a/words/star', {'v': 1, 'updatedAt': 1});
+      await shared.enqueue('users/a/words/star', {'v': 2, 'updatedAt': 2});
+      cloud.online = true;
+      cloud.signedIn = 'b';
+      await shared.enqueue('users/b/words/boat', {'v': 'b', 'updatedAt': 3});
+      expect(await shared.flush(uid: 'b'), 1);
+
+      cloud.signedIn = 'a';
+      expect(await shared.flush(uid: 'a'), 2);
+      expect(cloud.docs['users/a/words/star']!['v'], 2);
+      expect(await shared.pendingCount(), 0);
+    });
+
+    test('without a uid flush keeps the old all-accounts behaviour', () async {
+      await shared.enqueue('users/a/words/star', {'v': 1, 'updatedAt': 1});
+      await shared.enqueue('users/b/words/boat', {'v': 2, 'updatedAt': 2});
+      cloud.signedIn = 'b';
+      expect(await shared.flush(), 0, reason: 'stops at the rejected A op');
+      expect(await shared.pendingCount(), 2, reason: 'nothing is dropped');
+    });
   });
 
   test('resolve picks the newer version', () {
