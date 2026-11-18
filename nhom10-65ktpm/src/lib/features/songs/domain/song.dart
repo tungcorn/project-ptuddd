@@ -25,6 +25,8 @@ const genreLabels = <String, String>{
   'holiday': 'Lễ hội',
   'hymn': 'Thánh ca',
   'ballad': 'Ballad',
+  'pop-rock': 'Pop Rock',
+  'acoustic': 'Acoustic',
 };
 
 /// Where a media reference points to.

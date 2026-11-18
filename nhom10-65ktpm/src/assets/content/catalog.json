@@ -362,6 +362,151 @@
     "nation",
     "born"
    ]
+  },
+  {
+   "id": "coffee-learning-clip",
+   "title": "Coffee (đoạn học)",
+   "artist": "Josh Woodward",
+   "level": "A2",
+   "topics": [
+    "daily-life",
+    "work"
+   ],
+   "genre": "pop-rock",
+   "keywords": [
+    "coffee",
+    "morning",
+    "headline",
+    "routine",
+    "productive",
+    "upstairs",
+    "spill",
+    "floor"
+   ],
+   "durationMs": 77000,
+   "audio": "assets/audio/coffee-learning-clip.mp3",
+   "lrc": "assets/lyrics/coffee-learning-clip.lrc",
+   "cover": "assets/covers/coffee-learning-clip.png",
+   "color": "#1c4572",
+   "license": "Lời: Josh Woodward, Coffee — https://www.joshwoodward.com/song/Coffee — lời và nhạc CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Nhóm 10: chọn đoạn đầu, chuẩn hóa dấu câu, dịch tiếng Việt và căn lời; không phải toàn bộ bài hát. Bản thu: Josh Woodward — CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); https://www.joshwoodward.com/song/Coffee. Đoạn 12–89 giây của bản gốc; Nhóm 10 cắt đoạn, chuyển mã MP3 mono 96 kbps và thêm fade.",
+   "recording": {
+    "performer": "Josh Woodward",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://www.joshwoodward.com/song/Coffee"
+   },
+   "translations": [
+    "Một tách cà phê buổi sáng, rồi tôi lấy báo đọc.",
+    "Tôi xem các tiêu đề và thấy thật chán.",
+    "Tôi kiểm tra email rồi quyết định trả lời sau.",
+    "Thêm một tách cà phê, rồi tôi lê bước đi làm.",
+    "Cuộc sống của tôi gắn chặt với một nếp sinh hoạt cố định:",
+    "cà phê, ngủ và làm việc.",
+    "Tôi không tẻ nhạt, tôi chỉ quen làm những điều mình biết.",
+    "Tôi ngồi ở chỗ làm rồi nhận ra mình vẫn chưa tỉnh ngủ.",
+    "Làm sao làm việc hiệu quả khi tôi còn mơ về một chú cừu.",
+    "Tôi lên tầng trên lấy thêm một tách cà phê.",
+    "Tôi xuống tầng dưới rồi làm đổ cà phê ra sàn.",
+    "Cuộc sống của tôi gắn chặt với một nếp sinh hoạt cố định:",
+    "cà phê, ngủ và làm việc.",
+    "Tôi không tẻ nhạt, tôi chỉ quen làm những điều mình biết."
+   ]
+  },
+  {
+   "id": "learn-to-fly-learning-clip",
+   "title": "Learn To Fly (đoạn học)",
+   "artist": "Josh Woodward",
+   "level": "B1",
+   "topics": [
+    "feelings",
+    "nature"
+   ],
+   "genre": "pop-rock",
+   "keywords": [
+    "eagle",
+    "hope",
+    "sky",
+    "ground",
+    "knee",
+    "grin",
+    "wing",
+    "sprout"
+   ],
+   "durationMs": 61000,
+   "audio": "assets/audio/learn-to-fly-learning-clip.mp3",
+   "lrc": "assets/lyrics/learn-to-fly-learning-clip.lrc",
+   "cover": "assets/covers/learn-to-fly-learning-clip.png",
+   "color": "#1c7249",
+   "license": "Lời: Josh Woodward, Learn To Fly — https://www.joshwoodward.com/song/LearnToFly — lời và nhạc CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Nhóm 10: chọn khổ đầu và điệp khúc, dùng biến thể lời trong bản thu Here Today Remixed, chuẩn hóa dấu câu, dịch tiếng Việt và căn lời; không phải toàn bộ bài hát. Bản thu: Josh Woodward — CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); https://www.joshwoodward.com/song/LearnToFly. Đoạn 11–72 giây của bản gốc; Nhóm 10 cắt đoạn, chuyển mã MP3 mono 96 kbps và thêm fade.",
+   "recording": {
+    "performer": "Josh Woodward",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://www.joshwoodward.com/song/LearnToFly"
+   },
+   "translations": [
+    "Một ngày hè oi bức ở Shepherdstown.",
+    "Một con đại bàng đang lượn vòng trong luồng khí nóng.",
+    "Như bánh xe đạp đang lăn dọc phố Columbus.",
+    "Trong mắt Katie ánh lên một chút hy vọng.",
+    "Cô bé dang tay ra khi nhìn lên bầu trời,",
+    "và nói: Mình sẽ học bay lượn cùng bạn.",
+    "Cô bé nhảy lên cao rồi ngã xuống đất,",
+    "trầy đầu gối nhỏ và kêu lên đau đớn.",
+    "Cô bé đứng dậy ngay và lại thử lần nữa,",
+    "vẫn luôn mỉm cười với nụ cười không gì dập tắt được.",
+    "Cứ từ từ, hãy làm điều bạn định làm.",
+    "Cứ mỉm cười, bạn sẽ làm được đến cùng.",
+    "Đôi cánh của bạn sẽ mọc ra, nâng bạn lên khỏi mặt đất.",
+    "Cứ từ từ, hãy làm điều bạn định làm.",
+    "Cứ mỉm cười, bạn sẽ làm được đến cùng.",
+    "Đôi cánh của bạn sẽ mọc ra, và bạn sẽ học được cách bay."
+   ]
+  },
+  {
+   "id": "little-tomcat-learning-clip",
+   "title": "Little Tomcat (đoạn học)",
+   "artist": "Josh Woodward",
+   "level": "B1",
+   "topics": [
+    "friendship",
+    "animals"
+   ],
+   "genre": "acoustic",
+   "keywords": [
+    "tomcat",
+    "horizon",
+    "breeze",
+    "share",
+    "promise",
+    "stray",
+    "seed",
+    "feed"
+   ],
+   "durationMs": 47000,
+   "audio": "assets/audio/little-tomcat-learning-clip.mp3",
+   "lrc": "assets/lyrics/little-tomcat-learning-clip.lrc",
+   "cover": "assets/covers/little-tomcat-learning-clip.png",
+   "color": "#2f721c",
+   "license": "Lời: Josh Woodward, Little Tomcat — https://www.joshwoodward.com/song/LittleTomcat — lời và nhạc CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Nhóm 10: chọn khổ đầu và điệp khúc, chuẩn hóa dấu câu, dịch tiếng Việt và căn lời; không phải toàn bộ bài hát. Bản thu: Josh Woodward — CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); https://www.joshwoodward.com/song/LittleTomcat. Đoạn 14–61 giây của bản gốc; Nhóm 10 cắt đoạn, chuyển mã MP3 mono 96 kbps và thêm fade.",
+   "recording": {
+    "performer": "Josh Woodward",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://www.joshwoodward.com/song/LittleTomcat"
+   },
+   "translations": [
+    "Mèo nhỏ ơi, hãy ở bên tôi nhé,",
+    "vì mây đang kéo đến phía chân trời,",
+    "và gió thoảng mang theo hơi lạnh.",
+    "Ở đây chỉ có chúng ta, nhưng đừng sợ nhé.",
+    "Tôi có bàn tay chai sần, làn da rám nắng của người nông dân,",
+    "và tôi sẵn lòng sẻ chia.",
+    "Cả bạn và tôi rồi sẽ sống ổn thôi,",
+    "chỉ cần hứa rằng bạn sẽ không đi lạc.",
+    "Tất cả những gì tôi cần là chút đất và một hạt giống,",
+    "và tôi sẽ cho bạn ăn cho đến khi mùa hè qua đi."
+   ]
   }
  ]
 }

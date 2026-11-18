@@ -1,0 +1,26 @@
+{
+  "id": "coffee-learning-clip",
+  "title": "Coffee (đoạn học)",
+  "artist": "Josh Woodward",
+  "level": "A2",
+  "topics": ["daily-life", "work"],
+  "genre": "pop-rock",
+  "lyricsSource": "Josh Woodward, Coffee — https://www.joshwoodward.com/song/Coffee — lời và nhạc CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Nhóm 10: chọn đoạn đầu, chuẩn hóa dấu câu, dịch tiếng Việt và căn lời; không phải toàn bộ bài hát",
+  "lines": [
+    {"en": "A cup of coffee in the morning and I get the paper", "vi": "Một tách cà phê buổi sáng, rồi tôi lấy báo đọc."},
+    {"en": "I check the headlines and decide that I am bored", "vi": "Tôi xem các tiêu đề và thấy thật chán."},
+    {"en": "I check my email and decide to answer later", "vi": "Tôi kiểm tra email rồi quyết định trả lời sau."},
+    {"en": "Another cup of coffee and I drag myself to work", "vi": "Thêm một tách cà phê, rồi tôi lê bước đi làm."},
+    {"en": "My life is grounded in a firm routine", "vi": "Cuộc sống của tôi gắn chặt với một nếp sinh hoạt cố định:"},
+    {"en": "Of coffee, sleep and work", "vi": "cà phê, ngủ và làm việc."},
+    {"en": "I am not boring, I just stick to what I know", "vi": "Tôi không tẻ nhạt, tôi chỉ quen làm những điều mình biết."},
+    {"en": "I'm sitting there at work and I realized I forgot to wake up", "vi": "Tôi ngồi ở chỗ làm rồi nhận ra mình vẫn chưa tỉnh ngủ."},
+    {"en": "Can't be productive when I'm dreaming 'bout a sheep", "vi": "Làm sao làm việc hiệu quả khi tôi còn mơ về một chú cừu."},
+    {"en": "I go upstairs and get myself another cup of coffee", "vi": "Tôi lên tầng trên lấy thêm một tách cà phê."},
+    {"en": "I get downstairs and then I spill it on the floor", "vi": "Tôi xuống tầng dưới rồi làm đổ cà phê ra sàn."},
+    {"en": "My life is grounded in a firm routine", "vi": "Cuộc sống của tôi gắn chặt với một nếp sinh hoạt cố định:"},
+    {"en": "Of coffee, sleep and work", "vi": "cà phê, ngủ và làm việc."},
+    {"en": "I am not boring, I just stick to what I know", "vi": "Tôi không tẻ nhạt, tôi chỉ quen làm những điều mình biết."}
+  ],
+  "keywords": ["coffee", "morning", "headline", "routine", "productive", "upstairs", "spill", "floor"]
+}

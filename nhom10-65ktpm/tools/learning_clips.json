@@ -1,0 +1,44 @@
+[
+  {
+    "id": "coffee-learning-clip",
+    "file": "tools/recordings_src/josh-woodward-coffee.mp3",
+    "sha256": "e0ece785d62530fb0f6f83544bcc1b0fbf7d9795eb1134dac5ebb594b613b729",
+    "performer": "Josh Woodward",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://www.joshwoodward.com/song/Coffee",
+    "downloadUrl": "https://www.joshwoodward.com/mp3/sunny/JoshWoodward-SunnySideOfTheStreet-09-Coffee.mp3",
+    "startSec": 12.0,
+    "endSec": 89.0,
+    "lineStartsSec": [14.4, 19.92, 24.9, 29.82, 36.1, 39.38, 41.24, 55.72, 61.2, 65.64, 70.76, 77.07, 80.3, 82.2],
+    "lineEndSec": 86.4
+  },
+  {
+    "id": "learn-to-fly-learning-clip",
+    "file": "tools/recordings_src/josh-woodward-learn-to-fly.mp3",
+    "sha256": "d247ecfdfa56d953e7aef351dc8a47ad015110b09522e2e49c378f3e5db968d6",
+    "performer": "Josh Woodward",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://www.joshwoodward.com/song/LearnToFly",
+    "downloadUrl": "https://www.joshwoodward.com/mp3/HereToday/JoshWoodward-HereTodayRemixed-06-LearnToFly.mp3",
+    "startSec": 11.0,
+    "endSec": 72.0,
+    "lineStartsSec": [13.2, 16.24, 18.8, 24.54, 27.06, 29.74, 35.04, 37.96, 40.66, 43.42, 48.02, 50.86, 53.52, 58.76, 61.62, 64.38],
+    "lineEndSec": 69.1
+  },
+  {
+    "id": "little-tomcat-learning-clip",
+    "file": "tools/recordings_src/josh-woodward-little-tomcat.mp3",
+    "sha256": "471ed76edde879032273ba91353fdfc71da6ad80fb676c9eaa7658c7df5a1c55",
+    "performer": "Josh Woodward",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://www.joshwoodward.com/song/LittleTomcat",
+    "downloadUrl": "https://www.joshwoodward.com/mp3/TheWake/JoshWoodward-TheWake-09-LittleTomcat.mp3",
+    "startSec": 14.0,
+    "endSec": 61.0,
+    "lineStartsSec": [16.68, 19.8, 22.8, 28.2, 32.2, 35.32, 38.76, 43.32, 49.12, 53.5],
+    "lineEndSec": 58.78
+  }
+]

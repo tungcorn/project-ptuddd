@@ -33,7 +33,6 @@ import tempfile
 import wave
 from pathlib import Path
 
-import lameenc
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
@@ -182,6 +181,7 @@ def backing_track(n_bars: int, bpm: int, key: int, prog: list[int]) -> np.ndarra
 TOPIC_EMOJI_FREE_LABEL = {
     "nursery": "Thiếu nhi", "folk": "Dân ca", "holiday": "Lễ hội",
     "hymn": "Thánh ca", "ballad": "Ballad",
+    "pop-rock": "Pop Rock", "acoustic": "Acoustic",
 }
 
 
@@ -233,6 +233,9 @@ def fmt_lrc(ms: int) -> str:
 
 
 def build_song(song: dict, tmp: Path) -> dict:
+    # Cover-only callers do not need the optional TTS MP3 encoder.
+    import lameenc
+
     level = song["level"]
     seed = seed_of(song["id"])
     voice = "Microsoft Zira Desktop" if seed % 2 == 0 else "Microsoft David Desktop"
