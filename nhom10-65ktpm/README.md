@@ -239,9 +239,10 @@ gh pr create --repo tungcorn/project-ptuddd --base nhom10-65ktpm --head feature/
   `git fetch origin` rồi `git merge origin/nhom10-65ktpm -m "fix(nhom10-65ktpm): dong bo nhanh nhom vao nhanh tinh nang"`
   ngay trên nhánh tính năng. Không ghi đè code của người khác; sau khi xử lý
   xung đột phải chạy lại kiểm thử ứng dụng trước khi commit hoàn tất merge và push.
-- Admin vẫn có khả năng push trực tiếp theo cấu hình bảo vệ hiện tại, nhưng
-  **không dùng làm quy trình phát triển thông thường** theo yêu cầu phối hợp mới.
-  Không force push hoặc xóa nhánh nhóm.
+- Chỉ nhóm trưởng thực hiện merge vào `nhom10-65ktpm`. Sau khi có đủ review
+  và xử lý các góp ý, nhóm trưởng dùng quyền bypass giới hạn cập nhật nhánh qua PR
+  để merge; quyền này không thay thế approval của người khác hoặc cho phép push
+  trực tiếp lên nhánh nhóm. Không force push hoặc xóa nhánh nhóm.
 - Sau khi PR được merge, quay lại nhánh nhóm và `git pull --ff-only origin nhom10-65ktpm`;
   đầu việc tiếp theo tạo nhánh mới. **Đóng (Close) PR không có nghĩa là đã merge**.
 
