@@ -16,6 +16,13 @@ Chỉ đánh dấu checklist và ghi kết quả kiểm thử thực sự đã t
 ## Mục tiêu
 
 - Tính năng / lỗi / đầu việc cần xử lý: [Điền nội dung hoặc liên kết issue]
+- Mức độ giải quyết: [Một phần / toàn bộ issue; hoặc đầu việc độc lập không có issue]
+- Tiêu chí / phần việc được xử lý trong PR này: [Liệt kê cụ thể]
+- Phần còn lại của issue và PR phụ thuộc: [Liệt kê hoặc ghi không có]
+
+Một issue có thể có nhiều PR nhỏ; không cần làm xong cả issue mới mở PR. Mỗi PR cần có giá trị thực tế, phạm vi review/kiểm thử rõ ràng, không tách chỉ để tăng số lượng. Nếu còn đang làm và muốn góp ý sớm, dùng Draft PR.
+
+PR chỉ giải quyết một phần ghi `Liên quan #<issue>`, không dùng `Closes`, `Fixes`, `Resolves` cho issue chưa hoàn thành. Chỉ đóng issue khi toàn bộ tiêu chí có bằng chứng và các PR cần thiết đã merge.
 
 ## Thay đổi chính
 
