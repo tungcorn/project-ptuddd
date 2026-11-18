@@ -89,6 +89,7 @@ class PlayerController extends Notifier<PlayerState> {
   int _listenedMs = 0;
   bool _completed = false;
   int _session = 0;
+  int _seekRequest = 0;
 
   @override
   PlayerState build() {
@@ -206,10 +207,15 @@ class PlayerController extends Notifier<PlayerState> {
   Future<void> togglePlay() => state.playing ? pause() : play();
 
   Future<void> seek(Duration to) async {
+    final session = _session;
+    final request = ++_seekRequest;
     final clamped = to < Duration.zero
         ? Duration.zero
         : (state.duration > Duration.zero && to > state.duration ? state.duration : to);
     await ref.read(audioEngineProvider).seek(clamped);
+    // Platform acknowledgements can arrive after another seek or track load.
+    // Only the current request may update this session's UI/lyric position.
+    if (session != _session || request != _seekRequest) return;
     state = state.copyWith(position: clamped);
   }
 
