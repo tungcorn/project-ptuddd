@@ -41,9 +41,6 @@ class FlakyRemote extends FakeRemote {
 void main() {
   final now = DateTime(2026, 11, 18, 20);
 
-  Future<void> settle() =>
-      Future<void>.delayed(const Duration(milliseconds: 80));
-
   Future<SaveWordOutcome> saveStar(VocabularyRepository repo, int line) =>
       repo.save(
         lemma: 'Star',
@@ -119,13 +116,22 @@ void main() {
           store: store, sync: sync, bus: bus, uid: 'u1', clock: () => now);
       final progress =
           ProgressService(store: store, sync: sync, uid: 'u1', clock: () => now);
-      bus.stream.listen(progress.record);
+      // Keep the Future of every record() call so the test waits for the
+      // XP writes themselves instead of sleeping a fixed time.
+      final recording = <Future<int?>>[];
+      bus.stream.listen((e) => recording.add(progress.record(e)));
+      Future<void> settle(int events) async {
+        // Broadcast events are delivered asynchronously: let them arrive.
+        await Future<void>.delayed(Duration.zero);
+        expect(recording, hasLength(events));
+        await Future.wait(recording);
+      }
 
       expect(await saveStar(repo, 0), SaveWordOutcome.created);
       expect(await saveStar(repo, 0), SaveWordOutcome.alreadySaved);
       expect(await saveStar(repo, 4), SaveWordOutcome.contextAdded);
       await repo.review('star', ReviewGrade.good);
-      await settle();
+      await settle(3); // created + contextAdded + review; duplicate emits none
       final queued = await sync.pendingCount();
 
       // Several failed attempts while offline lose nothing.
