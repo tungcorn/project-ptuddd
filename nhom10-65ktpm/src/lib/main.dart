@@ -37,21 +37,24 @@ Future<Widget> bootstrap() async {
 
   AuthRepository auth;
   if (AppConfig.isFirebaseConfigured) {
-    // Cloud mode: Firebase Auth + Firestore sync + Storage uploads.
+    // Spark-compatible cloud mode: Auth + Firestore. Media uploads are opt-in.
     await Firebase.initializeApp(options: AppConfig.firebaseOptions);
     final db = FirebaseFirestore.instance;
     auth = FirebaseAuthRepository(FirebaseAuth.instance, db);
     overrides.addAll([
       remoteStoreProvider.overrideWithValue(FirestoreRemoteStore(db)),
       socialRepositoryProvider.overrideWithValue(FirestoreSocialRepository(db)),
-      mediaUploaderProvider
-          .overrideWithValue(CloudMediaUploader(FirebaseStorage.instance)),
+      if (AppConfig.storageEnabled)
+        mediaUploaderProvider.overrideWithValue(
+          CloudMediaUploader(FirebaseStorage.instance),
+        ),
     ]);
   } else {
     // Demo / local mode: everything stays on the device.
     auth = LocalAuthRepository(store);
     overrides.add(
-        socialRepositoryProvider.overrideWithValue(LocalSocialRepository(store)));
+      socialRepositoryProvider.overrideWithValue(LocalSocialRepository(store)),
+    );
   }
   overrides.add(authRepositoryProvider.overrideWithValue(auth));
   // Restore the previous session before the first frame (bounded so a slow

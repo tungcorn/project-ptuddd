@@ -8,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../features/auth/data/auth_repository.dart';
 import '../../features/auth/domain/app_user.dart';
+import '../config/app_config.dart';
 import '../sync/sync_service.dart';
 
 /// Cloud Firestore transport for [SyncService].
@@ -52,7 +53,7 @@ class FirebaseAuthRepository implements AuthRepository {
   AppUser? get current => _current;
 
   @override
-  bool get supportsGoogle => true;
+  bool get supportsGoogle => AppConfig.googleSignInEnabled;
 
   @override
   bool get supportsPasswordReset => true;
@@ -80,7 +81,8 @@ class FirebaseAuthRepository implements AuthRepository {
     final user = AppUser(
       uid: u.uid,
       email: u.email ?? '',
-      displayName: (profile['displayName'] as String?) ??
+      displayName:
+          (profile['displayName'] as String?) ??
           u.displayName ??
           (u.email ?? 'Người học').split('@').first,
       isAdmin: token?.claims?['admin'] == true,
@@ -88,12 +90,13 @@ class FirebaseAuthRepository implements AuthRepository {
       isCloud: true,
     );
     // Firestore queues this write while offline.
-    unawaited(_db.doc('publicProfiles/${u.uid}').set({
-      'uid': u.uid,
-      'displayName': user.displayName,
-      'email': user.email.toLowerCase(),
-      'userCode': user.userCode,
-    }, SetOptions(merge: true)));
+    unawaited(
+      _db.doc('publicProfiles/${u.uid}').set({
+        'uid': u.uid,
+        'displayName': user.displayName,
+        'userCode': user.userCode,
+      }, SetOptions(merge: true)),
+    );
     return user;
   }
 
@@ -112,17 +115,16 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   AuthFailure _map(FirebaseAuthException e) => AuthFailure(switch (e.code) {
-        'email-already-in-use' => 'Email này đã được đăng ký',
-        'invalid-email' => 'Email không hợp lệ',
-        'weak-password' => 'Mật khẩu quá yếu',
-        'user-not-found' ||
-        'wrong-password' ||
-        'invalid-credential' =>
-          'Email hoặc mật khẩu không đúng',
-        'network-request-failed' => 'Không có kết nối mạng',
-        'too-many-requests' => 'Thử lại sau ít phút',
-        _ => 'Lỗi xác thực: ${e.code}',
-      });
+    'email-already-in-use' => 'Email này đã được đăng ký',
+    'invalid-email' => 'Email không hợp lệ',
+    'weak-password' => 'Mật khẩu quá yếu',
+    'user-not-found' ||
+    'wrong-password' ||
+    'invalid-credential' => 'Email hoặc mật khẩu không đúng',
+    'network-request-failed' => 'Không có kết nối mạng',
+    'too-many-requests' => 'Thử lại sau ít phút',
+    _ => 'Lỗi xác thực: ${e.code}',
+  });
 
   @override
   Future<AppUser> signUp({
@@ -130,13 +132,16 @@ class FirebaseAuthRepository implements AuthRepository {
     required String password,
     required String displayName,
   }) async {
-    final error = AuthValidators.email(email) ??
+    final error =
+        AuthValidators.email(email) ??
         AuthValidators.password(password) ??
         AuthValidators.displayName(displayName);
     if (error != null) throw AuthFailure(error);
     try {
       final cred = await _auth.createUserWithEmailAndPassword(
-          email: email.trim(), password: password);
+        email: email.trim(),
+        password: password,
+      );
       await cred.user!.updateDisplayName(displayName.trim());
       await _db.doc('users/${cred.user!.uid}').set({
         'displayName': displayName.trim(),
@@ -152,10 +157,15 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<AppUser> signIn({required String email, required String password}) async {
+  Future<AppUser> signIn({
+    required String email,
+    required String password,
+  }) async {
     try {
       final cred = await _auth.signInWithEmailAndPassword(
-          email: email.trim(), password: password);
+        email: email.trim(),
+        password: password,
+      );
       final user = await _load(cred.user!);
       _set(user);
       return user;
@@ -166,6 +176,9 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<AppUser> signInWithGoogle() async {
+    if (!supportsGoogle) {
+      throw const AuthFailure('Đăng nhập Google chưa được bật cho dự án này.');
+    }
     try {
       final cred = await _auth.signInWithProvider(GoogleAuthProvider());
       final user = await _load(cred.user!);
@@ -221,8 +234,9 @@ class FirebaseAuthRepository implements AuthRepository {
       'updatedAt': DateTime.now().millisecondsSinceEpoch,
     }, SetOptions(merge: true));
     if (displayName != null) {
-      await _db.doc('publicProfiles/${user.uid}').set(
-          {'displayName': displayName.trim()}, SetOptions(merge: true));
+      await _db.doc('publicProfiles/${user.uid}').set({
+        'displayName': displayName.trim(),
+      }, SetOptions(merge: true));
     }
     final next = user.copyWith(displayName: displayName?.trim(), level: level);
     _set(next);

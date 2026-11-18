@@ -1,8 +1,12 @@
 # Firebase config passed with --dart-define-from-file (never commit real keys)
 firebase.env.json
 **/firebase.env.json
-# Cloud Functions dependencies
+# Firebase tooling / Cloud Functions dependencies and emulator logs
+firebase/node_modules/
 firebase/functions/node_modules/
+firebase/.firebase/
+firebase/*-debug.log
+firebase/*-debug.*.log
 # Local tooling state
 .omc/
 **/.omc/
