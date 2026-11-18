@@ -25,7 +25,8 @@ Chỉ đánh dấu checklist và ghi kết quả kiểm thử thực sự đã t
 ## Ảnh hưởng đến phần của thành viên khác
 
 - Mô-đun, API, model, dữ liệu hoặc cấu hình bị ảnh hưởng: [Điền hoặc ghi không có]
-- Thay đổi cần phối hợp / cách chuyển đổi dữ liệu: [Điền hoặc ghi không có]
+- File ngoài phạm vi / file dùng chung theo `docs/PHAN_CONG_HOAN_THIEN.md`: [Liệt kê và ghi người đã phối hợp, hoặc ghi không có]
+- Thay đổi cần phối hợp / cách chuyển đổi dữ liệu và thứ tự merge PR phụ thuộc: [Điền hoặc ghi không có]
 
 ## Kiểm thử
 
@@ -54,6 +55,6 @@ kèm kiểm tra nội dung/liên kết đã thực hiện. -->
 
 ## Lưu ý khi merge
 
-- Thành viên không có quyền admin phải đi qua PR, cần ít nhất **1 người khác duyệt**.
+- Mọi nhiệm vụ phát triển, **kể cả của nhóm trưởng/admin**, đi qua PR và cần ít nhất **1 người khác duyệt**; người tạo PR không tự duyệt.
 - Giải quyết các trao đổi review trước khi merge; thay đổi mới có thể làm mất hiệu lực lượt duyệt cũ.
-- Admin được phép push trực tiếp theo cấu hình nhóm, nhưng không dùng quyền này để ghi đè công việc chưa thống nhất.
+- Admin vẫn có khả năng bypass theo cấu hình bảo vệ hiện tại, nhưng không dùng làm luồng phát triển thông thường hoặc thay thế review.

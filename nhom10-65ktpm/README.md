@@ -6,6 +6,8 @@
 - **Giảng viên hướng dẫn:** ThS. Đỗ Oanh Cường.
 - **Thành viên:** [Danh sách nhóm](danhsachnhom.md).
 - **Mẫu PR nội bộ nhóm:** [PR template](docs/PR_TEMPLATE.md) — dành cho nhánh tính năng → `nhom10-65ktpm`; sao chép thủ công hoặc dùng `--body-file`, không tự điền trên GitHub.
+- **Phân công đợt hoàn thiện:** [Nhiệm vụ, ranh giới file và giao tiếp mô-đun](docs/PHAN_CONG_HOAN_THIEN.md) — đọc trước khi nhận việc hoặc dùng AI sửa code.
+- **Quản lý tiến độ:** [Project board](https://github.com/users/tungcorn/projects/2/views/2) (riêng tư, thành viên đã được cấp quyền cập nhật) · [Issues](https://github.com/tungcorn/project-ptuddd/issues).
 - **Đề cương, phân công chi tiết và kế hoạch:** [TH4 – SingLearn](docs/TH4_DeCuong_Project_SingLearn.md) · [Bản Word](docs/TH4_DeCuong_Project_SingLearn.docx).
 
 ## 1. Giới thiệu và trạng thái (cập nhật 16/11/2026)
@@ -109,7 +111,7 @@ flutter test integration_test/app_e2e_test.dart -d <android-device-id>
 | **Đào Ngọc Đình – M3** | [DaoNgocDinh](https://github.com/DaoNgocDinh) | Bài tập nghe, chấm/tổng kết phiên, luyện phát âm | Thử thách đoán tên bài hát |
 | **Phạm Ngọc Bách – M4** | [phamngocbach05-debug](https://github.com/phamngocbach05-debug) | Xác thực/hồ sơ, trang chủ, XP/streak/huy hiệu, thống kê và nhắc học | Bạn bè và bảng xếp hạng |
 
-Mỗi người phụ trách cả giao diện, logic, dữ liệu, kiểm thử và phần báo cáo/demo của mình. Cả nhóm chuẩn bị nội dung bài hát và review chéo; nhóm trưởng điều phối tích hợp, không mặc định làm thay các mô-đun. Phạm vi và mốc nghiệm thu chi tiết nằm ở mục 9–10 của đề cương.
+Mỗi người phụ trách cả giao diện, logic, dữ liệu, kiểm thử và phần báo cáo/demo của mình. Cả nhóm chuẩn bị nội dung bài hát và review chéo; nhóm trưởng điều phối tích hợp, không mặc định làm thay các mô-đun. Phân công nghiệp vụ tổng thể ở mục 9–10 của đề cương; **đợt hoàn thiện hiện tại áp dụng [bốn nhiệm vụ, quyền sửa file và quy tắc phối hợp](docs/PHAN_CONG_HOAN_THIEN.md)**. Đây là kế hoạch công việc, không phải xác nhận đóng góp hoặc kết quả kiểm thử đã hoàn thành.
 
 ## 5. Quy định nộp bài và việc còn thiếu
 
@@ -129,7 +131,10 @@ Mỗi người phụ trách cả giao diện, logic, dữ liệu, kiểm thử v
 
 Các lệnh Git dưới đây chạy từ **thư mục gốc kho `project-ptuddd`**. `origin` là
 `https://github.com/tungcorn/project-ptuddd.git`. Nhánh tích hợp của nhóm là
-`nhom10-65ktpm`; thành viên làm trên nhánh tính năng rồi mở PR vào nhánh này.
+`nhom10-65ktpm`; **mọi nhiệm vụ phát triển, kể cả của nhóm trưởng/admin**, làm
+trên nhánh tính năng rồi mở PR vào nhánh này và được người khác review.
+Trước khi sửa, đọc [phân công đợt hoàn thiện](docs/PHAN_CONG_HOAN_THIEN.md) và issue:
+chỉ sửa phần được giao, phối hợp trước khi đụng file chung hoặc đổi giao tiếp.
 Không commit/push trực tiếp vào `main`, không sửa tệp gốc hoặc thư mục nhóm khác.
 
 ### 6.1. Lấy mã nguồn và tạo nhánh làm việc
@@ -225,17 +230,18 @@ gh pr create --repo tungcorn/project-ptuddd --base nhom10-65ktpm --head feature/
 
 ### 6.4. Cập nhật PR và merge
 
-- Thành viên không có quyền admin không push trực tiếp vào `nhom10-65ktpm`;
-  phải qua PR, có ít nhất **1 người khác duyệt** và giải quyết các trao đổi review.
-  Commit mới làm mất hiệu lực lượt duyệt cũ, cần review lại.
+- Mọi nhiệm vụ phát triển, **kể cả của nhóm trưởng/admin**, đi qua PR vào
+  `nhom10-65ktpm`, có ít nhất **1 người khác duyệt** và giải quyết các trao đổi review.
+  Người tạo PR không tự duyệt. Commit mới làm mất hiệu lực lượt duyệt cũ, cần review lại.
 - Sửa theo review rồi commit/push tiếp **trên cùng nhánh tính năng**, PR tự cập nhật;
   không cần mở PR mới cho mỗi commit.
 - Nếu cần đồng bộ nhánh nhóm vào nhánh tính năng: khi working tree sạch, chạy
   `git fetch origin` rồi `git merge origin/nhom10-65ktpm -m "fix(nhom10-65ktpm): dong bo nhanh nhom vao nhanh tinh nang"`
   ngay trên nhánh tính năng. Không ghi đè code của người khác; sau khi xử lý
   xung đột phải chạy lại kiểm thử ứng dụng trước khi commit hoàn tất merge và push.
-- Admin được phép push trực tiếp theo cấu hình bảo vệ hiện tại, nhưng nên dùng
-  PR cho thay đổi cần review. Không force push hoặc xóa nhánh nhóm.
+- Admin vẫn có khả năng push trực tiếp theo cấu hình bảo vệ hiện tại, nhưng
+  **không dùng làm quy trình phát triển thông thường** theo yêu cầu phối hợp mới.
+  Không force push hoặc xóa nhánh nhóm.
 - Sau khi PR được merge, quay lại nhánh nhóm và `git pull --ff-only origin nhom10-65ktpm`;
   đầu việc tiếp theo tạo nhánh mới. **Đóng (Close) PR không có nghĩa là đã merge**.
 

@@ -4,6 +4,7 @@
 
 - Chỉ thêm/sửa tệp trong `nhom10-65ktpm/`. Không sửa tệp gốc của kho hoặc thư mục nhóm khác.
 - Đọc `README.md` của nhóm để biết cách chạy, trạng thái kiểm chứng và quy trình Git ở mục 6. Quy định học phần nằm trong `../README.md`.
+- Đọc `docs/PHAN_CONG_HOAN_THIEN.md` và issue được giao trước khi sửa: xác định phạm vi file, người điều phối file chung, giao tiếp và tiêu chí nghiệm thu. Không tự sửa ngoài phạm vi; đề xuất thay đổi và thống nhất một người/PR thực hiện trước.
 - PR nội bộ dùng `docs/PR_TEMPLATE.md`. Cấu hình và kiểm thử Firebase xem `firebase/README.md`.
 - Các đường dẫn tài liệu ở trên tính từ thư mục chứa file này. Các lệnh Git bên dưới tính từ gốc kho `project-ptuddd`.
 
@@ -11,8 +12,8 @@
 
 - Trước khi sửa, kiểm tra `git status` và nhánh hiện tại. Giữ nguyên thay đổi chưa commit của người dùng; không tự reset, stash hoặc ghi đè.
 - Không tự tạo/chuyển nhánh chỉ vì bắt đầu một yêu cầu mới. Nếu đang ở nhánh tính năng phù hợp, tiếp tục dùng nhánh đó; không tạo nhánh mới cho mỗi commit.
-- Nhóm trưởng có quyền admin được làm trực tiếp trên `nhom10-65ktpm` khi họ yêu cầu hoặc xác nhận cách làm này. Không ép tạo nhánh tính năng, PR hay chờ reviewer trong trường hợp đó.
-- Thành viên không có quyền admin dùng `feature/nhom10-65ktpm/<dau-viec>` từ nhánh nhóm mới nhất, rồi mở PR vào `nhom10-65ktpm`. Không lấy một nhánh tính năng chưa merge khác làm base nếu chưa thống nhất.
+- Theo yêu cầu phối hợp GitHub mới, mọi nhiệm vụ phát triển, kể cả của nhóm trưởng/admin, dùng nhánh `feature/nhom10-65ktpm/<dau-viec>` từ nhánh nhóm mới nhất rồi PR vào `nhom10-65ktpm`, có người khác review trước merge. Nếu đang ở nhánh nhóm và bắt đầu nhiệm vụ phát triển đã được giao, tạo nhánh tính năng phù hợp; không commit/push trực tiếp lên nhánh nhóm theo quy trình thông thường.
+- Không lấy một nhánh tính năng chưa merge khác làm base nếu chưa thống nhất. Quyền admin bypass hiện có là khả năng kỹ thuật, không phải quy trình phát triển; không tự dùng để bỏ qua PR/review.
 - Không suy đoán quyền admin từ cấu hình tên/email Git. Nếu cách làm phụ thuộc quyền mà chưa biết, xác minh hoặc hỏi trước khi thay đổi nhánh.
 - Không commit/push trực tiếp vào `main`. Không tự viết lại lịch sử, force push hoặc xóa nhánh.
 
@@ -27,7 +28,7 @@
 - Không dùng `git add .` ở gốc kho. Chỉ stage đường dẫn cụ thể bên trong `nhom10-65ktpm/`, xem lại staged diff và chạy `git diff --cached --check` trước commit.
 - Không gộp thay đổi không liên quan hoặc công việc chưa thống nhất của người khác vào commit.
 - PR nội bộ: repository `tungcorn/project-ptuddd`, base `nhom10-65ktpm`, head là nhánh tính năng. Điền mẫu nội bộ, ghi kết quả kiểm thử thực tế; mẫu không tự điền trên GitHub.
-- Thành viên không có quyền admin cần ít nhất một người khác duyệt và giải quyết các trao đổi review trước merge. Commit mới làm mất hiệu lực lượt duyệt cũ.
+- Mọi PR nhiệm vụ phát triển cần ít nhất một người khác duyệt và giải quyết các trao đổi review trước merge, áp dụng cả nhóm trưởng/admin. Không tự duyệt, không tạo review/bình luận dưới danh tính thành viên khác. Commit mới làm mất hiệu lực lượt duyệt cũ.
 - PR nộp bài cho giảng viên là quy trình riêng, không tự mở khi được yêu cầu tạo PR nội bộ. Đóng PR không có nghĩa đã merge.
 - Sau push/merge, kiểm tra trạng thái local và remote rồi báo đúng nhánh, commit và kết quả. Không tự mở PR chỉ vì GitHub in ra liên kết gợi ý sau push.
 
