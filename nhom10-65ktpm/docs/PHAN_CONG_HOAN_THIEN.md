@@ -194,6 +194,6 @@ Ca kiểm thử để xác nhận tương thích:
 - [M4 – Phiên Firebase và tiến độ (#5)](https://github.com/tungcorn/project-ptuddd/issues/5).
 - [Project SingLearn – Tiến độ nhóm 10](https://github.com/users/tungcorn/projects/2), [board theo trạng thái](https://github.com/users/tungcorn/projects/2/views/2): đã có Todo, In progress, In review, Done và liên kết với repository.
 - Project để riêng tư; đã cấp quyền WRITER cho ba thành viên còn lại để tự cập nhật tiến độ, không cấp quyền admin. Project không tên có sẵn trên tài khoản không bị thay đổi.
-- Đã thêm bốn issue vào Project, gán đúng owner và đặt Todo. Reviewer mới là đề xuất, chưa có PR/review hay xác nhận nhận việc của thành viên; không tự chuyển In progress/Done.
+- Tại thời điểm khởi tạo, bốn issue đã được thêm vào Project, gán đúng owner và đặt Todo; reviewer trong kế hoạch là đề xuất. Tiến độ hiện tại, xác nhận nhận việc và các PR/review liên quan được theo dõi trực tiếp trên issue và Project, không suy ra từ trạng thái khởi tạo này.
 
 Tài liệu này bổ sung phân công nghiệp vụ ở mục 9 của đề cương. Nếu hướng dẫn cũ mâu thuẫn về cách làm của đợt hiện tại, dùng tài liệu này và yêu cầu GitHub mới; các thay đổi ranh giới tiếp theo phải được ghi lại trước khi triển khai.
