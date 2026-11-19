@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,6 +31,7 @@ class PronunciationScreen extends StatelessWidget {
 enum _Phase {
   idle,
   preparing,
+  preparationTimeout,
   listening,
   scored,
   noSpeech,
@@ -59,6 +62,29 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   List<String> _alternatives = const [];
   PronunciationResult? _result;
   int _session = 0;
+  Timer? _preparationTimer;
+
+  bool get _recognizing =>
+      _phase == _Phase.preparing || _phase == _Phase.listening;
+
+  bool _isCurrent(int session) => mounted && session == _session;
+
+  // Permission dialogs and platform initialization can fail to complete.
+  // Invalidate this attempt so a late response cannot start the microphone.
+  void _preparationTimedOut(int session) {
+    if (!_isCurrent(session) || _phase != _Phase.preparing) return;
+    _session++;
+    unawaited(_cancelRecognition());
+    setState(() => _phase = _Phase.preparationTimeout);
+  }
+
+  Future<void> _cancelRecognition() async {
+    try {
+      await _recognizer.cancel();
+    } catch (_) {
+      // Cleanup is best effort; leaving the screen must not throw.
+    }
+  }
 
   LyricLine get _line => _lines[_pos];
 
@@ -77,14 +103,16 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   @override
   void dispose() {
     _session++;
-    if (_phase == _Phase.listening) _recognizer.cancel();
+    _preparationTimer?.cancel();
+    if (_recognizing) unawaited(_cancelRecognition());
     super.dispose();
   }
 
   void _select(int pos) {
     if (pos < 0 || pos >= _lines.length || pos == _pos) return;
-    if (_phase == _Phase.listening) _recognizer.cancel();
     _session++;
+    _preparationTimer?.cancel();
+    if (_recognizing) unawaited(_cancelRecognition());
     _player.cancelSegment();
     _player.pause();
     setState(() {
@@ -101,6 +129,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   }
 
   Future<void> _start() async {
+    if (_recognizing) return;
     final session = ++_session;
     setState(() {
       _phase = _Phase.preparing;
@@ -108,26 +137,34 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
       _partial = '';
       _alternatives = const [];
     });
-    // The microphone must not pick up the music.
-    _player.cancelSegment();
-    await _player.pause();
-
-    final permission = await _recognizer.ensurePermission();
-    if (!mounted || session != _session) return;
-    if (permission != MicPermission.granted) {
-      setState(() => _phase = permission == MicPermission.permanentlyDenied
-          ? _Phase.permissionPermanent
-          : _Phase.permissionDenied);
-      return;
-    }
-    final available = await _recognizer.initialize();
-    if (!mounted || session != _session) return;
-    if (!available) {
-      setState(() => _phase = _Phase.unavailable);
-      return;
-    }
-    setState(() => _phase = _Phase.listening);
+    _preparationTimer?.cancel();
+    final timer = Timer(
+      const Duration(seconds: 30),
+      () => _preparationTimedOut(session),
+    );
+    _preparationTimer = timer;
     try {
+      // The microphone must not pick up the music.
+      _player.cancelSegment();
+      await _player.pause();
+      if (!_isCurrent(session)) return;
+
+      final permission = await _recognizer.ensurePermission();
+      if (!_isCurrent(session)) return;
+      if (permission != MicPermission.granted) {
+        setState(() => _phase = permission == MicPermission.permanentlyDenied
+            ? _Phase.permissionPermanent
+            : _Phase.permissionDenied);
+        return;
+      }
+      final available = await _recognizer.initialize();
+      if (!_isCurrent(session)) return;
+      if (!available) {
+        setState(() => _phase = _Phase.unavailable);
+        return;
+      }
+      timer.cancel();
+      setState(() => _phase = _Phase.listening);
       await _recognizer.listen(
         onResult: (heard) {
           if (!mounted || session != _session || _phase != _Phase.listening) return;
@@ -153,7 +190,14 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
         onDone: () => _finish(session),
       );
     } catch (_) {
-      if (mounted && session == _session) setState(() => _phase = _Phase.failed);
+      if (_isCurrent(session) && _recognizing) {
+        _session++;
+        unawaited(_cancelRecognition());
+        setState(() => _phase = _Phase.failed);
+      }
+    } finally {
+      // A stale attempt must not cancel the next attempt's watchdog.
+      timer.cancel();
     }
   }
 
@@ -385,6 +429,14 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
           title: 'Thiết bị không hỗ trợ nhận dạng giọng nói',
           message: 'Hãy cài/bật dịch vụ nhận dạng giọng nói của Google '
               '(ứng dụng Google) và gói ngôn ngữ tiếng Anh, rồi thử lại.',
+        );
+      case _Phase.preparationTimeout:
+        return _InfoPanel(
+          icon: Icons.timer_off_outlined,
+          title: 'Chuẩn bị micro quá lâu',
+          message: 'Nếu hộp thoại quyền micro còn mở, hãy xử lý hộp thoại '
+              'rồi thử lại. Bạn cũng có thể thoát màn và quay lại sau.',
+          actions: [FilledButton.tonal(onPressed: _start, child: const Text('Thử lại'))],
         );
       case _Phase.failed:
         return _InfoPanel(
