@@ -47,19 +47,47 @@ class SyncService {
     await _store.put(pendingBox, key, {'path': path, 'data': data});
   }
 
-  Future<int> pendingCount() async =>
-      (await _store.entries(pendingBox)).length;
+  /// Account that owns a document path: `uid` for `users/{uid}/...`, null
+  /// for shared paths such as `songs/...`.
+  static String? ownerOf(String path) {
+    final parts = path.split('/');
+    return parts.length >= 2 && parts.first == 'users' ? parts[1] : null;
+  }
+
+  /// Whether a queued write to [path] may be sent while [uid] is signed in.
+  /// A null [uid] keeps the original behaviour (every account).
+  static bool _sendableBy(String path, String? uid) {
+    if (uid == null) return true;
+    final owner = ownerOf(path);
+    return owner == null || owner == uid;
+  }
+
+  /// Number of queued writes; with [uid], only those [flush] would send for
+  /// that account.
+  Future<int> pendingCount({String? uid}) async =>
+      (await _store.entries(pendingBox)).values
+          .where((op) => _sendableBy(op['path'] as String, uid))
+          .length;
 
   /// Pushes pending operations. Returns how many were pushed. Stops at the
   /// first failure so ordering is preserved; the rest stay queued.
-  Future<int> flush() async {
+  ///
+  /// With [uid] (the signed-in account), writes under another account's
+  /// `users/{otherUid}/...` are skipped and kept in the queue: they would be
+  /// rejected by the security rules and block this account's writes. They are
+  /// sent when their owner signs in again.
+  Future<int> flush({String? uid}) async {
     final remote = _remote;
     if (remote == null || _flushing) return 0;
     _flushing = true;
     var pushed = 0;
     try {
       final ops = await _store.entries(pendingBox);
-      final keys = ops.keys.toList()..sort();
+      final keys =
+          ops.keys
+              .where((k) => _sendableBy(ops[k]!['path'] as String, uid))
+              .toList()
+            ..sort();
       for (final key in keys) {
         final op = ops[key]!;
         try {
