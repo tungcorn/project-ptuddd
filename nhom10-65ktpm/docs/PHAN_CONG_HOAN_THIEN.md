@@ -168,7 +168,7 @@ Ca kiểm thử để xác nhận tương thích:
 ### Theo dõi tiến độ và bằng chứng
 
 - Board: **Todo → In progress → In review → Done**. Tạo issue không đồng nghĩa đã bắt đầu hoặc hoàn thành.
-- Todo: đã có phạm vi/assignee; In progress: người làm xác nhận bắt đầu; In review: phần việc hiện tại có PR sẵn sàng review, không có nghĩa toàn bộ issue đã xong. PR một phần được merge mà issue còn việc thì giữ/mở lại In progress và ghi tiến độ; Done: toàn bộ tiêu chí nghiệm thu có bằng chứng và các PR cần thiết đã merge. Không đóng issue chỉ vì một PR thành phần đã merge.
+- Todo: đã có phạm vi/assignee; In progress: người làm xác nhận bắt đầu hoặc issue lớn còn việc triển khai, kiểm thử hay phụ thuộc chưa giải quyết. Nếu chỉ một PR thành phần sẵn sàng review, giữ issue ở In progress và ghi liên kết PR/phần việc đang chờ review. In review: toàn bộ phạm vi của item đã sẵn sàng review và có PR tương ứng. Done: toàn bộ tiêu chí nghiệm thu có bằng chứng và các PR cần thiết đã merge. Không chuyển Done hoặc đóng issue chỉ vì một PR thành phần đã merge.
 - Người bị chặn ghi comment nêu trở ngại và phụ thuộc; không chuyển Done để làm đẹp tiến độ.
 - Reviewer dự kiến theo bảng M1–M3, M2–M4. Người tạo PR không tự duyệt; phản hồi phải có kiểm tra thực tế, không tạo bình luận giả.
 - Mỗi người tự cập nhật issue/PR và phản hồi review bằng tài khoản của mình; AI hỗ trợ không thay thế hiểu code và trách nhiệm kiểm chứng.
