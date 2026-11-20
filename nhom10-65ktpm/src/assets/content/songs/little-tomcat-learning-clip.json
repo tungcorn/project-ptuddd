@@ -1,0 +1,22 @@
+{
+  "id": "little-tomcat-learning-clip",
+  "title": "Little Tomcat (đoạn học)",
+  "artist": "Josh Woodward",
+  "level": "B1",
+  "topics": ["friendship", "animals"],
+  "genre": "acoustic",
+  "lyricsSource": "Josh Woodward, Little Tomcat — https://www.joshwoodward.com/song/LittleTomcat — lời và nhạc CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Nhóm 10: chọn khổ đầu và điệp khúc, chuẩn hóa dấu câu, dịch tiếng Việt và căn lời; không phải toàn bộ bài hát",
+  "lines": [
+    {"en": "Little tomcat, stay close to me", "vi": "Mèo nhỏ ơi, hãy ở bên tôi nhé,"},
+    {"en": "Cuz there are clouds on the horizon", "vi": "vì mây đang kéo đến phía chân trời,"},
+    {"en": "And a chill on the breeze", "vi": "và gió thoảng mang theo hơi lạnh."},
+    {"en": "We're alone here, but don't you be scared", "vi": "Ở đây chỉ có chúng ta, nhưng đừng sợ nhé."},
+    {"en": "I've got a calloused hand, a farmer's tan", "vi": "Tôi có bàn tay chai sần, làn da rám nắng của người nông dân,"},
+    {"en": "And I'm happy to share", "vi": "và tôi sẵn lòng sẻ chia."},
+    {"en": "You and I will both get by", "vi": "Cả bạn và tôi rồi sẽ sống ổn thôi,"},
+    {"en": "Just promise you won't stray", "vi": "chỉ cần hứa rằng bạn sẽ không đi lạc."},
+    {"en": "All that I need is some dirt and a seed", "vi": "Tất cả những gì tôi cần là chút đất và một hạt giống,"},
+    {"en": "And I will feed you till the summer blows away", "vi": "và tôi sẽ cho bạn ăn cho đến khi mùa hè qua đi."}
+  ],
+  "keywords": ["tomcat", "horizon", "breeze", "share", "promise", "stray", "seed", "feed"]
+}

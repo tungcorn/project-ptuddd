@@ -1,6 +1,7 @@
 """Generate SingLearn demo media from song content JSON.
 
-For every ``src/assets/content/songs/<id>.json`` this script produces:
+For every song without a source recording in ``src/assets/content/songs/<id>.json``
+this script produces:
 
 * ``src/assets/audio/<id>.mp3`` – a self-made recording: a synthesized
   backing track (chords, bass, light percussion) plus every lyric line read
@@ -16,8 +17,10 @@ Run from the ``nhom10-65ktpm`` folder:
 
     python tools/generate_media.py
 
-The lyrics are public domain; the generated audio/covers are original work of
-Nhóm 10 and released under CC BY 4.0 together with the app.
+Songs registered in ``tools/recordings.json`` or ``tools/learning_clips.json``
+are excluded, including when explicitly selected on the command line.
+The lyrics used for TTS are public domain; the generated audio/covers are original
+work of Nhóm 10 and released under CC BY 4.0 together with the app.
 """
 
 from __future__ import annotations
@@ -33,7 +36,6 @@ import tempfile
 import wave
 from pathlib import Path
 
-import lameenc
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
@@ -182,6 +184,7 @@ def backing_track(n_bars: int, bpm: int, key: int, prog: list[int]) -> np.ndarra
 TOPIC_EMOJI_FREE_LABEL = {
     "nursery": "Thiếu nhi", "folk": "Dân ca", "holiday": "Lễ hội",
     "hymn": "Thánh ca", "ballad": "Ballad",
+    "pop-rock": "Pop Rock", "acoustic": "Acoustic",
 }
 
 
@@ -233,6 +236,9 @@ def fmt_lrc(ms: int) -> str:
 
 
 def build_song(song: dict, tmp: Path) -> dict:
+    # Cover-only callers do not need the optional TTS MP3 encoder.
+    import lameenc
+
     level = song["level"]
     seed = seed_of(song["id"])
     voice = "Microsoft Zira Desktop" if seed % 2 == 0 else "Microsoft David Desktop"
@@ -314,10 +320,13 @@ def main() -> None:
         d.mkdir(parents=True, exist_ok=True)
     only = set(sys.argv[1:])
     songs = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(SONGS_DIR.glob("*.json"))]
-    # Songs with a real recording (tools/recordings.json) are produced by
-    # align_recordings.py: never overwrite their audio/LRC or catalog entry.
-    manifest = Path(__file__).with_name("recordings.json")
-    real = {e["id"] for e in json.loads(manifest.read_text(encoding="utf-8"))} if manifest.exists() else set()
+    # Both aligned recordings and licensed learning clips have real audio.
+    # Never regenerate their audio/LRC/covers or replace their catalog entries.
+    real = set()
+    for name in ("recordings.json", "learning_clips.json"):
+        manifest = Path(__file__).with_name(name)
+        if manifest.exists():
+            real.update(e["id"] for e in json.loads(manifest.read_text(encoding="utf-8")))
     old = json.loads(CATALOG.read_text(encoding="utf-8"))["songs"] if CATALOG.exists() else []
     catalog = [e for e in old if e["id"] in real] if not only else []
     for song in songs:
