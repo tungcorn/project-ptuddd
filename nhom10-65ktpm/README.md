@@ -12,7 +12,7 @@
 
 ## 1. Giới thiệu và trạng thái (cập nhật 16/11/2026)
 
-SingLearn giúp người Việt học tiếng Anh qua các bài hát kinh điển. Bộ demo gồm 8 bài: lời đã hết bản quyền và **bản thu đều do người hát thật, thuộc phạm vi công cộng**. Mỗi bài có lời LRC đồng bộ theo giọng hát và bản dịch tiếng Việt.
+SingLearn giúp người Việt học tiếng Anh qua bài hát. Thư viện gồm **8 bài kinh điển giữ nguyên và 3 đoạn học pop/acoustic của Josh Woodward**, với giọng hát thật, lời LRC và bản dịch tiếng Việt. Tám bài cũ dùng nguồn thuộc phạm vi công cộng; ba đoạn mới dùng tác phẩm và bản thu **CC BY 4.0**, ghi rõ tác giả, nguồn, giấy phép và phần chỉnh sửa — không trình bày đoạn trích là toàn bộ bài.
 
 Mọi chức năng trong đề cương đều đã có code. Mức kiểm chứng của từng chức năng khác nhau và được ghi rõ ở bảng dưới.
 
@@ -43,11 +43,16 @@ Mọi chức năng trong đề cương đều đã có code. Mức kiểm chứn
   - B2: Amazing Grace – Southern Aire, US Air Force Reserve Band.
   - B2: Danny Boy – Celtic Aire, US Air Force Band.
   - B2: Hark! The Herald Angels Sing – Singing Sergeants.
-- Bản thu của ban nhạc quân đội Mỹ là tác phẩm của chính phủ liên bang nên thuộc phạm vi công cộng. Bản thu trước năm 1925 đã hết hạn bảo hộ tại Mỹ. Nguồn của từng bài được ghi trong `catalog.json` và hiển thị trong app.
+- Đoạn học bổ sung, đều do Josh Woodward sáng tác và trình bày, giấy phép CC BY 4.0:
+  - A2: **Coffee (đoạn học)** — 77 giây, 14 câu; sinh hoạt và công việc.
+  - B1: **Learn To Fly (đoạn học)** — 61 giây, 16 câu; động lực, thử lại và kiên trì.
+  - B1: **Little Tomcat (đoạn học)** — 47 giây, 10 câu; tình bạn và chăm sóc thú cưng.
+  - Mức CEFR là gợi ý biên tập. Có audio, LRC, bản dịch, từ vựng và ảnh bìa; mốc tự động vẫn cần nghe rà khi review. Nguồn, quyền sử dụng, cách tái tạo và giới hạn kiểm tra: [nội dung bài hát](docs/noi-dung-bai-hat.md).
+- Với tám bài cũ: bản thu của ban nhạc quân đội Mỹ là tác phẩm của chính phủ liên bang nên thuộc phạm vi công cộng. Bản thu trước năm 1925 đã hết hạn bảo hộ tại Mỹ. Nguồn của từng bài được ghi trong `catalog.json` và hiển thị trong app.
 - Lời được chỉnh theo đúng các lời bài mà ca sĩ hát trong bản thu. Mốc thời gian được căn tự động bằng `tools/align_recordings.py` (faster-whisper `small.en`), cấu hình trong `tools/recordings.json`. File gốc để ở `tools/recordings_src/` và không đưa lên Git.
-- Thêm bài: tải bản thu có giấy phép mở, soạn file `songs/<id>.json`, thêm một mục vào `tools/recordings.json`, rồi chạy `python tools/align_recordings.py <id>`. Script báo tỉ lệ khớp; bài dưới 60% sẽ bị bỏ qua để kiểm tra lại bằng tay.
+- Thêm bài: xác minh quyền với cả lời/nhạc và bản thu, soạn file `songs/<id>.json`, thêm một mục vào `tools/recordings.json`, rồi chạy `python tools/align_recordings.py <id>`. Script báo tỉ lệ khớp; bài dưới ngưỡng `--min-match` (mặc định 50%, có thể đặt riêng trong manifest) sẽ bị bỏ qua để kiểm tra lại bằng tay. Ba đoạn học mới dùng manifest riêng `tools/learning_clips.json` và `tools/build_learning_clips.py` để tái tạo đúng khoảng cắt/mốc đã lưu, không ghi đè bài cũ.
 - `tools/generate_media.py` (giọng TTS) chỉ còn dùng cho bài chưa có bản thu thật và không ghi đè các bài đã có trong `recordings.json`.
-- Lời và bản dịch nằm trong `src/assets/content/songs/*.json` (schema ở `tools/SONG_SCHEMA.md`). Từ điển gồm 510 mục, nằm ở `src/assets/content/dictionary.json`.
+- Lời và bản dịch nằm trong `src/assets/content/songs/*.json` (schema ở `tools/SONG_SCHEMA.md`). Từ điển gồm 657 mục (bổ sung 71 mục cho đợt nội dung này), nằm ở `src/assets/content/dictionary.json`.
 
 ### Quy tắc nghiệp vụ chính
 
