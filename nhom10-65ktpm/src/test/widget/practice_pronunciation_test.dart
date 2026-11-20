@@ -81,6 +81,38 @@ class FakeSpeechRecognizer implements SpeechRecognizer {
   }
 }
 
+typedef _SpeechCallbacks = ({
+  void Function(SpeechHeard) result,
+  void Function(SpeechFailure) error,
+  void Function() done,
+});
+
+/// Leaves recognition running so tests can order stop and platform callbacks.
+class ControlledSpeechRecognizer extends FakeSpeechRecognizer {
+  final sessions = <_SpeechCallbacks>[];
+  int stopRequests = 0;
+  Object? stopError;
+  Future<void>? stopResponse;
+
+  @override
+  Future<void> listen({
+    required void Function(SpeechHeard heard) onResult,
+    required void Function(SpeechFailure failure) onError,
+    required void Function() onDone,
+  }) async {
+    listenRequests++;
+    sessions.add((result: onResult, error: onError, done: onDone));
+  }
+
+  @override
+  Future<void> stop() async {
+    stopRequests++;
+    if (stopError != null) throw stopError!;
+    final response = stopResponse;
+    if (response != null) await response;
+  }
+}
+
 class DelayedPauseEngine extends FakeAudioEngine {
   Completer<void>? nextPause;
 
@@ -415,6 +447,252 @@ void main() {
     expect(rec.listenRequests, 0);
     await closeStore(tester, app);
   });
+
+  testWidgets('stop failure is explained, rejects old results and can retry', (tester) async {
+    final rec = ControlledSpeechRecognizer()
+      ..stopError = StateError('stop channel failed');
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    final old = rec.sessions.single;
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Nhận dạng giọng nói gặp lỗi'), findsOneWidget);
+    expect(rec.stopRequests, 1);
+    expect(rec.cancelRequests, 1);
+
+    old.result(const SpeechHeard(['all is calm'], isFinal: true));
+    old.done();
+    await tester.pump();
+    expect(events, isEmpty);
+    expect(find.byKey(const Key('pron-score')), findsNothing);
+
+    rec.stopError = null;
+    await tester.ensureVisible(find.text('Thử lại'));
+    await tester.tap(find.text('Thử lại'));
+    await tester.pump();
+    expect(rec.listenRequests, 2);
+    rec.sessions.last.result(const SpeechHeard(['all is calm'], isFinal: true));
+    rec.sessions.last.done();
+    await settleIo(tester);
+    expect(find.byKey(const Key('pron-score')), findsOneWidget);
+    expect(events.where((e) => e.type == LearningEventType.pronunciationScored), hasLength(1));
+    await closeStore(tester, app);
+  });
+
+  testWidgets('pending stop disables controls and grades collected speech once', (tester) async {
+    final stopped = Completer<void>();
+    final rec = ControlledSpeechRecognizer()..stopResponse = stopped.future;
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    addTearDown(() {
+      if (!stopped.isCompleted) stopped.complete();
+    });
+
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    rec.sessions.single.result(const SpeechHeard(['all is calm'], isFinal: false));
+    await tester.pump();
+    // Both taps reach the same frame; the phase guard must reject the second.
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    expect(rec.stopRequests, 1);
+    expect(find.text('Đang dừng nhận dạng…'), findsOneWidget);
+    expect(tester.widget<FilledButton>(find.byKey(const Key('mic-button'))).onPressed, isNull);
+    final sampleButton = find.ancestor(
+      of: find.text('Nghe mẫu'),
+      matching: find.byWidgetPredicate((widget) => widget is OutlinedButton),
+    );
+    expect(tester.widget<OutlinedButton>(sampleButton).onPressed, isNull);
+    expect(events, isEmpty);
+
+    stopped.complete();
+    await settleIo(tester);
+    expect(tester.widget<Text>(find.byKey(const Key('pron-score'))).data, '100');
+    rec.sessions.single.done();
+    rec.sessions.single.result(const SpeechHeard(['all is calm'], isFinal: true));
+    await tester.pump();
+    expect(events.where((e) => e.type == LearningEventType.pronunciationScored), hasLength(1));
+    expect(tester.takeException(), isNull);
+    await closeStore(tester, app);
+  });
+
+  testWidgets('final result during stop survives a late stop error', (tester) async {
+    final stopped = Completer<void>();
+    final rec = ControlledSpeechRecognizer()..stopResponse = stopped.future;
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    addTearDown(() {
+      if (!stopped.isCompleted) stopped.complete();
+    });
+
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    rec.sessions.single.result(const SpeechHeard(['all is calm'], isFinal: true));
+    rec.sessions.single.done();
+    await settleIo(tester);
+    stopped.completeError(StateError('late stop error'));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(tester.widget<Text>(find.byKey(const Key('pron-score'))).data, '100');
+    expect(find.text('Nhận dạng giọng nói gặp lỗi'), findsNothing);
+    expect(rec.cancelRequests, 0);
+    expect(events.where((e) => e.type == LearningEventType.pronunciationScored), hasLength(1));
+    await closeStore(tester, app);
+  });
+
+  testWidgets('stop without speech allows retry without recording a score', (tester) async {
+    final rec = ControlledSpeechRecognizer();
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    expect(find.text('Không nghe thấy giọng nói'), findsOneWidget);
+    expect(events, isEmpty);
+    await tester.ensureVisible(find.text('Thử lại'));
+    await tester.tap(find.text('Thử lại'));
+    await tester.pump();
+    expect(rec.listenRequests, 2);
+    await closeStore(tester, app);
+  });
+
+  testWidgets('old stop error and callbacks cannot affect a new line session', (tester) async {
+    final stopped = Completer<void>();
+    final rec = ControlledSpeechRecognizer()..stopResponse = stopped.future;
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    addTearDown(() {
+      if (!stopped.isCompleted) stopped.complete();
+    });
+
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    final old = rec.sessions.single;
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Câu sau'));
+    await tester.pump();
+    expect(rec.cancelRequests, 1);
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    expect(rec.listenRequests, 2);
+
+    stopped.completeError(StateError('old stop error'));
+    old.result(const SpeechHeard(['all is calm'], isFinal: true));
+    old.error(SpeechFailure.other);
+    old.done();
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Đang nghe… hãy nói ngay'), findsOneWidget);
+    expect(events, isEmpty);
+    rec.sessions.last.result(const SpeechHeard(['new line'], isFinal: true));
+    await settleIo(tester);
+    final scored = events.where((e) => e.type == LearningEventType.pronunciationScored).single;
+    expect(scored.data['lineIndex'], 3);
+    await closeStore(tester, app);
+  });
+
+  testWidgets('stop error after leaving the screen is contained', (tester) async {
+    final stopped = Completer<void>();
+    final rec = ControlledSpeechRecognizer()..stopResponse = stopped.future;
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    addTearDown(() {
+      if (!stopped.isCompleted) stopped.complete();
+    });
+
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    await tester.pumpWidget(const SizedBox());
+    stopped.completeError(StateError('stop error after exit'));
+    rec.sessions.single.result(const SpeechHeard(['all is calm'], isFinal: true));
+    rec.sessions.single.done();
+    await tester.pump();
+    expect(rec.cancelRequests, 1);
+    expect(events, isEmpty);
+    expect(tester.takeException(), isNull);
+    await closeStore(tester, app);
+  });
+
+  testWidgets('sample plays only after stop completes for the current line', (tester) async {
+    final stopped = Completer<void>();
+    final rec = ControlledSpeechRecognizer()..stopResponse = stopped.future;
+    await pump(tester, rec);
+    addTearDown(() {
+      if (!stopped.isCompleted) stopped.complete();
+    });
+
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    app.audio.log.clear();
+    await tester.tap(find.text('Nghe mẫu'));
+    await tester.pump();
+    expect(rec.stopRequests, 1);
+    expect(app.audio.log, isEmpty);
+
+    stopped.complete();
+    await settleIo(tester);
+    expect(app.audio.log.where((s) => s.startsWith('seek:')), hasLength(1));
+    expect(app.audio.log.where((s) => s == 'play'), hasLength(1));
+    expect(rec.cancelRequests, 0);
+    expect(tester.takeException(), isNull);
+    await closeStore(tester, app);
+  });
+
+  for (final interruption in ['failure', 'line change', 'exit']) {
+    testWidgets('sample playback is abandoned after stop $interruption', (tester) async {
+      final stopped = Completer<void>();
+      final rec = ControlledSpeechRecognizer()..stopResponse = stopped.future;
+      await pump(tester, rec);
+      addTearDown(() {
+        if (!stopped.isCompleted) stopped.complete();
+      });
+      await tester.tap(find.byKey(const Key('mic-button')));
+      await tester.pump();
+      app.audio.log.clear();
+      await tester.tap(find.text('Nghe mẫu'));
+      await tester.pump();
+      expect(rec.stopRequests, 1);
+      if (interruption == 'line change') {
+        await tester.tap(find.byTooltip('Câu sau'));
+        await tester.pump();
+      } else if (interruption == 'exit') {
+        await tester.pumpWidget(const SizedBox());
+      }
+      if (interruption == 'failure') {
+        stopped.completeError(StateError('sample stop failed'));
+      } else {
+        stopped.complete();
+      }
+      await settleIo(tester);
+      expect(tester.takeException(), isNull);
+      expect(app.audio.log.where((s) => s.startsWith('seek:') || s == 'play'), isEmpty);
+      expect(rec.cancelRequests, 1);
+      await closeStore(tester, app);
+    });
+  }
 
   testWidgets('cleanup failure while leaving preparation is contained', (tester) async {
     final permission = Completer<MicPermission>();

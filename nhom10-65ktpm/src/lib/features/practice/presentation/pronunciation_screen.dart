@@ -33,6 +33,7 @@ enum _Phase {
   preparing,
   preparationTimeout,
   listening,
+  stopping,
   scored,
   noSpeech,
   unavailable,
@@ -64,8 +65,10 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   int _session = 0;
   Timer? _preparationTimer;
 
-  bool get _recognizing =>
-      _phase == _Phase.preparing || _phase == _Phase.listening;
+  bool get _receivingResults =>
+      _phase == _Phase.listening || _phase == _Phase.stopping;
+
+  bool get _recognizing => _phase == _Phase.preparing || _receivingResults;
 
   bool _isCurrent(int session) => mounted && session == _session;
 
@@ -124,7 +127,12 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   }
 
   Future<void> _listenSample() async {
-    if (_phase == _Phase.listening) await _stop();
+    final session = _session;
+    if (_recognizing) {
+      if (_phase != _Phase.listening) return;
+      if (!await _stop()) return;
+    }
+    if (!_isCurrent(session)) return;
     await playLyricLine(ref, _line.index);
   }
 
@@ -167,7 +175,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
       setState(() => _phase = _Phase.listening);
       await _recognizer.listen(
         onResult: (heard) {
-          if (!mounted || session != _session || _phase != _Phase.listening) return;
+          if (!_isCurrent(session) || !_receivingResults) return;
           final alts = heard.alternatives.where((a) => a.trim().isNotEmpty).toList();
           if (alts.isNotEmpty) {
             _alternatives = alts;
@@ -176,7 +184,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
           if (heard.isFinal) _finish(session);
         },
         onError: (failure) {
-          if (!mounted || session != _session || _phase != _Phase.listening) return;
+          if (!_isCurrent(session) || !_receivingResults) return;
           if (_alternatives.isNotEmpty) {
             _finish(session);
             return;
@@ -201,15 +209,31 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
     }
   }
 
-  Future<void> _stop() async {
+  Future<bool> _stop() async {
+    if (_phase != _Phase.listening) return false;
     final session = _session;
-    await _recognizer.stop();
-    _finish(session);
+    setState(() => _phase = _Phase.stopping);
+    try {
+      // Some engines deliver their final result while stop is pending.
+      await _recognizer.stop();
+      if (!_isCurrent(session)) return false;
+      _finish(session);
+      return _phase == _Phase.scored || _phase == _Phase.noSpeech;
+    } catch (_) {
+      if (_isCurrent(session) && _phase == _Phase.stopping) {
+        _session++;
+        unawaited(_cancelRecognition());
+        setState(() => _phase = _Phase.failed);
+      }
+      // A late stop error must not replace a result already finalized by
+      // onResult/onDone, or affect a newer session after leaving this one.
+      return false;
+    }
   }
 
   /// Scores the best of the collected alternatives (once per session).
   void _finish(int session) {
-    if (!mounted || session != _session || _phase != _Phase.listening) return;
+    if (!_isCurrent(session) || !_receivingResults) return;
     if (_alternatives.isEmpty) {
       setState(() => _phase = _Phase.noSpeech);
       return;
@@ -308,7 +332,9 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
           runSpacing: 12,
           children: [
             OutlinedButton.icon(
-              onPressed: _phase == _Phase.preparing ? null : _listenSample,
+              onPressed: _phase == _Phase.preparing || _phase == _Phase.stopping
+                  ? null
+                  : _listenSample,
               icon: Icon(playing ? Icons.graphic_eq : Icons.hearing),
               label: const Text('Nghe mẫu'),
             ),
@@ -367,6 +393,8 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
     final t = Theme.of(context);
     final listening = _phase == _Phase.listening;
     final preparing = _phase == _Phase.preparing;
+    final stopping = _phase == _Phase.stopping;
+    final busy = preparing || stopping;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -381,15 +409,15 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
               backgroundColor: listening ? t.colorScheme.error : t.colorScheme.primary,
               foregroundColor: listening ? t.colorScheme.onError : t.colorScheme.onPrimary,
             ),
-            onPressed: preparing ? null : (listening ? _stop : _start),
-            child: preparing
+            onPressed: busy ? null : (listening ? _stop : _start),
+            child: busy
                 ? const SizedBox(
                     width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 3))
                 : Icon(listening ? Icons.stop : Icons.mic, size: 32),
           ),
         ),
         const SizedBox(height: 4),
-        Text(listening ? 'Nhấn để dừng' : 'Nhấn để nói',
+        Text(stopping ? 'Đang dừng' : (listening ? 'Nhấn để dừng' : 'Nhấn để nói'),
             style: t.textTheme.labelSmall),
       ],
     );
@@ -413,6 +441,12 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
             Text(_partial.isEmpty ? 'Đang nghe… hãy nói ngay' : _partial,
                 textAlign: TextAlign.center, style: t.textTheme.bodyLarge),
           ],
+        );
+      case _Phase.stopping:
+        return Text(
+          'Đang dừng nhận dạng…',
+          textAlign: TextAlign.center,
+          style: t.textTheme.bodyMedium,
         );
       case _Phase.scored:
         return _resultCard(context, _result!);
