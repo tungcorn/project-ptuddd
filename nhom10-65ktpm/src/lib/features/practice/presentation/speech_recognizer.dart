@@ -70,7 +70,11 @@ class DeviceSpeechRecognizer implements SpeechRecognizer {
   }
 
   @override
-  Future<void> openSettings() => openAppSettings();
+  Future<void> openSettings() async {
+    if (!await openAppSettings()) {
+      throw StateError('The system settings page could not be opened');
+    }
+  }
 
   @override
   Future<bool> initialize() async {

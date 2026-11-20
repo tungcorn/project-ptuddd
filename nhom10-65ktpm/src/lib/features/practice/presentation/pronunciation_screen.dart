@@ -52,7 +52,8 @@ class _PronunciationBody extends ConsumerStatefulWidget {
   ConsumerState<_PronunciationBody> createState() => _PronunciationBodyState();
 }
 
-class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
+class _PronunciationBodyState extends ConsumerState<_PronunciationBody>
+    with WidgetsBindingObserver {
   late final List<LyricLine> _lines = singableLines(widget.data.lyrics);
   late final SpeechRecognizer _recognizer;
   late final PlayerController _player;
@@ -94,6 +95,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _recognizer = ref.read(speechRecognizerProvider);
     _player = ref.read(playerControllerProvider.notifier);
     final initial = widget.initialLine;
@@ -105,10 +107,31 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _session++;
     _preparationTimer?.cancel();
     if (_recognizing) unawaited(_cancelRecognition());
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!mounted ||
+        (state != AppLifecycleState.paused && state != AppLifecycleState.detached) ||
+        !_recognizing) {
+      return;
+    }
+    // A permission dialog can temporarily make the app inactive. Only
+    // abandon recognition when the app actually pauses or detaches.
+    _session++;
+    _preparationTimer?.cancel();
+    unawaited(_cancelRecognition());
+    setState(() {
+      _phase = _Phase.idle;
+      _result = null;
+      _partial = '';
+      _alternatives = const [];
+    });
   }
 
   void _select(int pos) {
@@ -124,6 +147,18 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
       _result = null;
       _partial = '';
     });
+  }
+
+  Future<void> _openSettings() async {
+    final session = _session;
+    try {
+      await _recognizer.openSettings();
+    } catch (_) {
+      if (_isCurrent(session)) {
+        showMessage('Không mở được cài đặt. Hãy mở quyền micro trong '
+            'Cài đặt của thiết bị rồi thử lại.');
+      }
+    }
   }
 
   Future<void> _listenSample() async {
@@ -494,7 +529,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
           actions: [
             FilledButton.tonal(onPressed: _start, child: const Text('Thử lại')),
             OutlinedButton(
-              onPressed: () => _recognizer.openSettings(),
+              onPressed: _openSettings,
               child: const Text('Mở cài đặt'),
             ),
           ],
