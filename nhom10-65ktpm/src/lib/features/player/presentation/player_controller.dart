@@ -90,6 +90,7 @@ class PlayerController extends Notifier<PlayerState> {
   bool _completed = false;
   int _session = 0;
   int _seekRequest = 0;
+  int _segmentRequest = 0;
 
   @override
   PlayerState build() {
@@ -107,6 +108,7 @@ class PlayerController extends Notifier<PlayerState> {
         engine.seek(Duration.zero);
       }));
     ref.onDispose(() {
+      cancelSegment();
       for (final s in _subs) {
         s.cancel();
       }
@@ -162,8 +164,7 @@ class PlayerController extends Notifier<PlayerState> {
       return;
     }
     _flushListening();
-    _stopAt = null;
-    _onSegmentEnd = null;
+    cancelSegment();
     final session = ++_session;
     // Stop the previous song right away so it does not keep playing while
     // the new one loads.
@@ -266,10 +267,18 @@ class PlayerController extends Notifier<PlayerState> {
 
   /// Plays [start]..[end] once and calls [onEnd] when the segment finishes.
   Future<void> playSegment(Duration start, Duration end, {void Function()? onEnd}) async {
+    cancelSegment();
+    final session = _session;
+    final request = _segmentRequest;
     state = state.copyWith(loopLine: () => null, loopA: () => null, loopB: () => null);
+    await ref.read(audioEngineProvider).seek(start);
+    // A cancelled/replaced segment must not resume after a late seek ack,
+    // even if the player was disposed or another song has since loaded.
+    if (session != _session || request != _segmentRequest) return;
+    // Arm only the current segment after seeking: positions from the old
+    // playback must not finish a segment that is still being prepared.
     _stopAt = end;
     _onSegmentEnd = onEnd;
-    await ref.read(audioEngineProvider).seek(start);
     state = state.copyWith(position: start);
     await play();
   }
@@ -282,7 +291,10 @@ class PlayerController extends Notifier<PlayerState> {
     await playSegment(line.start, line.end, onEnd: onEnd);
   }
 
+  /// Disarms the endpoint and invalidates any segment still awaiting seek.
+  /// Callers that also want to stop current playback should call [pause].
   void cancelSegment() {
+    _segmentRequest++;
     _stopAt = null;
     _onSegmentEnd = null;
   }
