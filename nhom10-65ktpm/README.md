@@ -92,6 +92,8 @@ flutter run -d chrome                          # chạy thử nhanh trên Chrome
 flutter test integration_test/app_e2e_test.dart -d <android-device-id>
 ```
 
+**Android giả lập:** nhóm có script mở AVD đã thiết lập sẵn, test ba đoạn học và driver integration chuẩn. Từ `src/`, chạy `..\tools\start_android_emulator.ps1` rồi `flutter run --no-pub -d emulator-5554`. Đường dẫn ổ D/AVD là cấu hình tham chiếu, có thể truyền tham số theo máy; script không tự cài SDK hay tạo AVD. Xem [hướng dẫn giả lập](docs/chay-android-gia-lap.md) để biết lệnh test, tác động dữ liệu local và giới hạn bằng chứng. Smoke lịch sử không thay thế kết quả integration runner trên bản mới.
+
 **Chế độ Firebase (18/11/2026):** đã thiết lập project riêng `singlearn-nhom10-65ktpm`, Auth email/mật khẩu và Firestore tại Singapore, không liên kết billing. Từ `src/`, chạy `flutter run --dart-define-from-file=firebase.env.json -d <android-device-id>`. Máy khác sao chép `../firebase/firebase.env.example.json` thành `firebase.env.json` rồi điền cấu hình ứng dụng Android. Không commit tệp cấu hình cục bộ. Storage, Functions, FCM và Google sign-in chưa bật; audio/LRC/ảnh vẫn nằm trong assets. Xem [hướng dẫn Firebase và kiểm thử](firebase/README.md).
 
 **Chạy bản build web:** sau `flutter build web`, dùng `python tools/serve_web.py` rồi mở http://127.0.0.1:8765. Không dùng `python -m http.server` vì server này không hỗ trợ HTTP Range, khiến Chrome không tua được nhạc và tự quay về 0:00.
