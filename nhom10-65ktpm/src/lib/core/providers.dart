@@ -41,8 +41,22 @@ final mediaUploaderProvider = Provider<CloudMediaUploader?>((ref) => null);
 final assetLoaderProvider =
     Provider<AssetStringLoader>((ref) => rootBundle.loadString);
 
-final syncServiceProvider = Provider<SyncService>((ref) => SyncService(
-    ref.watch(localStoreProvider), ref.watch(remoteStoreProvider)));
+final syncServiceProvider = Provider<SyncService>((ref) {
+  AuthRepository? auth;
+  return SyncService(
+    ref.watch(localStoreProvider),
+    ref.watch(remoteStoreProvider),
+    // The queue follows the session (issue #3/#5): only the signed-in
+    // account's writes are sent, nothing when signed out or a guest. Read
+    // from the auth repository at each write, not from a derived provider,
+    // so it changes together with the session.
+    account: () {
+      final repo = auth ??= ref.read(authRepositoryProvider);
+      final user = repo!.current;
+      return user == null || user.isGuest ? null : user.uid;
+    },
+  );
+});
 
 final eventBusProvider = Provider<AppEventBus>((ref) {
   final bus = AppEventBus();

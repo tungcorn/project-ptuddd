@@ -25,8 +25,16 @@ abstract class RemoteStore {
 ///   removes each one only after the remote write succeeded;
 /// * [pull] fetches documents changed since the last pull and merges them with
 ///   last-write-wins on `updatedAt`; deletes are `isDeleted: true` tombstones.
+///
+/// One queue serves every account of the device. Given an `account` source,
+/// only the signed-in account's writes are sent (see [flush]).
 class SyncService {
-  SyncService(this._store, this._remote);
+  SyncService(
+    this._store,
+    this._remote, {
+    String? Function()? account,
+    this.writeTimeout = const Duration(seconds: 10),
+  }) : _session = account;
 
   static const pendingBox = 'pending_ops';
   static const _metaBox = 'sync_meta';
@@ -34,9 +42,30 @@ class SyncService {
   final LocalStore _store;
   final RemoteStore? _remote;
   final _uuid = const Uuid();
-  bool _flushing = false;
+
+  /// Live signed-in account: its uid, or null when signed out or a guest.
+  /// Read before every write, so a running flush follows the session.
+  /// Without it (the original API) every account is sent.
+  final String? Function()? _session;
+
+  /// How long [flush] waits for one remote write before keeping it queued
+  /// and stopping. Firestore does not complete a write while offline, so
+  /// without a limit one write could hold the queue for every account.
+  final Duration writeTimeout;
+
+  Future<int>? _running;
+  Future<int>? _next;
+  String? _nextUid;
+
+  /// Queue keys whose write timed out and is still unanswered. Later passes
+  /// stop there at once instead of re-sending it or waiting again; the op
+  /// leaves the queue when that write is acknowledged.
+  final _unanswered = <String>{};
 
   bool get isEnabled => _remote != null;
+
+  /// Signed-in account whose private writes may be sent now.
+  String? get account => _session?.call();
 
   /// Queues a remote write of [data] to [path]. No-op in local mode.
   Future<void> enqueue(String path, Map<String, dynamic> data) async {
@@ -44,7 +73,14 @@ class SyncService {
     final createdAt = DateTime.now().microsecondsSinceEpoch;
     // Key ordered by creation time so flush preserves write order.
     final key = '${createdAt.toString().padLeft(20, '0')}_${_uuid.v4()}';
-    await _store.put(pendingBox, key, {'path': path, 'data': data});
+    final author = account;
+    await _store.put(pendingBox, key, {
+      'path': path,
+      'data': data,
+      // Author of a shared-path write (an admin editing `songs/...`), so it
+      // waits for that account instead of blocking the next one.
+      if (author != null && ownerOf(path) == null) 'by': author,
+    });
   }
 
   /// Account that owns a document path: `uid` for `users/{uid}/...`, null
@@ -54,57 +90,134 @@ class SyncService {
     return parts.length >= 2 && parts.first == 'users' ? parts[1] : null;
   }
 
-  /// Whether a queued write to [path] may be sent while [uid] is signed in.
-  /// A null [uid] keeps the original behaviour (every account).
-  static bool _sendableBy(String path, String? uid) {
+  /// Account a flush or count requested for [uid] works for. `send: false`
+  /// means nothing may be sent: signed out, or [uid] is not the signed-in
+  /// account. `uid: null` with `send: true` is the original behaviour
+  /// (every account), only without an account source.
+  ({bool send, String? uid}) _target(String? uid) {
+    final session = _session;
+    if (session == null) return (send: true, uid: uid);
+    final current = session();
+    if (current == null || (uid != null && uid != current)) {
+      return (send: false, uid: uid);
+    }
+    return (send: true, uid: current);
+  }
+
+  /// Whether queued [op] may be sent for [uid] (null = every account).
+  /// Shared writes queued without an author go with any account.
+  static bool _sendableBy(Map<String, dynamic> op, String? uid) {
     if (uid == null) return true;
-    final owner = ownerOf(path);
+    final owner = ownerOf(op['path'] as String) ?? op['by'] as String?;
     return owner == null || owner == uid;
   }
 
-  /// Number of queued writes; with [uid], only those [flush] would send for
-  /// that account.
-  Future<int> pendingCount({String? uid}) async =>
-      (await _store.entries(pendingBox)).values
-          .where((op) => _sendableBy(op['path'] as String, uid))
-          .length;
+  /// Number of queued writes [flush] would try for [uid]: by default the
+  /// signed-in account (every account without an account source).
+  Future<int> pendingCount({String? uid}) async {
+    if (_remote == null) return 0;
+    final target = _target(uid);
+    if (!target.send) return 0;
+    return (await _store.entries(pendingBox)).values
+        .where((op) => _sendableBy(op, target.uid))
+        .length;
+  }
 
-  /// Pushes pending operations. Returns how many were pushed. Stops at the
-  /// first failure so ordering is preserved; the rest stay queued.
+  /// Pushes pending operations. Returns how many were pushed. An op leaves
+  /// the queue only after the remote confirmed it.
   ///
-  /// With [uid] (the signed-in account), writes under another account's
-  /// `users/{otherUid}/...` are skipped and kept in the queue: they would be
-  /// rejected by the security rules and block this account's writes. They are
-  /// sent when their owner signs in again.
-  Future<int> flush({String? uid}) async {
-    final remote = _remote;
-    if (remote == null || _flushing) return 0;
-    _flushing = true;
+  /// With [uid] (by default the signed-in account), writes under another
+  /// account's `users/{otherUid}/...` and shared writes made by another
+  /// account are skipped and kept: the security rules would reject them.
+  /// They are sent when their owner signs in again. Later writes to a
+  /// skipped document wait too, so a document never gets them out of order.
+  /// A flush stops before its next write when the session changes.
+  ///
+  /// A pass stops at the first failure or timeout so the rest keep their
+  /// order, except that a rejected shared write (e.g. one queued by an admin
+  /// before authors were recorded) only holds back its own document.
+  ///
+  /// A call made while a flush runs is not dropped: it waits for that flush,
+  /// then one more pass runs for every call made meanwhile (the last [uid]
+  /// given wins).
+  Future<int> flush({String? uid}) {
+    if (_remote == null) return Future.value(0);
+    final next = _next;
+    if (next != null) {
+      _nextUid = uid;
+      return next;
+    }
+    final running = _running;
+    if (running == null) return _start(uid);
+    _nextUid = uid;
+    return _next = running.then<void>((_) {}, onError: (Object _) {}).then((_) {
+      _next = null;
+      return _start(_nextUid);
+    });
+  }
+
+  Future<int> _start(String? uid) {
+    final run = _flushOnce(uid);
+    _running = run;
+    run.then<void>((_) {}, onError: (Object _) {}).whenComplete(() {
+      if (identical(_running, run)) _running = null;
+    });
+    return run;
+  }
+
+  Future<int> _flushOnce(String? uid) async {
+    final remote = _remote!;
+    final target = _target(uid);
+    if (!target.send) return 0;
+    final ops = await _store.entries(pendingBox);
+    // Documents held back in this pass, to keep per-document order.
+    final held = <String>{};
     var pushed = 0;
-    try {
-      final ops = await _store.entries(pendingBox);
-      final keys =
-          ops.keys
-              .where((k) => _sendableBy(ops[k]!['path'] as String, uid))
-              .toList()
-            ..sort();
-      for (final key in keys) {
-        final op = ops[key]!;
-        try {
-          await remote.upsert(
-            op['path'] as String,
-            Map<String, dynamic>.from(op['data'] as Map),
-          );
-        } catch (_) {
-          break;
-        }
-        await _store.delete(pendingBox, key);
-        pushed++;
+    for (final key in ops.keys.toList()..sort()) {
+      final op = ops[key]!;
+      final path = op['path'] as String;
+      if (held.contains(path)) continue;
+      if (!_sendableBy(op, target.uid)) {
+        held.add(path);
+        continue;
       }
-    } finally {
-      _flushing = false;
+      // An earlier write of this op is still unanswered: keep the order.
+      if (_unanswered.contains(key)) break;
+      // Acknowledged late while this pass was running.
+      if (await _store.get(pendingBox, key) == null) continue;
+      // The session changed during this flush: leave the rest to its owner.
+      final current = _target(uid);
+      if (!current.send || current.uid != target.uid) break;
+      final write = remote.upsert(
+        path,
+        Map<String, dynamic>.from(op['data'] as Map),
+      );
+      try {
+        await write.timeout(writeTimeout);
+      } on TimeoutException {
+        _awaitLate(key, write);
+        break;
+      } catch (_) {
+        if (ownerOf(path) == null) {
+          held.add(path);
+          continue;
+        }
+        break;
+      }
+      await _store.delete(pendingBox, key);
+      pushed++;
     }
     return pushed;
+  }
+
+  /// Keeps listening to a write [flush] stopped waiting for: once it is
+  /// acknowledged the op is dequeued; if it fails, a later flush retries it.
+  void _awaitLate(String key, Future<void> write) {
+    _unanswered.add(key);
+    write
+        .then<void>((_) => _store.delete(pendingBox, key))
+        .catchError((Object _) {})
+        .whenComplete(() => _unanswered.remove(key));
   }
 
   /// Pulls [collectionPath] into [localBox] using last-write-wins.
