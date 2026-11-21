@@ -18,7 +18,7 @@ Script chỉ **mở AVD đã có**, không cài SDK/image, không tạo AVD, kh�
 
 ## Mở và chạy app
 
-Từ `nhom10-65ktpm/src/`, dùng PowerShell:
+Từ `nhom10-65ktpm/src/`, dùng Windows PowerShell 5.1 hoặc PowerShell 7:
 
 ```powershell
 ..\tools\start_android_emulator.ps1
@@ -75,6 +75,21 @@ Kiểm tra phần chuẩn bị ngày 21/11/2026 trên nhánh `feature/nhom10-65k
 | Boot/Android integration runner trên nhánh mới | Chưa chạy trong lượt chuẩn bị; không nhận PASS |
 
 Lệnh validation PowerShell đầu tiên dùng kiểu exception không truy cập được nên lỗi ở harness kiểm tra; đổi sang bắt lỗi qua `FullyQualifiedErrorId` rồi chạy lại các guard đạt. Không khởi động emulator để thực hiện các ca validation trên. Chưa có kết quả integration runner mới trên nền `d910601`; cần chạy trên AVD kiểm thử trước khi xác nhận luồng mới. Vòng Android cuối chờ các phần việc tích hợp/kiểm chứng còn lại, không đóng #23 từ PR công cụ.
+
+### Sửa tương thích PowerShell ngày 22/11/2026
+
+Review #24 xác định ADB ghi stderr khi chưa có thiết bị khiến Windows PowerShell 5.1 ném `NativeCommandError` dưới chế độ `Stop`, dù đã có `2>$null`. Đã tái hiện bằng ADB thật trước sửa. Hai probe trạng thái/boot nay dùng helper giữ `Continue` riêng trong scope hàm, thu stdout và exit code; chỉ coi thiết bị/boot sẵn sàng khi exit code bằng 0. Các lỗi còn lại của launcher vẫn theo `Stop`, không thay môi trường hoặc cấu hình toàn máy. Giới hạn chờ boot 6 phút giữ nguyên.
+
+Có bộ kiểm tra không cần SDK/AVD, từ cùng thư mục `src/`:
+
+```powershell
+powershell.exe -NoProfile -NonInteractive -File ..\tools\test_android_emulator_probes.ps1
+pwsh.exe -NoProfile -NonInteractive -File ..\tools\test_android_emulator_probes.ps1
+```
+
+Bộ kiểm tra parse launcher, nạp riêng helper và dùng `cmd.exe` làm executable giả có stdout/stderr/exit code thật; không chạy thân launcher để mở giả lập. Chín ca gồm: thiết bị vắng mặt; thiết bị kết nối; boot chưa xong; boot xong; probe lỗi vẫn có stdout; ba cổng không hợp lệ; SDK thiếu. Kiểm tra cả việc giữ nguyên `Stop` của bên gọi sau mỗi probe.
+
+Kết quả sau sửa: **9/9 đạt và parser sạch trên mỗi engine**, Windows PowerShell `5.1.26100.9818` và PowerShell `7.6.10`, cả hai exit 0. Kiểm tra thêm bằng ADB thật, không có `emulator-5554`: cả hai probe trả exit code 1, không ném lỗi và bên gọi vẫn giữ `Stop`, trên cả hai engine. Đây là kiểm tra helper/guard, không phải boot AVD hoặc PASS integration runner. Không cần nâng PowerShell để dùng launcher.
 
 ## Lịch sử smoke trực tiếp ngày 19/11/2026
 

@@ -18,8 +18,19 @@ foreach ($path in @($adb, $emulator, (Join-Path $AvdHome "$AvdName.ini"))) {
     if (-not (Test-Path -LiteralPath $path)) { throw "Missing: $path" }
 }
 
-$existing = & $adb -s $device get-state 2>$null
-if ($existing -eq 'device') {
+# Only readiness probes may fail while ADB cannot see the device yet.
+# Windows PowerShell 5.1 turns redirected native stderr into NativeCommandError
+# under Stop. Keep Continue local to this function; the caller stays on Stop.
+function Invoke-AdbProbe {
+    param([string[]]$AdbArguments)
+    $ErrorActionPreference = 'Continue'
+    $output = & $adb @AdbArguments 2>$null
+    $exitCode = $LASTEXITCODE
+    [pscustomobject]@{ ExitCode = $exitCode; Output = ($output -join "`n").Trim() }
+}
+
+$existing = Invoke-AdbProbe -AdbArguments @('-s', $device, 'get-state')
+if ($existing.ExitCode -eq 0 -and $existing.Output -eq 'device') {
     $runningName = & $adb -s $device emu avd name
     if ($runningName -notcontains $AvdName) {
         throw "$device already belongs to a different AVD; choose another -Port."
@@ -65,8 +76,8 @@ try {
 
 $deadline = (Get-Date).AddMinutes(6)
 do {
-    $boot = & $adb -s $device shell getprop sys.boot_completed 2>$null
-    if ($boot -eq '1') {
+    $boot = Invoke-AdbProbe -AdbArguments @('-s', $device, 'shell', 'getprop', 'sys.boot_completed')
+    if ($boot.ExitCode -eq 0 -and $boot.Output -eq '1') {
         & $adb -s $device shell input keyevent KEYCODE_WAKEUP
         Write-Output "Ready: $AvdName ($device), AVD data: $AvdHome"
         Write-Output "From nhom10-65ktpm/src: flutter run --no-pub -d $device"
