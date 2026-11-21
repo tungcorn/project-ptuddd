@@ -142,7 +142,17 @@ class ProfileScreen extends ConsumerWidget {
               final player = ref.read(playerControllerProvider.notifier);
               player.reportListening();
               await player.pause();
-              await ref.read(syncServiceProvider).flush().catchError((_) => 0);
+              // Give this account's queued writes a short chance to reach
+              // the server; whatever is left stays queued for its next
+              // sign-in, so an offline network cannot hold up signing out.
+              // A guest has nothing queued.
+              if (!user.isGuest) {
+                await ref
+                    .read(syncServiceProvider)
+                    .flush(uid: user.uid)
+                    .timeout(const Duration(seconds: 5), onTimeout: () => 0)
+                    .catchError((_) => 0);
+              }
               await ref.read(authRepositoryProvider).signOut();
             },
           ),

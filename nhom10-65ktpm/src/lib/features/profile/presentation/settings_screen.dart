@@ -25,7 +25,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _refreshPending() async {
-    final n = await ref.read(syncServiceProvider).pendingCount();
+    final n = await ref.read(accountSyncProvider).pending();
     if (mounted) setState(() => _pending = n);
   }
 
@@ -156,12 +156,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     tooltip: 'Đồng bộ ngay',
                     icon: const Icon(Icons.sync),
                     onPressed: () async {
-                      try {
-                        final n = await sync.flush();
-                        showMessage('Đã đồng bộ $n thay đổi');
-                      } catch (e) {
-                        showMessage('Chưa đồng bộ được: $e');
-                      }
+                      // Reports what is still waiting instead of a success
+                      // count of 0 when sending failed (issue #20).
+                      final outcome =
+                          await ref.read(accountSyncProvider).syncNow();
+                      showMessage(outcome.message);
                       _refreshPending();
                     },
                   )
