@@ -34,6 +34,7 @@ enum _Phase {
   preparationTimeout,
   listening,
   stopping,
+  stopTimeout,
   scored,
   noSpeech,
   unavailable,
@@ -64,6 +65,11 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   PronunciationResult? _result;
   int _session = 0;
   Timer? _preparationTimer;
+  // Allow the adapter's 2s final-result fallback before giving up on stop.
+  // This bounds the UI wait, not the physical microphone's shutdown time.
+  static const _stopWait = Duration(seconds: 5);
+  Completer<bool>? _stopResult;
+  bool _stopAcknowledged = false;
 
   bool get _receivingResults =>
       _phase == _Phase.listening || _phase == _Phase.stopping;
@@ -71,6 +77,24 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   bool get _recognizing => _phase == _Phase.preparing || _receivingResults;
 
   bool _isCurrent(int session) => mounted && session == _session;
+
+  void _settleStop() {
+    final pending = _stopResult;
+    if (pending == null ||
+        pending.isCompleted ||
+        !_stopAcknowledged ||
+        _phase == _Phase.stopping) {
+      return;
+    }
+    pending.complete(_phase == _Phase.scored || _phase == _Phase.noSpeech);
+  }
+
+  void _abandonStop() {
+    final pending = _stopResult;
+    _stopResult = null;
+    _stopAcknowledged = false;
+    if (pending != null && !pending.isCompleted) pending.complete(false);
+  }
 
   // Permission dialogs and platform initialization can fail to complete.
   // Invalidate this attempt so a late response cannot start the microphone.
@@ -107,6 +131,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   void dispose() {
     _session++;
     _preparationTimer?.cancel();
+    _abandonStop();
     if (_recognizing) unawaited(_cancelRecognition());
     super.dispose();
   }
@@ -115,6 +140,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
     if (pos < 0 || pos >= _lines.length || pos == _pos) return;
     _session++;
     _preparationTimer?.cancel();
+    _abandonStop();
     if (_recognizing) unawaited(_cancelRecognition());
     _player.cancelSegment();
     _player.pause();
@@ -138,6 +164,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
 
   Future<void> _start() async {
     if (_recognizing) return;
+    _abandonStop();
     final session = ++_session;
     setState(() {
       _phase = _Phase.preparing;
@@ -194,6 +221,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
                 SpeechFailure.permission => _Phase.permissionDenied,
                 SpeechFailure.other => _Phase.failed,
               });
+          _settleStop();
         },
         onDone: () => _finish(session),
       );
@@ -202,6 +230,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
         _session++;
         unawaited(_cancelRecognition());
         setState(() => _phase = _Phase.failed);
+        _abandonStop();
       }
     } finally {
       // A stale attempt must not cancel the next attempt's watchdog.
@@ -212,22 +241,45 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
   Future<bool> _stop() async {
     if (_phase != _Phase.listening) return false;
     final session = _session;
+    final pending = Completer<bool>();
+    _stopResult = pending;
+    _stopAcknowledged = false;
     setState(() => _phase = _Phase.stopping);
+    unawaited(_requestStop(session, pending));
     try {
-      // Some engines deliver their final result while stop is pending.
+      return await pending.future.timeout(_stopWait, onTimeout: () {
+        if (_isCurrent(session)) {
+          final waiting = _phase == _Phase.stopping;
+          _session++;
+          unawaited(_cancelRecognition());
+          if (waiting) setState(() => _phase = _Phase.stopTimeout);
+        }
+        return false;
+      });
+    } finally {
+      // Never clear a newer attempt's waiter.
+      if (identical(_stopResult, pending)) _abandonStop();
+    }
+  }
+
+  Future<void> _requestStop(int session, Completer<bool> pending) async {
+    try {
       await _recognizer.stop();
-      if (!_isCurrent(session)) return false;
-      _finish(session);
-      return _phase == _Phase.scored || _phase == _Phase.noSpeech;
+      if (!_isCurrent(session) || !identical(_stopResult, pending)) return;
+      // Acknowledging stop is not a terminal recognition result. Wait for
+      // onResult(isFinal) or onDone before allowing sample playback.
+      _stopAcknowledged = true;
+      _settleStop();
     } catch (_) {
-      if (_isCurrent(session) && _phase == _Phase.stopping) {
+      if (!_isCurrent(session) || !identical(_stopResult, pending)) return;
+      if (_phase == _Phase.stopping) {
         _session++;
         unawaited(_cancelRecognition());
         setState(() => _phase = _Phase.failed);
       }
       // A late stop error must not replace a result already finalized by
       // onResult/onDone, or affect a newer session after leaving this one.
-      return false;
+      if (!pending.isCompleted) pending.complete(false);
     }
   }
 
@@ -236,6 +288,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
     if (!_isCurrent(session) || !_receivingResults) return;
     if (_alternatives.isEmpty) {
       setState(() => _phase = _Phase.noSpeech);
+      _settleStop();
       return;
     }
     final result = PronunciationScorer.score(_line.en, _alternatives);
@@ -243,6 +296,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
       _phase = _Phase.scored;
       _result = result;
     });
+    _settleStop();
     _save(result.score);
   }
 
@@ -447,6 +501,13 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody> {
           'Đang dừng nhận dạng…',
           textAlign: TextAlign.center,
           style: t.textTheme.bodyMedium,
+        );
+      case _Phase.stopTimeout:
+        return _InfoPanel(
+          icon: Icons.timer_off_outlined,
+          title: 'Chưa nhận được kết quả cuối',
+          message: 'Dịch vụ nhận dạng chưa kết thúc đúng lúc. Hãy thử lại.',
+          actions: [FilledButton.tonal(onPressed: _start, child: const Text('Thử lại'))],
         );
       case _Phase.scored:
         return _resultCard(context, _result!);

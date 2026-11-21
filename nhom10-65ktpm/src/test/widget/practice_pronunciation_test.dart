@@ -516,6 +516,10 @@ void main() {
 
     stopped.complete();
     await settleIo(tester);
+    expect(find.byKey(const Key('pron-score')), findsNothing);
+    expect(events, isEmpty);
+    rec.sessions.single.done();
+    await settleIo(tester);
     expect(tester.widget<Text>(find.byKey(const Key('pron-score'))).data, '100');
     rec.sessions.single.done();
     rec.sessions.single.result(const SpeechHeard(['all is calm'], isFinal: true));
@@ -562,6 +566,9 @@ void main() {
     await tester.tap(find.byKey(const Key('mic-button')));
     await tester.pump();
     await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    expect(find.text('Đang dừng nhận dạng…'), findsOneWidget);
+    rec.sessions.single.done();
     await tester.pump();
     expect(find.text('Không nghe thấy giọng nói'), findsOneWidget);
     expect(events, isEmpty);
@@ -654,6 +661,9 @@ void main() {
 
     stopped.complete();
     await settleIo(tester);
+    expect(app.audio.log.where((s) => s == 'play'), isEmpty);
+    rec.sessions.single.done();
+    await settleIo(tester);
     expect(app.audio.log.where((s) => s.startsWith('seek:')), hasLength(1));
     expect(app.audio.log.where((s) => s == 'play'), hasLength(1));
     expect(rec.cancelRequests, 0);
@@ -693,6 +703,259 @@ void main() {
       await closeStore(tester, app);
     });
   }
+
+  testWidgets('stop acknowledgement waits for the final transcript and saves once', (tester) async {
+    final rec = ControlledSpeechRecognizer();
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    final callbacks = rec.sessions.single;
+    callbacks.result(const SpeechHeard(['hello'], isFinal: false));
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text('Đang dừng nhận dạng…'), findsOneWidget);
+    expect(find.byKey(const Key('pron-score')), findsNothing);
+    expect(events, isEmpty);
+
+    callbacks.result(const SpeechHeard(['all is calm'], isFinal: true));
+    callbacks.done();
+    callbacks.result(const SpeechHeard(['hello'], isFinal: true));
+    await settleIo(tester);
+    expect(tester.widget<Text>(find.byKey(const Key('pron-score'))).data, '100');
+    final scored = events.where((e) => e.type == LearningEventType.pronunciationScored).single;
+    expect(scored.data['score'], 100);
+    final progress = (await tester.runAsync(
+        () => container.read(songProgressRepositoryProvider).get(songId)))!;
+    expect(progress.lineBestScores[2], 100);
+    await tester.pump(const Duration(seconds: 5));
+    expect(rec.cancelRequests, 0);
+    expect(tester.takeException(), isNull);
+    await closeStore(tester, app);
+  });
+
+  testWidgets('done after stop uses the latest partial once', (tester) async {
+    final rec = ControlledSpeechRecognizer();
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    final callbacks = rec.sessions.single;
+    callbacks.result(const SpeechHeard(['hello'], isFinal: false));
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    expect(events, isEmpty);
+    callbacks.result(const SpeechHeard(['all is calm'], isFinal: false));
+    callbacks.done();
+    callbacks.done();
+    callbacks.result(const SpeechHeard(['hello'], isFinal: true));
+    await settleIo(tester);
+    expect(tester.widget<Text>(find.byKey(const Key('pron-score'))).data, '100');
+    expect(events.where((e) => e.type == LearningEventType.pronunciationScored), hasLength(1));
+    await closeStore(tester, app);
+  });
+
+  testWidgets('missing final and done times out without grading a partial and can retry', (tester) async {
+    final rec = ControlledSpeechRecognizer();
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    final old = rec.sessions.single;
+    old.result(const SpeechHeard(['all is calm'], isFinal: false));
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump(const Duration(seconds: 4));
+    expect(find.text('Đang dừng nhận dạng…'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('Chưa nhận được kết quả cuối'), findsOneWidget);
+    expect(rec.cancelRequests, 1);
+    expect(events, isEmpty);
+    await tester.ensureVisible(find.text('Thử lại'));
+    await tester.tap(find.text('Thử lại'));
+    await tester.pump();
+    old.result(const SpeechHeard(['all is calm'], isFinal: true));
+    old.done();
+    old.error(SpeechFailure.other);
+    await tester.pump();
+    expect(events, isEmpty);
+    expect(rec.listenRequests, 2);
+    rec.sessions.last.result(const SpeechHeard(['all is calm'], isFinal: true));
+    await settleIo(tester);
+    expect(events.where((e) => e.type == LearningEventType.pronunciationScored), hasLength(1));
+    expect(tester.takeException(), isNull);
+    await closeStore(tester, app);
+  });
+
+  testWidgets('a stop Future that never completes has a bounded UI wait', (tester) async {
+    final stopped = Completer<void>();
+    final rec = ControlledSpeechRecognizer()..stopResponse = stopped.future;
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    addTearDown(() {
+      if (!stopped.isCompleted) stopped.complete();
+    });
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.text('Chưa nhận được kết quả cuối'), findsOneWidget);
+    expect(rec.cancelRequests, 1);
+    expect(events, isEmpty);
+    stopped.completeError(StateError('stop failed after timeout'));
+    rec.sessions.single.done();
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Chưa nhận được kết quả cuối'), findsOneWidget);
+    await closeStore(tester, app);
+  });
+
+  testWidgets('a valid final survives stop timeout and cannot start sample audio', (tester) async {
+    final stopped = Completer<void>();
+    final rec = ControlledSpeechRecognizer()..stopResponse = stopped.future;
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    addTearDown(() {
+      if (!stopped.isCompleted) stopped.complete();
+    });
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    app.audio.log.clear();
+    await tester.tap(find.text('Nghe mẫu'));
+    await tester.pump();
+    rec.sessions.single.result(const SpeechHeard(['all is calm'], isFinal: true));
+    await settleIo(tester);
+    await tester.pump(const Duration(seconds: 5));
+    expect(tester.widget<Text>(find.byKey(const Key('pron-score'))).data, '100');
+    expect(find.text('Chưa nhận được kết quả cuối'), findsNothing);
+    expect(rec.cancelRequests, 1);
+    expect(app.audio.log.where((s) => s == 'play'), isEmpty);
+    expect(events.where((e) => e.type == LearningEventType.pronunciationScored), hasLength(1));
+    stopped.completeError(StateError('late stop error'));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    await closeStore(tester, app);
+  });
+
+  testWidgets('sample also waits for stop acknowledgement when final arrives first', (tester) async {
+    final stopped = Completer<void>();
+    final rec = ControlledSpeechRecognizer()..stopResponse = stopped.future;
+    await pump(tester, rec);
+    addTearDown(() {
+      if (!stopped.isCompleted) stopped.complete();
+    });
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    app.audio.log.clear();
+    await tester.tap(find.text('Nghe mẫu'));
+    await tester.pump();
+    rec.sessions.single.result(const SpeechHeard(['all is calm'], isFinal: true));
+    await settleIo(tester);
+    expect(app.audio.log.where((s) => s == 'play'), isEmpty);
+    stopped.complete();
+    await settleIo(tester);
+    expect(app.audio.log.where((s) => s == 'play'), hasLength(1));
+    expect(tester.takeException(), isNull);
+    await closeStore(tester, app);
+  });
+
+  for (final interruption in ['line change', 'exit']) {
+    testWidgets('sample awaiting final is canceled by $interruption after stop returns', (tester) async {
+      final rec = ControlledSpeechRecognizer();
+      await pump(tester, rec);
+      await tester.tap(find.byKey(const Key('mic-button')));
+      await tester.pump();
+      final old = rec.sessions.single;
+      app.audio.log.clear();
+      await tester.tap(find.text('Nghe mẫu'));
+      await tester.pump();
+      expect(rec.stopRequests, 1);
+      expect(app.audio.log.where((s) => s == 'play'), isEmpty);
+      if (interruption == 'line change') {
+        await tester.tap(find.byTooltip('Câu sau'));
+        await tester.pump();
+      } else {
+        await tester.pumpWidget(const SizedBox());
+      }
+      old.result(const SpeechHeard(['all is calm'], isFinal: true));
+      old.done();
+      await tester.pump(const Duration(seconds: 5));
+      expect(rec.cancelRequests, 1);
+      expect(app.audio.log.where((s) => s == 'play'), isEmpty);
+      expect(tester.takeException(), isNull);
+      await closeStore(tester, app);
+    });
+  }
+
+  testWidgets('abandoning an old stop cannot time out a new stop', (tester) async {
+    final firstStop = Completer<void>();
+    final secondStop = Completer<void>();
+    final rec = ControlledSpeechRecognizer()..stopResponse = firstStop.future;
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    addTearDown(() {
+      if (!firstStop.isCompleted) firstStop.complete();
+      if (!secondStop.isCompleted) secondStop.complete();
+    });
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump(const Duration(seconds: 2));
+    final old = rec.sessions.single;
+    await tester.tap(find.byTooltip('Câu sau'));
+    await tester.pump();
+    rec.stopResponse = secondStop.future;
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump(const Duration(seconds: 3));
+    firstStop.completeError(StateError('old stop error'));
+    old.done();
+    await tester.pump();
+    expect(find.text('Đang dừng nhận dạng…'), findsOneWidget);
+    expect(find.text('Chưa nhận được kết quả cuối'), findsNothing);
+    expect(rec.cancelRequests, 1);
+    rec.sessions.last.result(const SpeechHeard(['new line'], isFinal: true));
+    secondStop.complete();
+    await settleIo(tester);
+    expect(events.where((e) => e.type == LearningEventType.pronunciationScored).single.data['lineIndex'], 3);
+    expect(tester.takeException(), isNull);
+    await closeStore(tester, app);
+  });
+
+  testWidgets('recognition error after stop returns abandons sample playback', (tester) async {
+    final rec = ControlledSpeechRecognizer();
+    final container = await pump(tester, rec);
+    final events = <LearningEvent>[];
+    final sub = container.read(eventBusProvider).stream.listen(events.add);
+    addTearDown(sub.cancel);
+    await tester.tap(find.byKey(const Key('mic-button')));
+    await tester.pump();
+    app.audio.log.clear();
+    await tester.tap(find.text('Nghe mẫu'));
+    await tester.pump();
+    rec.sessions.single.error(SpeechFailure.other);
+    await tester.pump();
+    expect(find.text('Nhận dạng giọng nói gặp lỗi'), findsOneWidget);
+    expect(events, isEmpty);
+    expect(app.audio.log.where((s) => s == 'play'), isEmpty);
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.text('Nhận dạng giọng nói gặp lỗi'), findsOneWidget);
+    expect(rec.cancelRequests, 0);
+    expect(tester.takeException(), isNull);
+    await closeStore(tester, app);
+  });
 
   testWidgets('cleanup failure while leaving preparation is contained', (tester) async {
     final permission = Completer<MicPermission>();
