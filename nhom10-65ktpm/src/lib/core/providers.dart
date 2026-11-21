@@ -22,6 +22,7 @@ import 'events/app_event_bus.dart';
 import 'services/audio_engine.dart';
 import 'services/device_services.dart';
 import 'storage/local_store.dart';
+import 'sync/account_sync.dart';
 import 'sync/sync_service.dart';
 
 // ---------------------------------------------------------------------------
@@ -214,24 +215,24 @@ final dueWordsProvider = StreamProvider<List<SavedWord>>((ref) {
 
 final progressServiceProvider = Provider<ProgressService>((ref) {
   final user = ref.watch(currentUserProvider);
-  final social = ref.watch(socialRepositoryProvider);
   final service = ProgressService(
     store: ref.watch(localStoreProvider),
     sync: ref.watch(syncServiceProvider),
     uid: ref.watch(uidProvider),
+    // Published only once this account's cloud data was downloaded in this
+    // session, so a fresh install does not overwrite its XP with zero.
     onPublicProfileChanged: user == null || user.isGuest
         ? null
-        : (snap) => social.upsertProfile(PublicProfile(
-              uid: user.uid,
-              displayName: user.displayName,
-              userCode: user.userCode,
-              email: user.email,
-              xp: snap.totalXp,
-              weekXp: snap.weekXp,
-              weekKey: weekKeyOf(DateTime.now()),
-              level: snap.level.level,
-              streak: snap.streak,
-            )),
+        : (snap) async {
+            try {
+              if (ref.read(accountSyncProvider).isReconciled(user.uid)) {
+                _publishProfile(ref, user, snap);
+              }
+            } catch (e) {
+              // Provider rebuilt for another session meanwhile.
+              debugPrint('Profile update skipped: $e');
+            }
+          },
   );
   final sub = ref.watch(eventBusProvider).stream.listen(service.record);
   ref.onDispose(() {
@@ -245,6 +246,63 @@ final progressSnapshotProvider = StreamProvider<ProgressSnapshot>((ref) {
   final service = ref.watch(progressServiceProvider);
   return liveQuery(service.watch(), service.snapshot);
 });
+
+/// Shared sync routine of every trigger (issue #20): send, then download
+/// the signed-in account's data, then publish its public profile.
+final Provider<AccountSync> accountSyncProvider = Provider<AccountSync>((ref) {
+  String? signedIn() {
+    final user = ref.read(authRepositoryProvider).current;
+    return user == null || user.isGuest ? null : user.uid;
+  }
+
+  return AccountSync(
+    sync: ref.watch(syncServiceProvider),
+    account: signedIn,
+    pull: (uid) async {
+      // Repositories follow the session through providers, which may lag
+      // the auth repository for a moment: never pull into another account.
+      final words = ref.read(vocabularyRepositoryProvider);
+      final songs = ref.read(songProgressRepositoryProvider);
+      final progress = ref.read(progressServiceProvider);
+      if (words.uid != uid || songs.uid != uid || progress.uid != uid) {
+        throw StateError('Phiên đăng nhập vừa thay đổi');
+      }
+      await words.pull();
+      await songs.pull();
+      await progress.pull();
+      await ref.read(songRepositoryProvider).pullRemote();
+    },
+    publishProfile: (uid) {
+      final user = ref.read(authRepositoryProvider).current;
+      final progress = ref.read(progressServiceProvider);
+      if (user == null || user.uid != uid || progress.uid != uid) return;
+      unawaited(progress
+          .snapshot()
+          .then((snap) => _publishProfile(ref, user, snap))
+          .catchError((Object e) => debugPrint('Profile update deferred: $e')));
+    },
+  );
+});
+
+/// Writes the public profile without waiting for the server: Firestore keeps
+/// the write while offline and never completes it until online, so awaiting
+/// it would hold up XP recording or sign-in.
+void _publishProfile(Ref ref, AppUser user, ProgressSnapshot snap) {
+  unawaited(ref
+      .read(socialRepositoryProvider)
+      .upsertProfile(PublicProfile(
+        uid: user.uid,
+        displayName: user.displayName,
+        userCode: user.userCode,
+        email: user.email,
+        xp: snap.totalXp,
+        weekXp: snap.weekXp,
+        weekKey: weekKeyOf(DateTime.now()),
+        level: snap.level.level,
+        streak: snap.streak,
+      ))
+      .catchError((Object e) => debugPrint('Profile update deferred: $e')));
+}
 
 // ---------------------------------------------------------------------------
 // Social (M4 / M3 challenge)
