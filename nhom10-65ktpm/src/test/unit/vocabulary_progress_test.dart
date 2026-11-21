@@ -29,6 +29,7 @@ void main() {
   late AppEventBus bus;
   late VocabularyRepository vocab;
   late ProgressService progress;
+  late List<Future<int?>> recording;
   var now = DateTime(2026, 11, 16, 10);
 
   setUp(() async {
@@ -41,12 +42,18 @@ void main() {
         store: store, sync: sync, bus: bus, uid: 'u1', clock: () => now);
     progress =
         ProgressService(store: store, sync: sync, uid: 'u1', clock: () => now);
-    bus.stream.listen(progress.record);
+    // Keep every record() Future so settle() waits for the XP writes
+    // themselves instead of sleeping a fixed time (flaky under load).
+    recording = [];
+    bus.stream.listen((e) => recording.add(progress.record(e)));
   });
   tearDown(() => closeTestStore(store));
 
-  Future<void> settle() =>
-      Future<void>.delayed(const Duration(milliseconds: 80));
+  Future<void> settle() async {
+    // Broadcast events are delivered asynchronously: let them arrive.
+    await Future<void>.delayed(Duration.zero);
+    await Future.wait(recording);
+  }
 
   test('save -> duplicate handling -> XP once per lemma', () async {
     Future<SaveWordOutcome> save(int line) => vocab.save(
