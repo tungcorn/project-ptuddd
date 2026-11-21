@@ -210,14 +210,29 @@ class SyncService {
     return pushed;
   }
 
-  /// Keeps listening to a write [flush] stopped waiting for: once it is
-  /// acknowledged the op is dequeued; if it fails, a later flush retries it.
+  /// Keeps listening to a write [flush] stopped waiting for. Once it is
+  /// acknowledged the op is dequeued and the rest of the queue resumes
+  /// through [flush] (merged with a running pass, for the account signed in
+  /// at that moment: nothing when signed out). If it fails, the op stays for
+  /// the next trigger; no retry is started here, so a failing remote cannot
+  /// loop.
   void _awaitLate(String key, Future<void> write) {
     _unanswered.add(key);
     write
-        .then<void>((_) => _store.delete(pendingBox, key))
-        .catchError((Object _) {})
-        .whenComplete(() => _unanswered.remove(key));
+        .then<void>(
+          (_) async {
+            try {
+              await _store.delete(pendingBox, key);
+            } finally {
+              _unanswered.remove(key);
+            }
+            await flush();
+          },
+          onError: (Object _) => _unanswered.remove(key),
+        )
+        // A failure here (e.g. storage closed) leaves the op queued for the
+        // next trigger; it is a background continuation with no caller.
+        .ignore();
   }
 
   /// Pulls [collectionPath] into [localBox] using last-write-wins.

@@ -206,14 +206,101 @@ void main() {
           cloud.attempts.where((p) => p == 'users/a/words/star').length;
       expect(starAttempts(), 1, reason: 'not re-sent');
 
-      // Acknowledged late: it leaves the queue without another write.
+      // Acknowledged late: it leaves the queue without being re-sent and the
+      // rest of A's queue follows on its own.
       answer.complete();
-      await Future<void>.delayed(const Duration(milliseconds: 20));
-      expect(await sync.pendingCount(), 2);
-      expect(await sync.flush(), 2);
+      for (var i = 0; i < 100 && await sync.pendingCount() > 0; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
       expect(starAttempts(), 2, reason: 'first and second star write once');
       expect(cloud.docs['users/a/words/star']!['v'], 2);
       expect(await sync.pendingCount(), 0);
+    });
+
+    /// Waits until [done] holds, failing after about a second.
+    Future<void> eventually(
+      Future<bool> Function() done,
+      String reason,
+    ) async {
+      for (var i = 0; i < 100; i++) {
+        if (await done()) return;
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      fail(reason);
+    }
+
+    test('a late acknowledgement resumes the rest of the queue without '
+        'another trigger', () async {
+      await queueA();
+      cloud.signedIn = 'a';
+      final answer = Completer<void>();
+      var held = true;
+      cloud.gate = (path) => held && path == 'users/a/words/star'
+          ? answer.future
+          : Future<void>.value();
+
+      expect(await sync.flush(), 0, reason: 'first write timed out');
+      // Reconnect: this flush stops at the unanswered write.
+      expect(await sync.flush(), 0);
+      held = false;
+
+      // The old request is acknowledged; no third flush is called.
+      answer.complete();
+      await eventually(
+        () async => await sync.pendingCount() == 0,
+        'remaining ops should sync without a third external trigger',
+      );
+      expect(cloud.docs['users/a/words/star']!['v'], 2, reason: 'in order');
+      expect(cloud.docs.keys, contains('users/a/xpEvents/word:star'));
+      expect(
+        cloud.attempts.where((p) => p == 'users/a/words/star').length,
+        2,
+        reason: 'each queued write sent once',
+      );
+    });
+
+    test('a late acknowledgement after sign-out sends nothing more', () async {
+      await queueA();
+      cloud.signedIn = 'a';
+      final answer = Completer<void>();
+      cloud.gate = (path) =>
+          path == 'users/a/words/star' ? answer.future : Future<void>.value();
+      expect(await sync.flush(), 0);
+
+      // A signs out while the first write is still unanswered.
+      session = null;
+      answer.complete();
+      await eventually(
+        () async {
+          session = 'a';
+          final left = await sync.pendingCount();
+          session = null;
+          return left == 2;
+        },
+        'the acknowledged write should leave the queue',
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(cloud.attempts, ['users/a/words/star'], reason: 'signed out');
+
+      session = 'a';
+      expect(await sync.flush(), 2, reason: 'A gets the rest on return');
+    });
+
+    test('a late failure does not start a retry loop', () async {
+      await queueA();
+      cloud.signedIn = 'a';
+      final answer = Completer<void>();
+      cloud.gate = (path) =>
+          path == 'users/a/words/star' ? answer.future : Future<void>.value();
+      expect(await sync.flush(), 0);
+
+      answer.completeError(StateError('unavailable'));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(cloud.attempts, ['users/a/words/star'], reason: 'no auto retry');
+      expect(await sync.pendingCount(), 3, reason: 'nothing dropped');
+
+      cloud.gate = null;
+      expect(await sync.flush(), 3, reason: 'the next trigger retries');
     });
 
     test(
