@@ -28,20 +28,28 @@
 - Không dùng `git add .` ở gốc kho. Chỉ stage đường dẫn cụ thể bên trong `nhom10-65ktpm/`, xem lại staged diff và chạy `git diff --cached --check` trước commit.
 - Không gộp thay đổi không liên quan hoặc công việc chưa thống nhất của người khác vào commit.
 - PR nội bộ: repository `tungcorn/project-ptuddd`, base `nhom10-65ktpm`, head là nhánh tính năng. Điền mẫu nội bộ, ghi kết quả kiểm thử thực tế; mẫu không tự điền trên GitHub.
+- Khi tạo PR:
+  - Gán assignee là người thực hiện/chịu trách nhiệm theo phân công; không mặc định gán cho nhóm trưởng hoặc người đang chạy CLI.
+  - Request reviewer bằng chức năng GitHub, không chỉ ghi tên trong mô tả. Cặp hiện tại: `tungcorn` ↔ `DaoNgocDinh`, `HaiNinh1` ↔ `phamngocbach05-debug`; đối chiếu phân công mới nhất, không tự request chính tác giả PR.
+  - Gắn label phù hợp từ các label đã có trong repository; không tự tạo label mới hoặc gắn nhãn không liên quan cho đủ thủ tục.
+  - Liên kết issue liên quan. PR chỉ giải quyết một phần dùng `Liên quan #...`, không dùng `Closes/Fixes/Resolves` để tự đóng issue lớn chưa hoàn tất.
+  - Kiểm tra/cập nhật item công việc trên Project theo mục bên dưới; tạo PR không có nghĩa đã cập nhật Board.
+- Khi bình luận nhờ review/re-review hoặc phối hợp, tag đúng GitHub login của người cần phản hồi. Không tag cả nhóm, tag người không liên quan hoặc gửi nhiều lời nhắc trùng nhau khi chưa có tiến triển mới.
 - Mọi PR nhiệm vụ phát triển cần ít nhất một người khác duyệt và giải quyết các trao đổi review trước merge, áp dụng cả nhóm trưởng/admin. Không tự duyệt, không tạo review/bình luận dưới danh tính thành viên khác. Commit mới làm mất hiệu lực lượt duyệt cũ.
+- Khi kết luận đồng ý duyệt, reviewer phải gửi `Review changes → Approve` trên GitHub. Viết “approve/đồng ý merge” trong review loại `Comment` không tạo approval; kiểm tra trạng thái review thực tế trước khi báo PR đã được duyệt.
 - PR nộp bài cho giảng viên là quy trình riêng, không tự mở khi được yêu cầu tạo PR nội bộ. Đóng PR không có nghĩa đã merge.
-- Sau push/merge, kiểm tra trạng thái local và remote rồi báo đúng nhánh, commit và kết quả. Không tự mở PR chỉ vì GitHub in ra liên kết gợi ý sau push.
+- Sau tạo PR/push/merge, kiểm tra trạng thái local và remote rồi báo đúng nhánh, commit và kết quả. Với PR, xác minh cả base/head, assignee, reviewer đã request, label, issue liên quan và trạng thái công việc trên Project; báo rõ mục nào chưa thực hiện được. Không tự mở PR chỉ vì GitHub in ra liên kết gợi ý sau push.
 
 ## Cập nhật tiến độ GitHub Project
 
 - Bảng tiến độ chung: https://github.com/users/tungcorn/projects/2. Khi thực hiện công việc được giao, AI phải kiểm tra issue/PR liên quan và cập nhật tiến độ trên bảng theo kết quả thực tế; không chỉ sửa code rồi bỏ quên bảng. Chỉ cập nhật item thuộc công việc đang xử lý, không tự thay đổi tiến độ hoặc người phụ trách của thành viên khác.
-- Các mốc cần cập nhật: bắt đầu triển khai, có PR sẵn sàng review, có yêu cầu sửa làm công việc quay lại triển khai, và hoàn tất tích hợp/nghiệm thu. Không cập nhật sau từng lệnh hoặc tạo comment lặp lại khi không có tiến triển.
+- Các mốc cần cập nhật: bắt đầu triển khai, mở PR/Draft hoặc chuyển Ready, có yêu cầu sửa làm công việc quay lại triển khai, và hoàn tất tích hợp/nghiệm thu. Sau mỗi mốc, kiểm tra issue và item trên Board rồi cập nhật nếu tiến độ thực tế đã thay đổi; không chỉ cập nhật mô tả PR. Không cập nhật sau từng lệnh hoặc tạo comment lặp lại khi không có tiến triển.
 - Dùng đúng các trạng thái hiện có; không tự tạo/đổi field hoặc workflow của Project:
   - `Todo`: chưa bắt đầu.
   - `In progress`: đã bắt đầu; còn triển khai, kiểm thử, xử lý góp ý hoặc phụ thuộc chưa giải quyết. Draft PR chưa phải sẵn sàng review.
   - `In review`: phạm vi công việc của item đã sẵn sàng review và có PR tương ứng. Nếu PR chỉ giải quyết một phần của issue lớn còn việc khác, giữ issue ở `In progress` và ghi rõ PR/phần việc đang chờ review.
   - `Done`: toàn bộ tiêu chí của item đã có bằng chứng nghiệm thu và các PR cần thiết đã merge. PR được mở, được approve, bị đóng không merge, hoặc chỉ một PR thành phần được merge không đủ để đánh dấu toàn bộ issue là Done.
-- Khi có tiến triển đáng kể, cập nhật issue với phần đã làm, PR liên quan, kết quả kiểm thử và phần còn lại/blocker. Kiểm tra item đã có trên Project trước khi thêm issue liên quan đang thiếu; không tạo item trùng. Xác minh lại trạng thái sau khi cập nhật.
+- Khi có tiến triển đáng kể, cập nhật issue với phần đã làm, PR liên quan, kết quả kiểm thử và phần còn lại/blocker. Kiểm tra item đã có trên Project trước khi thêm issue liên quan đang thiếu; ưu tiên dùng item issue hiện có, không thêm item PR trùng công việc chỉ để có trên Board. Không tạo issue/item giả cho đủ thủ tục. Xác minh lại trạng thái sau khi cập nhật; nếu trạng thái hiện tại đã đúng thì giữ nguyên, không đổi qua lại chỉ để tạo hoạt động.
 - Nếu tài khoản/CLI thiếu quyền truy cập hoặc ghi Project, báo rõ cập nhật nào chưa thực hiện được; không tự nâng quyền, đổi tài khoản, công khai bảng hoặc báo đã cập nhật khi chưa thành công.
 - Việc cập nhật tiến độ trong phạm vi được giao không thay thế quyền commit, push, tạo/merge PR, publish hoặc deploy; các thao tác đó vẫn theo quy định và yêu cầu cho phép ở trên. Nếu người dùng yêu cầu chỉ đọc/đánh giá thì không ghi lên issue/Project.
 
