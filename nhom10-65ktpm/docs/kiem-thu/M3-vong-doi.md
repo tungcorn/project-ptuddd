@@ -1,15 +1,50 @@
 # M3 — vòng đời, cài đặt micro và ledger
 
-Ngày cập nhật: 20/11/2026. Owner: DaoNgocDinh. Liên quan #4; phối hợp ledger tại #5.
+Ngày cập nhật: 21/11/2026. Owner: DaoNgocDinh. Liên quan #4; phối hợp ledger tại #5.
+
+## Review độc lập và cập nhật ngày 21/11/2026
+
+Nguồn: [bình luận của tungcorn trên PR #17](https://github.com/tungcorn/project-ptuddd/pull/17#issuecomment-7054327231),
+07:39 giờ Việt Nam ngày 21/11/2026. Đây là kết quả reviewer chạy độc lập,
+không phải lượt chạy của agent/owner.
+
+| Phiên bản reviewer kiểm tra | Kết quả reviewer xác nhận |
+| --- | --- |
+| Head #17 `d4dba7da7e8b36315ece0181c63202ae5a759e2f` | Analyze 4 file No issues found, exit 0; bộ 7 file unit/widget 58/58 đạt, exit 0 |
+| Ghép #16 `1afa8d6` + #17 `d4dba7d`, tree `f4ec4415b9f00485f449cdfcbba70d076915110c` | Không xung đột; analyze 5 file sạch; cùng bộ 7 file 68/68 đạt, exit 0 |
+| Kiểm tra format hai file test mới trên SDK reviewer | Còn thay đổi cần format; lệnh check trả exit 1 ở bản d4dba7d |
+
+Sau review chỉ chỉnh bố cục hai file test được nêu và tài liệu. Mã production,
+test case, assertion, chuỗi dữ liệu và hành vi giữ nguyên. Đã đối chiếu token
+trước/sau, bỏ qua whitespace và dấu phẩy cuối tùy chọn: không có thay đổi token
+còn lại. Đây là kiểm tra phạm vi chỉnh sửa, không thay thế Dart analyzer/test.
+
+Môi trường agent ngày 21/11 vẫn không chạy được SDK formatter: gọi trực tiếp
+Dart AOT runtime dừng trước format với `Failed to canonicalize path ... (5)`;
+launcher trước đó lỗi `resolved_executable_name`. Bố cục được chỉnh trực tiếp;
+**chưa xác nhận `dart format --output=none --set-exit-if-changed` trả exit 0**
+trên bản sau cập nhật. Nhờ reviewer kiểm tra lại đúng hai file trước khi approve.
+Không gọi 58/58 hoặc 68/68 là lượt chạy trên commit mới sau chỉnh bố cục.
+
+```powershell
+dart format --output=none --set-exit-if-changed test/widget/practice_pronunciation_lifecycle_test.dart test/unit/pronunciation_ledger_test.dart
+```
+
+PR #16 đã approve/merge vào nhánh nhóm tại
+`0cdeaf304ffba386f2d9d80ef664bc47f4be6fda`. M1 đã nhận phần player và mở
+[PR #18](https://github.com/tungcorn/project-ptuddd/pull/18); M3 tiếp tục review
+và bổ sung ca UI đổi câu/thoát trong lúc seek chờ theo phối hợp trên #4.
+Kết quả trên vẫn là local/unit/widget, chưa chứng minh Android micro, cloud
+hoặc crash recovery. Issue #4 tiếp tục In progress.
 
 ## Phạm vi và nền lịch sử
 
 Nhánh `feature/nhom10-65ktpm/vong-doi-phat-am` được tạo trực tiếp từ
 `f21d04d861e0cecc1bd8d2273527dec63e5c8865` của `nhom10-65ktpm`.
 Không lấy lịch sử nhánh cũ hoặc commit sửa `.gitignore` gốc vào nhánh này.
-PR #16 xử lý final/done sau Dừng riêng; cần review/merge và chạy kiểm tra tích hợp
-hai phần trước khi nghiệm thu M3. Không dùng kết quả 54/54 trên bản cũ của #16
-hay 71/71 của nền trước đây làm kết quả của patch này.
+PR #16 xử lý final/done sau Dừng riêng và đã merge; kết quả ghép với phần này
+được ghi đúng tree ở trên. Không dùng kết quả 54/54 trên bản cũ của #16 hay
+71/71 của nền trước đây làm kết quả của patch này.
 
 Lỗi có thể thấy từ code nền: màn không quan sát vòng đời ứng dụng nên lượt xin
 quyền/khởi tạo đang chờ vẫn có thể tiếp tục khi app đã xuống nền; callback đang
@@ -32,8 +67,8 @@ giá trị `false` của `openAppSettings()` nên người dùng không biết m
 ## Ca hồi quy mới và kết quả thật
 
 `practice_pronunciation_lifecycle_test.dart` có 11 ca widget/adapter;
-`pronunciation_ledger_test.dart` có 3 ca unit. Đây là số ca đã viết, **chưa có
-kết quả chạy thành công** trong môi trường agent.
+`pronunciation_ledger_test.dart` có 3 ca unit. Agent chưa tự chạy thành công;
+reviewer đã xác nhận bộ liên quan ở đúng SHA/tree trong bảng đầu tài liệu.
 
 | Nhóm ca | Điều kiện cần kiểm chứng |
 | --- | --- |
@@ -49,7 +84,8 @@ kết quả chạy thành công** trong môi trường agent.
 | 69 điểm rồi 70 điểm | Lượt thấp có `:try:` riêng/+0 XP, chưa chiếm phần thưởng daily; đạt được +5 một lần |
 | Đóng/mở Hive khi offline | Ledger và queue còn nguyên, retry không thêm XP/queue; online fake flush đúng một lần |
 
-Đã kiểm tra `git diff --check` và rà soát phạm vi. Flutter launcher không trả
+Lịch sử triển khai ngày 20/11: đã kiểm tra `git diff --check` và rà soát phạm vi.
+Flutter launcher không trả
 kết quả phân tích; gọi Dart/flutter_tools trực tiếp vẫn lỗi trước khi nạp test:
 
 ```text
@@ -57,8 +93,9 @@ Empty value for option resolved_executable_name
 Setting VM flags failed: Unrecognized flags: resolved_executable_name
 ```
 
-Vì vậy analyze, unit/widget và định dạng Dart chưa được xác nhận bằng công cụ.
-Giữ Draft để reviewer có thể góp ý/chạy trên đúng head; không đánh dấu test đạt.
+Tại thời điểm triển khai, analyze/unit/widget/format chưa được agent xác nhận,
+nên đã mở Draft. Kết quả reviewer ngày 21/11 và bước chỉnh sau review được ghi
+riêng ở đầu tài liệu; không thay lịch sử này thành lượt agent tự chạy đạt.
 
 Chạy lại tại `nhom10-65ktpm/src` và ghi `git rev-parse HEAD` cùng kết quả:
 
@@ -67,9 +104,9 @@ flutter analyze --no-pub lib/features/practice/presentation/pronunciation_screen
 flutter test --no-pub test/unit/pronunciation_test.dart test/unit/exercises_test.dart test/widget/practice_pronunciation_test.dart test/widget/practice_fill_blank_test.dart test/widget/practice_ordering_quiz_test.dart test/widget/practice_pronunciation_lifecycle_test.dart test/unit/pronunciation_ledger_test.dart --reporter expanded
 ```
 
-Sau khi tích hợp #16 và phần này, thêm `practice_pronunciation_test.dart` vào
-analyze và chạy lại cùng bộ test trên chính cây tích hợp. Kiểm tra format các
-file đã sửa bằng SDK của dự án trước khi chuyển Ready.
+Khi kiểm tra cây tích hợp, thêm `practice_pronunciation_test.dart` vào analyze.
+Reviewer đã chạy cây `f4ec4415...` trước chỉnh bố cục; khi có thêm thay đổi logic
+hoặc tích hợp #18 cần kiểm tra lại trên chính cây mới, không dùng số cũ thay thế.
 
 ## Giới hạn còn lại và phối hợp
 
@@ -79,9 +116,9 @@ file đã sửa bằng SDK của dự án trước khi chuyển Ready.
   kiểm chứng/điều tra tiếp; patch này không thay đổi cơ chế native đó.
 - Khi ghép #16, lượt Dừng cũ bị vô hiệu theo phiên nhưng waiter có thể còn tới
   timeout 5 giây hoặc lượt mới/dispose. Không mô tả đây là hủy ngay Future stop.
-- Player đang chờ seek vẫn cần M1 chốt token/cancel continuation trước khi sửa
-  `player_controller.dart`; M3 chịu trách nhiệm ca đổi câu/thoát khi seek chờ.
-  Đề xuất và người phối hợp đã nêu trên #4, chưa có thống nhất sửa file chung.
+- M1 đã nhận token/cancel continuation player tại #18; M3 không tự sửa chồng
+  controller/API chung. Ca UI đổi câu/thoát khi seek chờ và review #18 vẫn là
+  phần việc M3 theo phối hợp trên #4, chưa được tính đã nghiệm thu trong #17.
 - Ledger test dùng Hive thật và `FakeRemote`, không gọi cloud/email. Việc mở
   lại store trong cùng test chưa chứng minh crash recovery/atomicity, logout
   đa tài khoản, Firestore rules hoặc đồng bộ thiết bị thật.

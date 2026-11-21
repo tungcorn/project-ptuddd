@@ -78,10 +78,12 @@ void main() {
   ) async {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     final app = await TestApp.create();
-    final container = ProviderContainer(overrides: [
-      ...app.overrides,
-      speechRecognizerProvider.overrideWithValue(recognizer),
-    ]);
+    final container = ProviderContainer(
+      overrides: [
+        ...app.overrides,
+        speechRecognizerProvider.overrideWithValue(recognizer),
+      ],
+    );
     addTearDown(() async {
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       // Unmount before disposing providers: State.dispose still cancels speech.
@@ -95,17 +97,19 @@ void main() {
       await container.read(songProgressRepositoryProvider).all();
       await container.read(vocabularyRepositoryProvider).words();
     });
-    await tester.pumpWidget(UncontrolledProviderScope(
-      container: container,
-      child: MaterialApp(
-        theme: AppTheme.light,
-        scaffoldMessengerKey: scaffoldMessengerKey,
-        home: const PronunciationScreen(
-          songId: 'silent-night',
-          initialLine: 2,
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.light,
+          scaffoldMessengerKey: scaffoldMessengerKey,
+          home: const PronunciationScreen(
+            songId: 'silent-night',
+            initialLine: 2,
+          ),
         ),
       ),
-    ));
+    );
     await settleIo(tester);
     return container;
   }
@@ -115,8 +119,10 @@ void main() {
     await settleIo(tester);
   }
 
-  Future<void> background(WidgetTester tester,
-      {AppLifecycleState state = AppLifecycleState.paused}) async {
+  Future<void> background(
+    WidgetTester tester, {
+    AppLifecycleState state = AppLifecycleState.paused,
+  }) async {
     tester.binding.handleAppLifecycleStateChanged(state);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pump();
@@ -143,160 +149,176 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('inactive permission dialog can still start recognition',
-      (tester) async {
-    final permission = Completer<MicPermission>();
-    final rec = _Recognizer()..permissionResponse = permission.future;
-    await pump(tester, rec);
-    await tapMic(tester);
+  testWidgets(
+    'inactive permission dialog can still start recognition',
+    (tester) async {
+      final permission = Completer<MicPermission>();
+      final rec = _Recognizer()..permissionResponse = permission.future;
+      await pump(tester, rec);
+      await tapMic(tester);
 
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    permission.complete(MicPermission.granted);
-    await settleIo(tester);
-    expect(rec.cancelRequests, 0);
-    expect(rec.initializeRequests, 1);
-    expect(rec.sessions, hasLength(1));
-  });
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      permission.complete(MicPermission.granted);
+      await settleIo(tester);
+      expect(rec.cancelRequests, 0);
+      expect(rec.initializeRequests, 1);
+      expect(rec.sessions, hasLength(1));
+    },
+  );
 
-  testWidgets('detaching during initialization discards its late response',
-      (tester) async {
-    final initialized = Completer<bool>();
-    final rec = _Recognizer()..initializeResponse = initialized.future;
-    await pump(tester, rec);
-    await tapMic(tester);
-    expect(rec.initializeRequests, 1);
+  testWidgets(
+    'detaching during initialization discards its late response',
+    (tester) async {
+      final initialized = Completer<bool>();
+      final rec = _Recognizer()..initializeResponse = initialized.future;
+      await pump(tester, rec);
+      await tapMic(tester);
+      expect(rec.initializeRequests, 1);
 
-    await background(tester, state: AppLifecycleState.detached);
-    initialized.complete(true);
-    await settleIo(tester);
-    expect(rec.cancelRequests, 1);
-    expect(rec.sessions, isEmpty);
-    expect(find.byType(CircularProgressIndicator), findsNothing);
+      await background(tester, state: AppLifecycleState.detached);
+      initialized.complete(true);
+      await settleIo(tester);
+      expect(rec.cancelRequests, 1);
+      expect(rec.sessions, isEmpty);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
 
-    rec.initializeResponse = null;
-    await tapMic(tester);
-    expect(rec.initializeRequests, 2);
-    expect(rec.sessions, hasLength(1));
-    expect(tester.takeException(), isNull);
-  });
+      rec.initializeResponse = null;
+      await tapMic(tester);
+      expect(rec.initializeRequests, 2);
+      expect(rec.sessions, hasLength(1));
+      expect(tester.takeException(), isNull);
+    },
+  );
 
-  testWidgets('background drops old callbacks and a new attempt scores once',
-      (tester) async {
-    final rec = _Recognizer();
-    final container = await pump(tester, rec);
-    final events = <LearningEvent>[];
-    final sub = container.read(eventBusProvider).stream.listen(events.add);
-    addTearDown(sub.cancel);
-    await tapMic(tester);
-    final old = rec.sessions.single;
-    old.result(const SpeechHeard(['all is'], isFinal: false));
-    await tester.pump();
+  testWidgets(
+    'background drops old callbacks and a new attempt scores once',
+    (tester) async {
+      final rec = _Recognizer();
+      final container = await pump(tester, rec);
+      final events = <LearningEvent>[];
+      final sub = container.read(eventBusProvider).stream.listen(events.add);
+      addTearDown(sub.cancel);
+      await tapMic(tester);
+      final old = rec.sessions.single;
+      old.result(const SpeechHeard(['all is'], isFinal: false));
+      await tester.pump();
 
-    await background(tester);
-    old.result(const SpeechHeard(['all is calm'], isFinal: true));
-    old.error(SpeechFailure.other);
-    old.done();
-    await settleIo(tester);
-    expect(rec.cancelRequests, 1);
-    expect(find.byKey(const Key('pron-result')), findsNothing);
-    expect(events, isEmpty);
+      await background(tester);
+      old.result(const SpeechHeard(['all is calm'], isFinal: true));
+      old.error(SpeechFailure.other);
+      old.done();
+      await settleIo(tester);
+      expect(rec.cancelRequests, 1);
+      expect(find.byKey(const Key('pron-result')), findsNothing);
+      expect(events, isEmpty);
 
-    await tapMic(tester);
-    expect(rec.sessions, hasLength(2));
-    final fresh = rec.sessions.last;
-    fresh.result(const SpeechHeard(['all is calm'], isFinal: true));
-    fresh.done();
-    await settleIo(tester);
-    expect(find.text('100'), findsOneWidget);
-    expect(events.where((e) => e.type == LearningEventType.pronunciationScored),
-        hasLength(1));
-    expect(tester.takeException(), isNull);
-  });
+      await tapMic(tester);
+      expect(rec.sessions, hasLength(2));
+      final fresh = rec.sessions.last;
+      fresh.result(const SpeechHeard(['all is calm'], isFinal: true));
+      fresh.done();
+      await settleIo(tester);
+      expect(find.text('100'), findsOneWidget);
+      expect(
+        events.where((e) => e.type == LearningEventType.pronunciationScored),
+        hasLength(1),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 
-  testWidgets('background contains a late stop failure before retry',
-      (tester) async {
-    final stop = Completer<void>();
-    final rec = _Recognizer()..stopResponse = stop.future;
-    await pump(tester, rec);
-    await tapMic(tester);
-    await tapMic(tester);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  testWidgets(
+    'background contains a late stop failure before retry',
+    (tester) async {
+      final stop = Completer<void>();
+      final rec = _Recognizer()..stopResponse = stop.future;
+      await pump(tester, rec);
+      await tapMic(tester);
+      await tapMic(tester);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    await background(tester);
-    stop.completeError(StateError('old stop failed'));
-    await settleIo(tester);
-    expect(find.byKey(const Key('pron-result')), findsNothing);
-    expect(tester.takeException(), isNull);
-    rec.stopResponse = null;
-    await tapMic(tester);
-    expect(rec.sessions, hasLength(2));
-  });
+      await background(tester);
+      stop.completeError(StateError('old stop failed'));
+      await settleIo(tester);
+      expect(find.byKey(const Key('pron-result')), findsNothing);
+      expect(tester.takeException(), isNull);
+      rec.stopResponse = null;
+      await tapMic(tester);
+      expect(rec.sessions, hasLength(2));
+    },
+  );
 
-  testWidgets('background cleanup failure is contained and allows retry',
-      (tester) async {
-    final rec = _Recognizer()..cancelError = StateError('cancel failed');
-    await pump(tester, rec);
-    await tapMic(tester);
-    await background(tester);
-    await settleIo(tester);
+  testWidgets(
+    'background cleanup failure is contained and allows retry',
+    (tester) async {
+      final rec = _Recognizer()..cancelError = StateError('cancel failed');
+      await pump(tester, rec);
+      await tapMic(tester);
+      await background(tester);
+      await settleIo(tester);
 
-    expect(rec.cancelRequests, 1);
-    expect(tester.takeException(), isNull);
-    rec.cancelError = null;
-    await tapMic(tester);
-    expect(rec.sessions, hasLength(2));
-  });
+      expect(rec.cancelRequests, 1);
+      expect(tester.takeException(), isNull);
+      rec.cancelError = null;
+      await tapMic(tester);
+      expect(rec.sessions, hasLength(2));
+    },
+  );
 
-  testWidgets('settings failure explains manual recovery and permits retry',
-      (tester) async {
-    final rec = _Recognizer()
-      ..permission = MicPermission.permanentlyDenied
-      ..settingsError = StateError('cannot open settings');
-    await pump(tester, rec);
-    await tapMic(tester);
-    final settings = find.text('Mở cài đặt');
-    await tester.ensureVisible(settings);
-    await tester.tap(settings);
-    await settleIo(tester);
+  testWidgets(
+    'settings failure explains manual recovery and permits retry',
+    (tester) async {
+      final rec = _Recognizer()
+        ..permission = MicPermission.permanentlyDenied
+        ..settingsError = StateError('cannot open settings');
+      await pump(tester, rec);
+      await tapMic(tester);
+      final settings = find.text('Mở cài đặt');
+      await tester.ensureVisible(settings);
+      await tester.tap(settings);
+      await settleIo(tester);
 
-    expect(rec.settingsRequests, 1);
-    expect(find.textContaining('Không mở được cài đặt.'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-    rec.permission = MicPermission.granted;
-    final retry = find.text('Thử lại');
-    await tester.ensureVisible(retry);
-    await tester.tap(retry);
-    await settleIo(tester);
-    expect(rec.sessions, hasLength(1));
-  });
+      expect(rec.settingsRequests, 1);
+      expect(find.textContaining('Không mở được cài đặt.'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      rec.permission = MicPermission.granted;
+      final retry = find.text('Thử lại');
+      await tester.ensureVisible(retry);
+      await tester.tap(retry);
+      await settleIo(tester);
+      expect(rec.sessions, hasLength(1));
+    },
+  );
 
-  testWidgets('settings failure after leaving cannot show a late message',
-      (tester) async {
-    final settings = Completer<void>();
-    final rec = _Recognizer()
-      ..permission = MicPermission.permanentlyDenied
-      ..settingsResponse = settings.future;
-    await pump(tester, rec);
-    await tapMic(tester);
-    final button = find.text('Mở cài đặt');
-    await tester.ensureVisible(button);
-    await tester.tap(button);
-    await tester.pump();
-    await tester.pumpWidget(const SizedBox.shrink());
-    settings.completeError(StateError('settings failed after exit'));
-    await settleIo(tester);
-    expect(rec.settingsRequests, 1);
-    expect(find.byType(SnackBar), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'settings failure after leaving cannot show a late message',
+    (tester) async {
+      final settings = Completer<void>();
+      final rec = _Recognizer()
+        ..permission = MicPermission.permanentlyDenied
+        ..settingsResponse = settings.future;
+      await pump(tester, rec);
+      await tapMic(tester);
+      final button = find.text('Mở cài đặt');
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pump();
+      await tester.pumpWidget(const SizedBox.shrink());
+      settings.completeError(StateError('settings failed after exit'));
+      await settleIo(tester);
+      expect(rec.settingsRequests, 1);
+      expect(find.byType(SnackBar), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   group('device settings adapter', () {
     const channel = MethodChannel('flutter.baseflow.com/permissions/methods');
 
     void reply(Future<Object?> Function(MethodCall) handler) {
-      final messenger = TestDefaultBinaryMessengerBinding
-          .instance.defaultBinaryMessenger;
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
       messenger.setMockMethodCallHandler(channel, handler);
       addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
     }
@@ -306,14 +328,18 @@ void main() {
         expect(call.method, 'openAppSettings');
         return false;
       });
-      await expectLater(DeviceSpeechRecognizer().openSettings(),
-          throwsA(isA<StateError>()));
+      await expectLater(
+        DeviceSpeechRecognizer().openSettings(),
+        throwsA(isA<StateError>()),
+      );
     });
 
     testWidgets('platform exceptions reach the UI error handler', (_) async {
       reply((_) async => throw PlatformException(code: 'settings_unavailable'));
-      await expectLater(DeviceSpeechRecognizer().openSettings(),
-          throwsA(isA<PlatformException>()));
+      await expectLater(
+        DeviceSpeechRecognizer().openSettings(),
+        throwsA(isA<PlatformException>()),
+      );
     });
 
     testWidgets('true from the platform completes successfully', (_) async {
