@@ -43,8 +43,10 @@ void main() {
   late _DelayedSeekEngine audio;
   late ProviderContainer container;
   late PlayerController player;
+  late bool disposed;
 
   setUp(() async {
+    disposed = false;
     audio = _DelayedSeekEngine();
     container = ProviderContainer(
       overrides: [
@@ -57,12 +59,13 @@ void main() {
     await player.open(_song('first'));
   });
 
-  tearDown(() {
-    // Release all acknowledgements even if an assertion failed.
+  tearDown(() async {
+    // Drain released continuations before disposing their providers.
     for (final pending in audio.pendingSeeks) {
       if (!pending.isCompleted) pending.complete();
     }
-    container.dispose();
+    await pumpEventQueue();
+    if (!disposed) container.dispose();
   });
 
   PlayerState state() => container.read(playerControllerProvider);
@@ -74,6 +77,135 @@ void main() {
     await player.togglePlay();
     expect(state().playing, isFalse);
     expect(audio.log, ['play', 'pause']);
+  });
+
+  test('current segment waits for seek, then plays and ends once', () async {
+    audio.delaySeeks = true;
+    audio.log.clear();
+    var ended = 0;
+    final segment = player.playSegment(
+      const Duration(seconds: 15),
+      const Duration(seconds: 20),
+      onEnd: () => ended++,
+    );
+    await pumpEventQueue();
+    expect(audio.log, ['seek:15000']);
+    expect(state().playing, isFalse);
+
+    audio.pendingSeeks.single.complete();
+    await segment;
+    await pumpEventQueue();
+    expect(audio.log, ['seek:15000', 'play']);
+    expect(state().playing, isTrue);
+    expect(state().position, const Duration(seconds: 15));
+
+    audio.advance(const Duration(seconds: 6));
+    await pumpEventQueue();
+    expect(state().playing, isFalse);
+    expect(ended, 1);
+    audio.delaySeeks = false;
+    await audio.seek(const Duration(seconds: 22));
+    await pumpEventQueue();
+    expect(ended, 1);
+  });
+
+  test(
+    'cancel during segment seek cannot resume playback or call onEnd',
+    () async {
+      audio.delaySeeks = true;
+      audio.log.clear();
+      var ended = 0;
+      final segment = player.playLine(1, onEnd: () => ended++);
+      await pumpEventQueue();
+
+      player.cancelSegment();
+      await player.pause();
+      audio.pendingSeeks.single.complete();
+      await segment;
+      await pumpEventQueue();
+      expect(audio.log, isNot(contains('play')));
+      expect(state().playing, isFalse);
+
+      // Cancelling a segment must not leave its endpoint on normal playback.
+      await player.play();
+      audio.advance(const Duration(seconds: 25));
+      await pumpEventQueue();
+      expect(ended, 0);
+      expect(state().playing, isTrue);
+    },
+  );
+
+  test(
+    'a replaced segment cannot rewind, replay or run its old callback',
+    () async {
+      audio.delaySeeks = true;
+      audio.log.clear();
+      final ended = <String>[];
+      final first = player.playSegment(
+        const Duration(seconds: 15),
+        const Duration(seconds: 20),
+        onEnd: () => ended.add('first'),
+      );
+      await pumpEventQueue();
+      final second = player.playSegment(
+        const Duration(seconds: 35),
+        const Duration(seconds: 40),
+        onEnd: () => ended.add('second'),
+      );
+      await pumpEventQueue();
+
+      audio.pendingSeeks[1].complete();
+      await second;
+      audio.pendingSeeks[0].complete();
+      await first;
+      await pumpEventQueue();
+      expect(state().position, const Duration(seconds: 35));
+      expect(audio.log.where((entry) => entry == 'play'), hasLength(1));
+      expect(ended, isEmpty);
+
+      audio.advance(const Duration(seconds: 6));
+      await pumpEventQueue();
+      expect(state().playing, isFalse);
+      expect(ended, ['second']);
+    },
+  );
+
+  for (final next in [_song('second'), _song('first').copyWith(updatedAt: 1)]) {
+    test(
+      'segment seek cannot resume after loading ${next.id}/${next.updatedAt}',
+      () async {
+        audio.delaySeeks = true;
+        var ended = 0;
+        final segment = player.playLine(1, onEnd: () => ended++);
+        await pumpEventQueue();
+        await player.open(next);
+        audio.log.clear();
+
+        audio.pendingSeeks.single.complete();
+        await segment;
+        await pumpEventQueue();
+        expect(state().song!.id, next.id);
+        expect(state().song!.updatedAt, next.updatedAt);
+        expect(state().position, Duration.zero);
+        expect(state().playing, isFalse);
+        expect(audio.log, isNot(contains('play')));
+        expect(ended, 0);
+      },
+    );
+  }
+
+  test('disposing the player abandons a pending segment seek', () async {
+    audio.delaySeeks = true;
+    audio.log.clear();
+    final segment = player.playLine(1);
+    await pumpEventQueue();
+    container.dispose();
+    disposed = true;
+    final completion = expectLater(segment, completes);
+
+    audio.pendingSeeks.single.complete();
+    await completion;
+    expect(audio.log, isNot(contains('play')));
   });
 
   test('seek clamps to track bounds and updates the active lyric', () async {
