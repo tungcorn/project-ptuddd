@@ -19,6 +19,48 @@ không chứng minh phiên cũ đã bị hủy khi `paused`. Cần xác định 
 lifecycle và kết quả đó thuộc phiên trước Home hay lượt mới sau khi quay lại.
 Không đánh dấu C đạt và chưa quy kết là lỗi của bản đã merge.
 
+## Cập nhật lượt Home tiếp theo do Đình báo
+
+Sau khi được hướng dẫn dùng bản cập nhật, Đình báo lại:
+
+> Sau khi bấm Home app vẫn hoạt động, tự động chấm hoặc thông báo không thể
+> nhận thấy âm thanh; ca sau vẫn hoạt động bình thường, không bị treo.
+
+Đã ghi nhận thêm khả năng kết thúc nhận dạng/no-speech và phục hồi lượt sau
+trên giả lập. Chưa có SHA nguồn APK đã cài, giờ cài/build, log lifecycle hoặc
+mốc kết quả trước/sau Home. Không tự gắn quan sát mới với SHA d6a9f70 chỉ
+vì source đã được tải về máy.
+
+Diễn giải “tiếp tục nhận dạng đến thời gian ngắt cho phép” là suy luận của
+người dùng, chưa được xác nhận bằng log native. Adapter hiện yêu cầu
+`listenFor: 30s`, `pauseFor: 4s`; đây không thay thế quy tắc hủy phiên
+khi màn nhận `paused/detached`. Khi hủy, màn tăng session và bỏ kết quả
+phiên cũ; app/process còn sống không đồng nghĩa phiên nhận dạng cũ được
+phép tiếp tục ghi điểm.
+
+**Trạng thái C:** đã quan sát không treo/thử lại được; chưa đủ bằng chứng
+đạt tiêu chí hủy phiên khi paused. Nếu xác nhận đúng APK có #17, thực sự
+paused lúc còn Đang nghe và kết quả vẫn phát sinh từ phiên cũ sau đó,
+cần ghi ca không đạt và xử lý lỗi. Hiện chưa đủ dữ liệu để quy kết bug.
+
+Kiểm tra source local tại thời điểm nhận báo cáo: worktree d6a9f70 sạch,
+có handler lifecycle; chưa tìm thấy app-debug.apk, thư mục build,
+android/.gradle hoặc .dart_tool/flutter_build trong project mới. Đây là
+kiểm tra tại đường dẫn này, không chứng minh APK chưa từng được build ở
+nơi khác. Agent thử đọc ADB nhưng server không khởi động/kết nối được,
+nên không xác minh được APK đang cài, model/API hoặc Activity của emulator.
+Không coi lỗi ADB trong phiên agent là kết luận emulator của người dùng
+chưa mở.
+
+**Chỉ còn một kiểm chứng tập trung cho C:** chốt nguồn APK thực sự vừa cài
+và bằng chứng paused/phiên cũ. Chưa yêu cầu làm lại A/B hoặc test thêm các
+chức năng khác chỉ để tăng số ca. Có thể phối hợp Tùng lấy log thay vì
+lặp lại Home mà vẫn không có dữ liệu để phân biệt nguyên nhân.
+
+Nguồn quy tắc: [handler lifecycle tại source đã chuẩn bị](https://github.com/tungcorn/project-ptuddd/blob/d6a9f70cc6b9dce92a8c6e02cc840e1e8f8d2eaf/nhom10-65ktpm/src/lib/features/practice/presentation/pronunciation_screen.dart)
+và [Flutter AppLifecycleState](https://api.flutter.dev/flutter/dart-ui/AppLifecycleState.html):
+trên Android, Flutter paused ứng với Activity.onStop, khác inactive/onPause.
+
 ## Môi trường và nguồn APK
 
 | Mục | Thông tin đã có / còn thiếu |
@@ -87,32 +129,34 @@ Chủ động bắt đầu lượt mới sau quay lại có hoạt động khôn
 - Format SDK, analyze và chạy riêng file mới rồi bộ liên quan trên đúng head.
   Không chuyển kết quả probe hoặc kết quả cũ thành PASS cho bản sửa mới.
 - Rà soát kết quả C với nguồn APK/lifecycle trước khi sửa production.
-- Giữ #22/#4 In progress và PR Draft tới khi phần sửa được kiểm tra/review
-  phù hợp; chỉ đóng issue khi đủ toàn bộ bằng chứng và tích hợp.
+- Phần test/tài liệu đã được reviewer xác nhận trên d6a9f70, có thể chuyển
+  Ready riêng phạm vi này. Bổ sung báo cáo là thay đổi tài liệu; cần kiểm tra
+  lại approval của head sau push, không tự merge hoặc tự duyệt.
+- #22/#4 vẫn In progress vì ca native/source APK và tích hợp còn thiếu;
+  chỉ đóng issue khi đủ toàn bộ bằng chứng và các PR cần thiết đã merge.
 
 ## Bằng chứng tự động đã có và giới hạn bản sửa
 
-Review Tùng trên head nguyên bản `1ff9038...`:
-[review yêu cầu sửa](https://github.com/tungcorn/project-ptuddd/pull/26#pullrequestreview-6006945453)
-và [tổng hợp trên #22](https://github.com/tungcorn/project-ptuddd/issues/22#issuecomment-7066453960).
+Nguồn mới nhất: [Tùng APPROVED tại d6a9f70](https://github.com/tungcorn/project-ptuddd/pull/26#pullrequestreview-6012794057)
+và [cập nhật trên #22](https://github.com/tungcorn/project-ptuddd/issues/22#issuecomment-7080648304).
 
-- Analyzer file mới sạch; formatter báo file cần format.
-- File mới kẹt chờ Auth trước UI. Probe giữ Auth có listener và chờ Back
-  bằng pumpAndSettle đạt 4/4, sau đó đã hoàn nguyên. **4/4 không phải PASS
-  của head nguyên bản hay bản sửa ngày 22/11.**
-- Chín file liên quan hiện có đạt 85/85 trên head nguyên bản, không gồm
-  file mới bị kẹt; không phải full suite hoặc kiểm thử Android.
+| Source được reviewer kiểm tra | Kết quả thực tế |
+| --- | --- |
+| 0f54111 | Analyzer file mới sạch; riêng file mới 4/4, bộ 10 file M1/M3 89/89 đạt |
+| d6a9f70, tree dd342af9eb31a4ad6f4502aadf76f36b84a9df21 | 11 file chọn lọc gồm Auth session và M1/M3: **96/96 đạt**, exit 0; khoảng 44 giây |
+| Fixture Auth/Back | Hai blocker đã sửa, hai thread được reviewer resolve; không còn kẹt Auth hoặc fail Back trong lượt reviewer |
+| Formatter file mới | Vẫn có nit bố cục, exit 1; reviewer chấp nhận không chặn approval, xử lý khi SDK dùng được |
+| Android/cloud | Reviewer không chạy micro/Android/cloud/email; các kết quả trên không thay bằng chứng phần cứng/native |
 
-Lượt sửa ngày 22/11 đã thay hai điểm fixture theo review. SDK của agent
-hiện đọc được phiên bản Dart 3.13.7, nhưng formatter dừng trước khi format
-vì `type 'Null' is not a subtype of type 'String'` tại
-`_Platform.resolvedExecutable`. Hai lệnh analyze/test bản sửa được khởi động qua flutter_tools.snapshot,
-nhưng phiên truy cập máy bị ngắt trước khi nhận kết quả kết thúc. Chưa có
-PASS của lượt này; không nhận các số cũ là kết quả bản sửa. Báo cáo và patch
-được lưu qua GitHub. Sau khi máy kết nối lại, đã sao lưu file/index/refs và
-đồng bộ local đúng 0f54111, rồi đưa nền nhóm 174921d vào cùng nhánh M3 để
-chuẩn bị lượt Home tiếp theo. Vẫn cần SDK checks trước khi chốt; không
-nhận bản đã chuẩn bị để chạy là APK đã được thử C.
+Đây là kết quả reviewer trên đúng các SHA đã nêu, không phải agent tự chạy
+lại và không phải full suite. Bản bổ sung báo cáo sau d6a9f70 chỉ sửa ba
+tài liệu M3; Dart/test/helper/Android giữ nguyên. Không gọi 96/96 là một
+lượt chạy mới trên commit tài liệu.
+
+Lịch sử: head nguyên bản 1ff9038 kẹt chờ Auth; probe sửa tạm đạt 4/4 rồi
+được hoàn nguyên, 9 file cũ đạt 85/85. Những số này không còn là trạng thái
+mới nhất của patch. SDK agent từng lỗi resolvedExecutable và ngắt phiên;
+reviewer đã kiểm chứng độc lập bản sửa sau đó như bảng trên.
 
 ## Bản local chuẩn bị cho lần thử Home tiếp theo
 

@@ -4,7 +4,9 @@ Liên quan [#22](https://github.com/tungcorn/project-ptuddd/issues/22) và #4.
 Người thao tác: Đình hoặc người hỗ trợ thiết bị đã thống nhất; reviewer: Tùng.
 Phiếu này là kịch bản, không tự đánh dấu các ca đạt.
 Đã tiếp nhận [báo cáo Đình ngày 22/11/2026](M3-ket-qua-Android-2026-11-22.md):
-A/B có quan sát không treo; C và nguồn APK/lifecycle còn cần xác nhận.
+A/B có quan sát không treo. Lượt Home tiếp theo Đình báo vẫn tự chấm hoặc
+no-speech, sau đó thử lại được. Còn xác nhận nguồn APK/lifecycle C; không coi
+hết thời gian nhận dạng là bằng chứng phiên đã bị hủy khi paused.
 Đình đã xác nhận ba ca trước chạy trên **giả lập Android**, chưa phải bằng
 chứng điện thoại thật. Bản chuẩn bị thử lại C đã có nền nhóm 174921d và #17;
 mở project `D:\Mobile\Daily_You\build\singlearn-m3-issue22\nhom10-65ktpm\src`,
