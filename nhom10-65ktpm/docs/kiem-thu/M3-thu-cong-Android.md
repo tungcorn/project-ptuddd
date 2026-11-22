@@ -5,7 +5,10 @@ Người thao tác: Đình hoặc người hỗ trợ thiết bị đã thống 
 Phiếu này là kịch bản, không tự đánh dấu các ca đạt.
 Đã tiếp nhận [báo cáo Đình ngày 22/11/2026](M3-ket-qua-Android-2026-11-22.md):
 A/B có quan sát không treo; C và nguồn APK/lifecycle còn cần xác nhận.
-Báo cáo ghi đúng giới hạn, chưa nhận đây là nghiệm thu điện thoại thật.
+Đình đã xác nhận ba ca trước chạy trên **giả lập Android**, chưa phải bằng
+chứng điện thoại thật. Bản chuẩn bị thử lại C đã có nền nhóm 174921d và #17;
+mở project `D:\Mobile\Daily_You\build\singlearn-m3-issue22\nhom10-65ktpm\src`,
+chạy `git rev-parse HEAD` lúc build và ghi SHA của APK vừa cài.
 
 ## Chuẩn bị một lần
 

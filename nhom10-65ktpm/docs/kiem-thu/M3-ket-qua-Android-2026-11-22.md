@@ -23,12 +23,12 @@ Không đánh dấu C đạt và chưa quy kết là lỗi của bản đã merg
 
 | Mục | Thông tin đã có / còn thiếu |
 | --- | --- |
-| Giả lập hay điện thoại thật | Người dùng gọi là Android; chưa xác nhận loại thiết bị của chính lượt này. Trước đó trao đổi về emulator; không tự nhận đây là điện thoại thật. |
+| Loại thiết bị của ba ca đã báo | **Giả lập Android — Đình xác nhận ngày 22/11/2026.** Không ghi là thử trên điện thoại thật. |
 | Model, Android/API, recognizer, mạng | Chưa cung cấp cho lượt này; không lấy thông số từ lượt thử của Tùng làm thông số của Đình. |
 | APK / SHA nguồn thực sự đã build và cài | Chưa xác nhận. SHA checkout không tự chứng minh nguồn APK đang chạy. |
 | Checkout Android Studio trước đó mở | `D:\Mobile\project-ptuddd\nhom10-65ktpm\src`; HEAD đọc từ Git ref là `d39bc2262ed41cb0a4b721c105de1a7d8f07e66b`. |
 | Kiểm tra file checkout nói trên | File phát âm hiện tại tại đường dẫn đó không có `didChangeAppLifecycleState`. Native Git bị từ chối truy cập nên chưa xác nhận được cây sạch hoặc toàn bộ thay đổi chưa commit. |
-| Nền nhóm mới nhất lúc đối chiếu | `d910601960a553587e2bace2c67d73c53973b736`, đã có #16/#17/#18/#19; khác checkout cũ. |
+| Nền nhóm mới nhất khi chuẩn bị lượt thử lại C | `174921dfb5a86414da374d9e84d6d497700593a8`, đã có #16/#17/#18/#19 và #12; M3 giữ các thay đổi của PR #26. |
 | Nhánh đang sửa báo cáo/fixture | `feature/nhom10-65ktpm/kiem-chung-huy-phat-mau`, PR #26; head trước lượt sửa ngày 22/11 là `1ff9038fa85440b13a56340a1de6190970bcb984`. |
 
 Nếu APK vừa thử được build từ checkout cũ nói trên, hành vi tiếp tục chấm
@@ -51,7 +51,7 @@ trên văn bản nhận dạng, không phải đo âm vị hay cao độ.
 
 ### Đình xác nhận / thao tác trên Android
 
-1. Xác nhận ba ca vừa chạy trên giả lập hay điện thoại thật; model/API,
+1. Đã xác nhận ba ca trước chạy trên giả lập Android. Còn model/API,
    dịch vụ nhận dạng và có/không có mạng nếu biết. Xác nhận nguồn bản APK
    từ thư mục đã dùng để build; không điền SHA PR #26 thay APK chưa chạy.
 2. Chạy lại C trên bản có #17: dùng app toàn màn hình, xác nhận đang nghe
@@ -63,8 +63,9 @@ trên văn bản nhận dạng, không phải đo âm vị hay cao độ.
    trạng thái trước/sau và phối hợp debug. Chưa cần thử lại toàn bộ A/B
    chỉ để thêm số ca; chỉ chạy lại khi nguồn build khác, có sửa liên quan,
    hoặc cần bổ sung thời gian chờ/luồng thử lại để chốt nghiệm thu.
-4. Nếu các ca này chỉ chạy trên emulator, giữ kết quả đúng loại môi trường;
-   bằng chứng điện thoại thật chưa được thay thế bởi kết quả giả lập.
+4. Ba ca này được ghi là kiểm thử giả lập; bằng chứng điện thoại thật chưa
+   được thay thế bởi kết quả đó. Không cần đổi kết quả giả lập thành PASS
+   phần cứng khi chưa có lượt điện thoại riêng.
 
 Mẫu bổ sung ngắn:
 
@@ -108,8 +109,27 @@ vì `type 'Null' is not a subtype of type 'String'` tại
 `_Platform.resolvedExecutable`. Hai lệnh analyze/test bản sửa được khởi động qua flutter_tools.snapshot,
 nhưng phiên truy cập máy bị ngắt trước khi nhận kết quả kết thúc. Chưa có
 PASS của lượt này; không nhận các số cũ là kết quả bản sửa. Báo cáo và patch
-được lưu qua GitHub; sau khi máy kết nối lại cần đối chiếu local/remote,
-giữ nguyên thay đổi chưa commit và kiểm tra SDK trước khi chốt.
+được lưu qua GitHub. Sau khi máy kết nối lại, đã sao lưu file/index/refs và
+đồng bộ local đúng 0f54111, rồi đưa nền nhóm 174921d vào cùng nhánh M3 để
+chuẩn bị lượt Home tiếp theo. Vẫn cần SDK checks trước khi chốt; không
+nhận bản đã chuẩn bị để chạy là APK đã được thử C.
+
+## Bản local chuẩn bị cho lần thử Home tiếp theo
+
+Đã tiếp nhận xác nhận **giả lập Android**; đây là cập nhật môi trường của
+ba quan sát cũ, không làm thay đổi trạng thái C chưa đủ bằng chứng.
+
+Mở đúng project trong Android Studio:
+
+```text
+D:\Mobile\Daily_You\build\singlearn-m3-issue22\nhom10-65ktpm\src
+```
+
+Nhánh `feature/nhom10-65ktpm/kiem-chung-huy-phat-mau` giữ patch M3 và cập nhật
+nền nhóm tới `174921dfb5a86414da374d9e84d6d497700593a8`; đã có lifecycle #17.
+Checkout cũ tại D:\Mobile\project-ptuddd được giữ nguyên. Ghi lại
+`git rev-parse HEAD` trong project này lúc build; chọn emulator rồi chạy
+main.dart để cài bản mới. Chỉ ghi kết quả C sau khi người dùng thực hiện.
 
 ## Nơi lưu và nhánh đưa kết quả lên
 
