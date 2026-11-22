@@ -2,7 +2,10 @@
 
 Liên quan [#22](https://github.com/tungcorn/project-ptuddd/issues/22) và #4.
 Người thao tác: Đình hoặc người hỗ trợ thiết bị đã thống nhất; reviewer: Tùng.
-Phiếu này là kịch bản và chỗ ghi kết quả, **chưa phải bằng chứng các ca đã đạt**.
+Phiếu này là kịch bản, không tự đánh dấu các ca đạt.
+Đã tiếp nhận [báo cáo Đình ngày 22/11/2026](M3-ket-qua-Android-2026-11-22.md):
+A/B có quan sát không treo; C và nguồn APK/lifecycle còn cần xác nhận.
+Báo cáo ghi đúng giới hạn, chưa nhận đây là nghiệm thu điện thoại thật.
 
 ## Chuẩn bị một lần
 

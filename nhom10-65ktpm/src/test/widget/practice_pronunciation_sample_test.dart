@@ -125,6 +125,9 @@ Future<_Fixture> _pump(WidgetTester tester) async {
       syncServiceProvider.overrideWithValue(sync),
     ],
   );
+  // Riverpod pauses an unobserved stream. Keep Auth active until teardown so
+  // ProgressService does not get replaced by its initial loading transition.
+  final authSubscription = container.listen(authStateProvider, (_, _) {});
   final events = <LearningEvent>[];
   final subscription = container.read(eventBusProvider).stream.listen(events.add);
   addTearDown(() async {
@@ -133,14 +136,17 @@ Future<_Fixture> _pump(WidgetTester tester) async {
     audio.releaseAll();
     await tester.pump();
     await subscription.cancel();
+    authSubscription.close();
     container.dispose();
     await app.dispose();
   });
 
+  expect(
+    await settleUntil(tester, () => container.read(authStateProvider).hasValue),
+    isTrue,
+    reason: 'Auth must emit before warming providers, within a bounded wait',
+  );
   await tester.runAsync(() async {
-    // Settle the auth stream before a test reads progressServiceProvider,
-    // so its initial loading transition cannot replace the observed service.
-    await container.read(authStateProvider.future);
     await app.store.get('downloads', '_');
     await container.read(songRepositoryProvider).allSongs();
     await container.read(songProgressRepositoryProvider).all();
@@ -232,7 +238,7 @@ void main() {
     final pending = await _startSample(tester, fixture);
 
     await tester.pageBack();
-    await settleIo(tester, rounds: 8);
+    await tester.pumpAndSettle();
     expect(find.byType(PronunciationScreen), findsNothing);
     expect(find.text('Practice test host'), findsOneWidget);
     expect(pending.acknowledgement.isCompleted, isFalse);
