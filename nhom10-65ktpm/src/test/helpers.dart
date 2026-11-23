@@ -22,6 +22,11 @@ class FakeRemote implements RemoteStore {
   bool online = true;
   int writes = 0;
 
+  /// Like Firestore's default read while offline: when set and [online] is
+  /// false, queries succeed from this (possibly outdated) cache, reported as
+  /// not confirmed by the server.
+  Map<String, Map<String, dynamic>>? offlineCache;
+
   @override
   Future<void> upsert(String path, Map<String, dynamic> data) async {
     if (!online) throw const SocketException('offline');
@@ -30,17 +35,19 @@ class FakeRemote implements RemoteStore {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> fetchUpdatedSince(
+  Future<RemoteFetch> fetchUpdatedSince(
     String collectionPath,
     int sinceMs,
   ) async {
-    if (!online) throw const SocketException('offline');
-    return [
-      for (final e in docs.entries)
+    final cache = offlineCache;
+    if (!online && cache == null) throw const SocketException('offline');
+    final source = online ? docs : cache!;
+    return RemoteFetch([
+      for (final e in source.entries)
         if (e.key.startsWith('$collectionPath/') &&
             !e.key.substring(collectionPath.length + 1).contains('/') &&
             ((e.value['updatedAt'] as num?) ?? 0) > sinceMs)
           {...e.value, 'id': e.key.split('/').last},
-    ];
+    ], fromServer: online);
   }
 }

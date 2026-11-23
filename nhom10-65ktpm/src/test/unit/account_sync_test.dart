@@ -40,6 +40,19 @@ class HangingSocial extends LocalSocialRepository {
   }
 }
 
+/// Public profile store that counts the writes it receives.
+class CountingSocial extends LocalSocialRepository {
+  CountingSocial(super.store);
+
+  int calls = 0;
+
+  @override
+  Future<void> upsertProfile(profile) {
+    calls++;
+    return super.upsertProfile(profile);
+  }
+}
+
 void main() {
   group('SyncOutcome.message', () {
     test('never reports success while writes wait or a step failed', () {
@@ -308,6 +321,65 @@ void main() {
           30 + xp!,
           reason: 'published from the downloaded ledger plus the new event',
         );
+      },
+    );
+
+    test(
+      'an offline refresh answered from the cache does not publish old XP',
+      () async {
+        final user = await auth.signUp(
+          email: 'c@test.vn',
+          password: 'secret1',
+          displayName: 'Cuong',
+        );
+        Map<String, Object?> event(String id, int updatedAt) => {
+          'id': id,
+          'type': LearningEventType.wordSaved.name,
+          'xp': 10,
+          'at': DateTime(2026, 11, 1).millisecondsSinceEpoch,
+          'day': '2026-11-01',
+          'data': const <String, Object?>{},
+          'updatedAt': updatedAt,
+        };
+        // Device A downloads 100 XP.
+        for (var i = 0; i < 10; i++) {
+          remote.docs['users/${user.uid}/xpEvents/a$i'] = event('a$i', 100 + i);
+        }
+        final social = CountingSocial(store);
+        final c = container(social);
+        await settle(c);
+        final sync = c.read(accountSyncProvider);
+        expect((await sync.syncNow()).complete, isTrue);
+        await settle(c);
+        expect((await social.profile(user.uid))?.xp, 100);
+
+        // A's Firestore cache holds those 100 XP; device B then learns
+        // 100 XP more on the server.
+        remote.offlineCache = Map.of(remote.docs);
+        for (var i = 0; i < 10; i++) {
+          remote.docs['users/${user.uid}/xpEvents/b$i'] = event('b$i', 200 + i);
+        }
+        final published = social.calls;
+
+        // A is offline with an empty queue and resumes / taps "Đồng bộ ngay":
+        // the queries succeed from the cache only.
+        remote.online = false;
+        expect(await sync.pending(), 0);
+        final offline = await sync.syncNow();
+        await settle(c);
+        expect(offline.complete, isFalse);
+        expect(offline.pullFailed, isTrue);
+        expect(
+          social.calls,
+          published,
+          reason: 'no profile write from data the server did not confirm',
+        );
+
+        // Back online: the server data is downloaded, then published.
+        remote.online = true;
+        expect((await sync.syncNow()).complete, isTrue);
+        await settle(c);
+        expect((await social.profile(user.uid))?.xp, 200);
       },
     );
 

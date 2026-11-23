@@ -63,8 +63,11 @@ class SyncOutcome {
 /// Signed out or a guest: nothing is sent or downloaded. Local mode (no
 /// remote): only the profile is published.
 ///
-/// Firestore does not complete writes or reads while offline; the limits
-/// make every trigger finish and report instead of waiting forever. A run
+/// A download counts only when the server answered: an answer from the
+/// offline cache fails the pull ([StaleRemoteReadException]), so it never
+/// marks the account reconciled or publishes outdated XP over newer cloud
+/// data. Firestore may not complete writes while offline; the limits make
+/// every trigger finish and report instead of waiting forever. A run
 /// requested while one is in progress waits for it, then one more run serves
 /// every request made meanwhile, so an account change mid-run is not lost.
 class AccountSync {
@@ -82,7 +85,8 @@ class AccountSync {
   /// Signed-in account (uid), or null when signed out or a guest.
   final String? Function() _account;
 
-  /// Downloads the data of the given account. Must throw if it cannot.
+  /// Downloads the data of the given account. Must throw if it cannot, or if
+  /// the data was not confirmed by the server.
   final Future<void> Function(String uid) _pull;
 
   /// Starts writing the public profile of the given account (not awaited).
@@ -97,8 +101,9 @@ class AccountSync {
 
   bool get isEnabled => _sync.isEnabled;
 
-  /// Whether [uid]'s data was downloaded at least once in this app session,
-  /// so local progress may be published (always true in local mode).
+  /// Whether [uid]'s data was downloaded from the server at least once in
+  /// this app session, so local progress may be published (always true in
+  /// local mode).
   bool isReconciled(String uid) => !isEnabled || _reconciled.contains(uid);
 
   /// Writes of the signed-in account waiting to be sent (0 when signed out,
