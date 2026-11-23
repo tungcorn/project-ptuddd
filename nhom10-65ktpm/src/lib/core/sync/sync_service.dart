@@ -12,10 +12,34 @@ abstract class RemoteStore {
 
   /// Documents of [collectionPath] whose `updatedAt` is greater than
   /// [sinceMs]. Each map must contain its document id under `id`.
-  Future<List<Map<String, dynamic>>> fetchUpdatedSince(
-    String collectionPath,
-    int sinceMs,
-  );
+  ///
+  /// [RemoteFetch.fromServer] must be false when the result was not
+  /// confirmed by the server (e.g. Firestore answering from its offline
+  /// cache), so callers never treat a cached answer as current data.
+  Future<RemoteFetch> fetchUpdatedSince(String collectionPath, int sinceMs);
+}
+
+/// Result of [RemoteStore.fetchUpdatedSince].
+class RemoteFetch {
+  const RemoteFetch(this.docs, {required this.fromServer});
+
+  final List<Map<String, dynamic>> docs;
+
+  /// True only when the server answered the query. A cached answer may miss
+  /// documents written from another device.
+  final bool fromServer;
+}
+
+/// Thrown by [SyncService.pull] when the remote answered from a cache
+/// instead of the server: the data is not known to be current.
+class StaleRemoteReadException implements Exception {
+  const StaleRemoteReadException(this.collectionPath);
+
+  final String collectionPath;
+
+  @override
+  String toString() =>
+      'StaleRemoteReadException: $collectionPath was not read from the server';
 }
 
 /// Offline-first sync engine (section 6.4 of the outline):
@@ -237,13 +261,19 @@ class SyncService {
 
   /// Pulls [collectionPath] into [localBox] using last-write-wins.
   /// Returns the number of local documents changed.
+  ///
+  /// Throws [StaleRemoteReadException] when the remote could not confirm the
+  /// result with the server; nothing is merged and the cursor stays put, so
+  /// a pull completes only with server data.
   Future<int> pull(String collectionPath, String localBox) async {
     final remote = _remote;
     if (remote == null) return 0;
     final metaKey = 'pull:$collectionPath';
     final since =
         ((await _store.get(_metaBox, metaKey))?['since'] as int?) ?? 0;
-    final docs = await remote.fetchUpdatedSince(collectionPath, since);
+    final fetch = await remote.fetchUpdatedSince(collectionPath, since);
+    if (!fetch.fromServer) throw StaleRemoteReadException(collectionPath);
+    final docs = fetch.docs;
     var changed = 0;
     var maxSeen = since;
     for (final doc in docs) {

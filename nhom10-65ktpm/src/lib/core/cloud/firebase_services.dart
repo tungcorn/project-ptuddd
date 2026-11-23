@@ -21,18 +21,21 @@ class FirestoreRemoteStore implements RemoteStore {
   Future<void> upsert(String path, Map<String, dynamic> data) =>
       _db.doc(path).set(data);
 
+  /// Reads from the server only: the default `get()` falls back to the
+  /// offline cache, which may miss writes from other devices. Offline, this
+  /// throws (`unavailable`) instead of answering from the cache.
   @override
-  Future<List<Map<String, dynamic>>> fetchUpdatedSince(
+  Future<RemoteFetch> fetchUpdatedSince(
     String collectionPath,
     int sinceMs,
   ) async {
     final snap = await _db
         .collection(collectionPath)
         .where('updatedAt', isGreaterThan: sinceMs)
-        .get();
-    return [
+        .get(const GetOptions(source: Source.server));
+    return RemoteFetch([
       for (final d in snap.docs) {...d.data(), 'id': d.id},
-    ];
+    ], fromServer: !snap.metadata.isFromCache);
   }
 }
 
