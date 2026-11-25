@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 
 /// Build-time configuration.
@@ -33,10 +35,17 @@ class AppConfig {
     'FIREBASE_ENABLE_GOOGLE_SIGN_IN',
   );
 
+  static const googleServerClientId = String.fromEnvironment(
+    'FIREBASE_GOOGLE_SERVER_CLIENT_ID',
+  );
+
   static bool get storageEnabled => isFirebaseConfigured && _enableStorage;
   static bool get messagingEnabled => isFirebaseConfigured && _enableMessaging;
   static bool get googleSignInEnabled =>
-      isFirebaseConfigured && _enableGoogleSignIn;
+      isFirebaseConfigured &&
+      _enableGoogleSignIn &&
+      googleServerClientId.isNotEmpty &&
+      Platform.isAndroid;
 
   /// Comma separated list of e-mails treated as content admins in local mode
   /// (cloud mode uses the `admin` custom claim instead).

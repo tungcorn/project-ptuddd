@@ -50,7 +50,16 @@ Các cờ tùy chọn mặc định là `false`:
 
 - `FIREBASE_ENABLE_STORAGE`: chỉ bật sau khi đã thống nhất chi phí và cấu hình Storage.
 - `FIREBASE_ENABLE_MESSAGING`: chỉ bật khi đã có cấu hình FCM và bên gửi phù hợp.
-- `FIREBASE_ENABLE_GOOGLE_SIGN_IN`: cần bật provider Google, cấu hình OAuth và SHA cho Android trước.
+- `FIREBASE_ENABLE_GOOGLE_SIGN_IN`: bật riêng cho Android sau khi cấu hình bên dưới.
+
+### Đăng nhập Google trên Android
+
+1. Trong Firebase Console → Authentication → Sign-in method, bật Google và lưu email hỗ trợ dự án.
+2. Trong Project settings → Your apps, chọn `com.gr10.singlearn` và thêm SHA-1/SHA-256 của **chứng chỉ ký bản APK sẽ cài**. Mỗi khóa ký khác nhau cần đăng ký fingerprint tương ứng. Có thể kiểm tra bằng `apksigner verify --print-certs <apk>`.
+3. Tải lại `google-services.json` từ Firebase Console hoặc dùng `firebase apps:sdkconfig ANDROID <app-id> --project <project-id>`. Trong cấu hình của đúng package, lấy `client_id` từ OAuth client có `client_type: 3` (Web), không dùng client Android (`client_type: 1`).
+4. Trong `firebase.env.json` cục bộ, đặt `FIREBASE_ENABLE_GOOGLE_SIGN_IN` thành `true` và `FIREBASE_GOOGLE_SERVER_CLIENT_ID` thành Web client ID. Build/chạy lại với `--dart-define-from-file=firebase.env.json`. Không cần chép `google-services.json` vào mã nguồn hay đưa OAuth client secret vào APK.
+
+App dùng bộ chọn tài khoản Google trên Android có Google Play services, rồi đổi ID token lấy phiên Firebase. Bản local hoặc bản Firebase thiếu cấu hình trên vẫn không bật nút Google. Khi kiểm thử trên thiết bị, xác nhận hủy bộ chọn giữ nguyên màn đăng nhập, tài khoản thử vào được app, và đăng xuất quay lại màn đăng nhập. Build hoặc widget test không thay cho kiểm thử OAuth trên Android.
 
 Admin cloud dùng custom claim `admin: true`, không dùng danh sách admin local.
 Không tự gán admin cho mọi người đăng ký và không triển khai Functions để gán quyền
