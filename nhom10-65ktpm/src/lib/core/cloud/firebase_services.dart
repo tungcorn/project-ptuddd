@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../features/auth/data/auth_repository.dart';
 import '../../features/auth/domain/app_user.dart';
@@ -218,17 +219,46 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
+  static Future<void>? _googleInitialization;
+
+  static Future<void> _initializeGoogle() => _googleInitialization ??=
+      GoogleSignIn.instance.initialize(
+        serverClientId: AppConfig.googleServerClientId,
+      );
+
   @override
   Future<AppUser> signInWithGoogle() async {
     if (!supportsGoogle) {
       throw const AuthFailure('Đăng nhập Google chưa được bật cho dự án này.');
     }
     try {
-      final cred = await _auth.signInWithProvider(GoogleAuthProvider());
+      await _initializeGoogle();
+      final account = await GoogleSignIn.instance.authenticate();
+      final idToken = account.authentication.idToken;
+      if (idToken == null || idToken.isEmpty) {
+        throw const AuthFailure('Không xác thực được với Google. Hãy thử lại.');
+      }
+      final cred = await _auth.signInWithCredential(
+        GoogleAuthProvider.credential(idToken: idToken),
+      );
       final user = await _load(cred.user!);
       _set(user);
       return user;
+    } on GoogleSignInException catch (e) {
+      throw AuthFailure(switch (e.code) {
+        GoogleSignInExceptionCode.canceled =>
+          'Chưa chọn tài khoản Google. Bạn có thể thử lại.',
+        GoogleSignInExceptionCode.clientConfigurationError ||
+        GoogleSignInExceptionCode.providerConfigurationError =>
+          'Đăng nhập Google chưa được cấu hình đúng cho bản cài này.',
+        _ => 'Không thể đăng nhập Google lúc này. Hãy thử lại.',
+      });
     } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        throw const AuthFailure(
+          'Tài khoản đã dùng phương thức khác. Hãy đăng nhập bằng phương thức đó.',
+        );
+      }
       throw _map(e);
     }
   }
@@ -257,6 +287,15 @@ class FirebaseAuthRepository implements AuthRepository {
     _guest = false;
     await _auth.signOut();
     _set(null);
+    final googleInitialization = _googleInitialization;
+    if (googleInitialization != null) {
+      try {
+        await googleInitialization;
+        await GoogleSignIn.instance.signOut();
+      } catch (_) {
+        // Firebase is already signed out; plugin cleanup must not undo it.
+      }
+    }
   }
 
   @override

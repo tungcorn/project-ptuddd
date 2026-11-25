@@ -181,7 +181,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with _Busy {
           icon: const Icon(Icons.g_mobiledata, size: 28),
           label: Text(auth.supportsGoogle
               ? 'Đăng nhập bằng Google'
-              : 'Google (cần cấu hình Firebase)'),
+              : 'Đăng nhập Google (chưa khả dụng)'),
         ),
         const SizedBox(height: 12),
         TextButton(
