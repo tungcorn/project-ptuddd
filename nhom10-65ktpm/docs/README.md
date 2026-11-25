@@ -7,6 +7,7 @@
 | [TH4_DeCuong_Project_SingLearn.docx](TH4_DeCuong_Project_SingLearn.docx) | Đề cương TH4 bản Word; phân công và kế hoạch cập nhật theo quyết định nhóm trưởng ngày 16/11/2026 |
 | [TH4_DeCuong_Project_SingLearn.md](TH4_DeCuong_Project_SingLearn.md) | Đề cương đọc trên GitHub; phân công và kế hoạch đồng bộ với Word |
 | [TH4_Video_SingLearn.mp4](TH4_Video_SingLearn.mp4) | Video đề cương TH4 gốc; chưa dựng lại theo phân công mới, không phải video demo ứng dụng hoàn thiện |
+| [Rehearsal Android và checklist bàn giao](kiem-thu/demo-tich-hop.md) | Các bước đã chạy trên điện thoại, giới hạn kiểm thử và câu hỏi luyện vấn đáp theo từng phần |
 
 ## Nguồn và cập nhật
 
