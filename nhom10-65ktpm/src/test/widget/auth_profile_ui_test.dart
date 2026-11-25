@@ -1,9 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:singlearn/core/events/app_event_bus.dart';
 import 'package:singlearn/features/auth/presentation/auth_screens.dart';
-import 'package:singlearn/features/profile/presentation/profile_screen.dart';
+import 'package:singlearn/features/vocabulary/domain/saved_word.dart';
+import 'package:singlearn/features/vocabulary/domain/sm2.dart';
+import 'package:singlearn/singlearn_app.dart';
 
 import 'harness.dart';
+
+/// One learner's data, different for every account so a leak is visible.
+class _Account {
+  const _Account(this.email, this.name, this.xp, this.word, {this.today = true});
+
+  final String email;
+  final String name;
+  final int xp;
+  final String word;
+
+  /// Studied today (streak 1) or only a week ago (streak 0).
+  final bool today;
+}
+
+const _a = _Account('an@test.vn', 'An Nguyễn', 120, 'star');
+const _b = _Account('binh@test.vn', 'Bình Trần', 35, 'moon', today: false);
 
 void main() {
   late TestApp app;
@@ -11,61 +31,179 @@ void main() {
   setUp(() async => app = await TestApp.create());
   tearDown(() => app.dispose());
 
-  testWidgets('ProfileScreen isolates user data and roles between accounts and guest', (tester) async {
-    // 1. User A (First account -> Admin)
-    await app.auth.signUp(
-      email: 'usera@test.vn',
+  /// Registers [account] and stores its XP ledger and saved word locally,
+  /// as earlier learning on this device would have.
+  Future<void> seed(_Account account, String level) async {
+    final user = await app.auth.signUp(
+      email: account.email,
       password: 'secret1',
-      displayName: 'Nguyễn Văn A',
+      displayName: account.name,
     );
-    await app.auth.updateProfile(level: 'B1');
-
-    await app.pumpScreen(tester, const ProfileScreen());
-    await settleIo(tester);
-
-    expect(find.text('Nguyễn Văn A'), findsOneWidget);
-    expect(find.text('usera@test.vn'), findsOneWidget);
-    expect(find.textContaining('Quản trị viên nội dung'), findsOneWidget);
-    expect(find.byKey(const Key('admin-entry')), findsOneWidget);
-    expect(find.textContaining('Mã kết bạn:'), findsOneWidget);
-
-    // 2. User B (Second account -> Learner, non-admin)
-    await app.auth.signOut();
-    final userB = await app.auth.signUp(
-      email: 'userb@test.vn',
-      password: 'secret2',
-      displayName: 'Trần Thị B',
+    await app.auth.updateProfile(level: level);
+    final at = account.today
+        ? DateTime.now()
+        : DateTime.now().subtract(const Duration(days: 7));
+    await app.store.put('xp_ledger_${user.uid}', 'seed', {
+      'id': 'seed',
+      'type': 'exerciseCompleted',
+      'xp': account.xp,
+      'at': at.millisecondsSinceEpoch,
+      'day': dayKey(at),
+      'data': const <String, dynamic>{},
+      'updatedAt': at.millisecondsSinceEpoch,
+    });
+    await app.store.put(
+      'words_${user.uid}',
+      account.word,
+      SavedWord(
+        id: account.word,
+        word: account.word,
+        ipa: '',
+        pos: 'noun',
+        meaning: 'nghĩa của ${account.word}',
+        sm2: Sm2State(dueAt: DateTime(2030)),
+        createdAt: 1,
+        updatedAt: 1,
+      ).toJson(),
     );
-    await app.auth.updateProfile(level: 'A2');
-
-    await app.pumpScreen(tester, const ProfileScreen());
-    await settleIo(tester);
-
-    // User A data must NOT be present
-    expect(find.text('Nguyễn Văn A'), findsNothing);
-    expect(find.text('usera@test.vn'), findsNothing);
-    expect(find.byKey(const Key('admin-entry')), findsNothing);
-
-    // User B data is displayed
-    expect(find.text('Trần Thị B'), findsOneWidget);
-    expect(find.text('userb@test.vn'), findsOneWidget);
-    expect(find.textContaining('Người học'), findsOneWidget);
-    expect(userB.isAdmin, isFalse);
-
-    // 3. Guest Mode
     await app.auth.signOut();
-    await app.auth.continueAsGuest();
+  }
 
-    await app.pumpScreen(tester, const ProfileScreen());
+  Finder tab(String label) => find.descendant(
+    of: find.byType(NavigationBar),
+    matching: find.text(label),
+  );
+
+  Future<void> open(WidgetTester tester, String label) async {
+    await tester.tap(tab(label));
+    await settleIo(tester);
+  }
+
+  Future<void> signIn(WidgetTester tester, _Account account) async {
+    expect(find.byKey(const Key('login-email')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('login-email')), account.email);
+    await tester.enterText(find.byKey(const Key('login-password')), 'secret1');
+    await tester.tap(find.byKey(const Key('login-submit')));
+    expect(
+      await settleUntil(tester, () => tab('Trang chủ').evaluate().isNotEmpty),
+      isTrue,
+      reason: 'signed in as ${account.email}',
+    );
+    await settleIo(tester);
+  }
+
+  Future<void> signOutFromProfile(WidgetTester tester) async {
+    await open(tester, 'Hồ sơ');
+    final signOut = find.byKey(const Key('sign-out'));
+    await tester.scrollUntilVisible(
+      signOut,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(signOut);
+    await settleIo(tester);
+    await tester.tap(find.widgetWithText(FilledButton, 'Đăng xuất'));
+    expect(
+      await settleUntil(
+        tester,
+        () => find.byKey(const Key('login-email')).evaluate().isNotEmpty,
+      ),
+      isTrue,
+      reason: 'back on the login screen',
+    );
+    await settleIo(tester);
+  }
+
+  /// Home, vocabulary and profile of the running app show [shown] only.
+  Future<void> expectOnly(
+    WidgetTester tester,
+    _Account shown,
+    _Account hidden, {
+    required bool admin,
+  }) async {
+    await open(tester, 'Trang chủ');
+    expect(find.text('Xin chào, ${shown.name}!'), findsOneWidget);
+    expect(
+      tester.widget<Text>(find.byKey(const Key('home-xp'))).data,
+      '${shown.xp}',
+    );
+    expect(
+      tester.widget<Text>(find.byKey(const Key('home-streak'))).data,
+      shown.today ? '1' : '0',
+    );
+
+    await open(tester, 'Từ vựng');
+    expect(find.byKey(Key('word-${shown.word}')), findsOneWidget);
+    expect(find.byKey(Key('word-${hidden.word}')), findsNothing);
+
+    await open(tester, 'Hồ sơ');
+    expect(
+      tester.widget<Text>(find.byKey(const Key('profile-name'))).data,
+      shown.name,
+    );
+    expect(find.text(shown.email), findsOneWidget);
+    expect(find.text(hidden.name), findsNothing);
+    expect(find.text(hidden.email), findsNothing);
+    expect(find.byKey(const Key('admin-entry')), admin ? findsOneWidget : findsNothing);
+  }
+
+  testWidgets('one running app: A -> sign out -> B -> sign out -> A shows '
+      'only the signed-in account', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    await seed(_a, 'A1'); // first local account: admin
+    await seed(_b, 'A2');
+
+    // Mounted once: every switch below happens in the same container and
+    // widget tree, so stale providers or screens would show up here.
+    final container = ProviderContainer(overrides: app.overrides);
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const SingLearnApp(),
+      ),
+    );
     await settleIo(tester);
 
-    expect(find.text('Khách'), findsWidgets);
+    await signIn(tester, _a);
+    await expectOnly(tester, _a, _b, admin: true);
+
+    await signOutFromProfile(tester);
+    expect(find.text(_a.name), findsNothing);
+    expect(find.byKey(const Key('home-xp')), findsNothing);
+
+    await signIn(tester, _b);
+    await expectOnly(tester, _b, _a, admin: false);
+
+    await signOutFromProfile(tester);
+    await signIn(tester, _a);
+    await expectOnly(tester, _a, _b, admin: true);
+
+    // Guest after an account: no profile, friend code or words of A.
+    await signOutFromProfile(tester);
+    await tester.tap(find.byKey(const Key('guest-button')));
+    expect(
+      await settleUntil(
+        tester,
+        () => find.text('Xin chào, Khách!').evaluate().isNotEmpty,
+      ),
+      isTrue,
+    );
+    await settleIo(tester);
+    expect(tester.widget<Text>(find.byKey(const Key('home-xp'))).data, '0');
+    await open(tester, 'Từ vựng');
+    expect(find.byKey(Key('word-${_a.word}')), findsNothing);
+    await open(tester, 'Hồ sơ');
+    expect(find.text(_a.name), findsNothing);
     expect(find.textContaining('Mã kết bạn:'), findsNothing);
     expect(
       find.text('Đăng ký tài khoản để sử dụng (khách chỉ học trên máy).'),
       findsOneWidget,
     );
     expect(find.text('Thoát chế độ khách'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('ForgotPasswordScreen clearly shows demo mode cloud requirement', (tester) async {
