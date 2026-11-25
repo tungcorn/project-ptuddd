@@ -129,6 +129,65 @@ class SavedWord {
         'isDeleted': isDeleted,
       };
 
+  /// Combines two versions of the same card from different devices (sync
+  /// merge rule of `users/{uid}/words`), so a card created on a new device
+  /// before its first download never erases the review history in the cloud.
+  ///
+  /// * Deleted on one side only: the later change wins as a whole (an
+  ///   explicit delete, or a restore that starts a new schedule).
+  /// * Otherwise the version with more reviews keeps its SM-2 schedule and
+  ///   counters (then the later `updatedAt`); song contexts of both are kept,
+  ///   `createdAt` is the earliest and `updatedAt` the latest.
+  ///
+  /// Order-independent and idempotent, so the server and every device reach
+  /// the same card.
+  static Map<String, dynamic> mergeJson(
+    Map<String, dynamic> current,
+    Map<String, dynamic> incoming,
+  ) {
+    final a = SavedWord.fromJson(current);
+    final b = SavedWord.fromJson(incoming);
+    if (a.isDeleted != b.isDeleted) return (_later(a, b) >= 0 ? a : b).toJson();
+    final (base, other) = _rank(a, b) >= 0 ? (a, b) : (b, a);
+    final keys = {for (final c in base.contexts) c.key};
+    return base
+        .copyWith(
+          contexts: [
+            ...base.contexts,
+            for (final c in other.contexts)
+              if (keys.add(c.key)) c,
+          ],
+          createdAt: base.createdAt < other.createdAt
+              ? base.createdAt
+              : other.createdAt,
+          updatedAt: base.updatedAt > other.updatedAt
+              ? base.updatedAt
+              : other.updatedAt,
+        )
+        .toJson();
+  }
+
+  /// Positive when [a] holds more learning history than [b].
+  static int _rank(SavedWord a, SavedWord b) {
+    final reviews = a.reviewCount.compareTo(b.reviewCount);
+    return reviews != 0 ? reviews : _later(a, b);
+  }
+
+  /// Positive when [a] changed later than [b]; a stable tie-break otherwise
+  /// that ignores what a merge combines (contexts, `createdAt`), so merging
+  /// a result again picks the same version.
+  static int _later(SavedWord a, SavedWord b) {
+    final at = a.updatedAt.compareTo(b.updatedAt);
+    if (at != 0) return at;
+    if (a.isDeleted != b.isDeleted) return a.isDeleted ? 1 : -1;
+    String own(SavedWord w) =>
+        (w.toJson()
+              ..remove('contexts')
+              ..remove('createdAt'))
+            .toString();
+    return own(a).compareTo(own(b));
+  }
+
   SavedWord copyWith({
     List<WordContext>? contexts,
     Sm2State? sm2,

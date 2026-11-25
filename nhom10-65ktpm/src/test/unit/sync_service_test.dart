@@ -11,13 +11,17 @@ class SessionRemote extends FakeRemote {
   int rejected = 0;
 
   @override
-  Future<void> upsert(String path, Map<String, dynamic> data) async {
+  Future<void> upsert(
+    String path,
+    Map<String, dynamic> data, {
+    DocMerge? merge,
+  }) async {
     final parts = path.split('/');
     if (parts.first == 'users' && parts[1] != signedIn) {
       rejected++;
       throw StateError('permission-denied: $path');
     }
-    await super.upsert(path, data);
+    await super.upsert(path, data, merge: merge);
   }
 }
 
@@ -83,7 +87,7 @@ void main() {
     remote.offlineCache = {
       'users/u/words/a': {'v': 'cached', 'updatedAt': 20},
     };
-    remote.docs['users/u/words/a'] = {'v': 'server-new', 'updatedAt': 30};
+    remote.write('users/u/words/a', {'v': 'server-new', 'updatedAt': 30});
     remote.online = false;
 
     await expectLater(

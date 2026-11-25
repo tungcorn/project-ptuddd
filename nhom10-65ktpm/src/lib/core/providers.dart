@@ -56,6 +56,12 @@ final syncServiceProvider = Provider<SyncService>((ref) {
       final user = repo!.current;
       return user == null || user.isGuest ? null : user.uid;
     },
+    // Learning state is combined, not replaced, when two devices (or a new
+    // install before its first download) wrote the same document (#20).
+    mergers: const {
+      'words': SavedWord.mergeJson,
+      'songProgress': SongProgress.mergeJson,
+    },
   );
 });
 

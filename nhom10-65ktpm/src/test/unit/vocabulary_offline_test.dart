@@ -31,10 +31,14 @@ class FlakyRemote extends FakeRemote {
   int okWrites;
 
   @override
-  Future<void> upsert(String path, Map<String, dynamic> data) async {
+  Future<void> upsert(
+    String path,
+    Map<String, dynamic> data, {
+    DocMerge? merge,
+  }) async {
     if (okWrites <= 0) throw const SocketException('connection reset');
     okWrites--;
-    await super.upsert(path, data);
+    await super.upsert(path, data, merge: merge);
   }
 }
 

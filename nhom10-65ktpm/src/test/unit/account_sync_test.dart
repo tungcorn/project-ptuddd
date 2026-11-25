@@ -19,8 +19,12 @@ class HangingRemote extends FakeRemote {
   final held = <Completer<void>>[];
 
   @override
-  Future<void> upsert(String path, Map<String, dynamic> data) {
-    if (!hang) return super.upsert(path, data);
+  Future<void> upsert(
+    String path,
+    Map<String, dynamic> data, {
+    DocMerge? merge,
+  }) {
+    if (!hang) return super.upsert(path, data, merge: merge);
     final c = Completer<void>();
     held.add(c);
     return c.future;
@@ -357,7 +361,7 @@ void main() {
         // 100 XP more on the server.
         remote.offlineCache = Map.of(remote.docs);
         for (var i = 0; i < 10; i++) {
-          remote.docs['users/${user.uid}/xpEvents/b$i'] = event('b$i', 200 + i);
+          remote.write('users/${user.uid}/xpEvents/b$i', event('b$i', 200 + i));
         }
         final published = social.calls;
 
