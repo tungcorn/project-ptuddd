@@ -59,7 +59,10 @@ class HomeScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(songsProvider);
-          await ref.read(syncServiceProvider).flush();
+          final outcome = await ref.read(accountSyncProvider).syncNow();
+          if (outcome.signedIn && !outcome.complete) {
+            showMessage(outcome.message);
+          }
         },
         child: ListView(
           padding: const EdgeInsets.only(bottom: 24),

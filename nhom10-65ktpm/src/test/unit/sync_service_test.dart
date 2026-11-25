@@ -75,6 +75,30 @@ void main() {
     expect(await sync.pull('users/u/words', 'words_u'), 0);
   });
 
+  test('a pull answered from the offline cache fails and changes nothing',
+      () async {
+    remote.docs['users/u/words/a'] = {'v': 'server-old', 'updatedAt': 10};
+    expect(await sync.pull('users/u/words', 'words_u'), 1);
+    // Another device writes newer data; this device only has its cache.
+    remote.offlineCache = {
+      'users/u/words/a': {'v': 'cached', 'updatedAt': 20},
+    };
+    remote.docs['users/u/words/a'] = {'v': 'server-new', 'updatedAt': 30};
+    remote.online = false;
+
+    await expectLater(
+      sync.pull('users/u/words', 'words_u'),
+      throwsA(isA<StaleRemoteReadException>()),
+    );
+    expect((await store.get('words_u', 'a'))!['v'], 'server-old',
+        reason: 'cached documents are not merged');
+
+    remote.online = true;
+    expect(await sync.pull('users/u/words', 'words_u'), 1,
+        reason: 'the cursor did not move past the unseen server write');
+    expect((await store.get('words_u', 'a'))!['v'], 'server-new');
+  });
+
   group('queue shared by several accounts on one device', () {
     late SessionRemote cloud;
     late SyncService shared;

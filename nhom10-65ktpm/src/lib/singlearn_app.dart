@@ -85,39 +85,25 @@ class _AppLifecycleHostState extends ConsumerState<AppLifecycleHost>
     }
   }
 
+  /// Every automatic trigger runs the shared routine; results are only
+  /// logged here (the manual actions show them).
   Future<void> _syncNow() async {
-    final sync = ref.read(syncServiceProvider);
-    if (!sync.isEnabled) return;
-    final user = ref.read(currentUserProvider);
     try {
-      await sync.flush();
-      if (user != null && !user.isGuest) {
-        await ref.read(vocabularyRepositoryProvider).pull();
-        await ref.read(songProgressRepositoryProvider).pull();
-        await ref.read(progressServiceProvider).pull();
-        await ref.read(songRepositoryProvider).pullRemote();
+      final outcome = await ref.read(accountSyncProvider).syncNow();
+      if (outcome.signedIn && !outcome.complete) {
+        debugPrint('Sync deferred: ${outcome.message}');
       }
     } catch (e) {
       debugPrint('Sync deferred: $e');
     }
   }
 
-  Future<void> _onUser(AppUser? user) async {
+  void _onUser(AppUser? user) {
     if (user == null || user.isGuest) return;
-    final snap = await ref.read(progressServiceProvider).snapshot();
-    await ref.read(socialRepositoryProvider).upsertProfile(PublicProfile(
-          uid: user.uid,
-          displayName: user.displayName,
-          userCode: user.userCode,
-          email: user.email,
-          xp: snap.totalXp,
-          weekXp: snap.weekXp,
-          weekKey: weekKeyOf(DateTime.now()),
-          level: snap.level.level,
-          streak: snap.streak,
-        ));
     _challengesPrimed = false;
     _seenChallenges.clear();
+    // Sends, downloads, then publishes the profile from the downloaded data;
+    // nothing here waits for the server, so offline sign-in is not held up.
     unawaited(_syncNow());
     if (AppConfig.messagingEnabled) {
       unawaited(CloudMessaging.register(user.uid).catchError(
