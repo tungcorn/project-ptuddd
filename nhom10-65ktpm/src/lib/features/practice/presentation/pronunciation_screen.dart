@@ -141,13 +141,7 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!mounted ||
-        (state != AppLifecycleState.paused && state != AppLifecycleState.detached) ||
-        !_recognizing) {
-      return;
-    }
-    // A permission dialog can temporarily make the app inactive. Only
-    // abandon recognition when the app actually pauses or detaches.
+    if (!mounted || !_recognizing || !_leavesRecognition(state)) return;
     _session++;
     _preparationTimer?.cancel();
     unawaited(_cancelRecognition());
@@ -158,6 +152,23 @@ class _PronunciationBodyState extends ConsumerState<_PronunciationBody>
       _alternatives = const [];
     });
   }
+
+  /// Whether moving to [state] ends the current attempt.
+  ///
+  /// Android reports `inactive` as soon as the app loses focus (Home,
+  /// recents). The recognizer can still deliver a final result or a
+  /// no-speech error before `hidden`/`paused` arrives, which would score an
+  /// attempt the learner left. While the microphone is open, losing focus
+  /// therefore ends the attempt. During preparation the permission dialog
+  /// itself makes the app inactive, so only leaving the foreground counts.
+  bool _leavesRecognition(AppLifecycleState state) => switch (state) {
+        AppLifecycleState.hidden ||
+        AppLifecycleState.paused ||
+        AppLifecycleState.detached =>
+          true,
+        AppLifecycleState.inactive => _receivingResults,
+        AppLifecycleState.resumed => false,
+      };
 
   void _select(int pos) {
     if (pos < 0 || pos >= _lines.length || pos == _pos) return;
