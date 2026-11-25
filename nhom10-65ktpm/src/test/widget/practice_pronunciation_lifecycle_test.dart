@@ -228,6 +228,80 @@ void main() {
     },
   );
 
+  // Android: Home reports `inactive` first; the recognizer can still deliver
+  // a final result or a no-speech error before `paused` arrives (#22).
+  for (final late in ['final result', 'no-speech error']) {
+    testWidgets(
+      'losing focus while listening drops a late $late of the old attempt',
+      (tester) async {
+        final rec = _Recognizer();
+        final container = await pump(tester, rec);
+        final events = <LearningEvent>[];
+        final sub = container.read(eventBusProvider).stream.listen(events.add);
+        addTearDown(sub.cancel);
+        await tapMic(tester);
+        final old = rec.sessions.single;
+        old.result(const SpeechHeard(['all is'], isFinal: false));
+        await tester.pump();
+
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+        if (late == 'final result') {
+          old.result(const SpeechHeard(['all is calm'], isFinal: true));
+        } else {
+          old.error(SpeechFailure.noSpeech);
+        }
+        old.done();
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        await settleIo(tester);
+        expect(rec.cancelRequests, 1, reason: 'canceled once, on inactive');
+
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+        await settleIo(tester);
+        expect(find.byKey(const Key('pron-result')), findsNothing);
+        expect(find.text('Nhấn để nói'), findsOneWidget);
+        expect(events, isEmpty);
+        final progress = await tester.runAsync(
+          () => container.read(songProgressRepositoryProvider).all(),
+        );
+        expect(progress!['silent-night']?.lineBestScores ?? const {}, isEmpty,
+            reason: 'the left attempt is not saved');
+
+        await tapMic(tester);
+        final fresh = rec.sessions.last;
+        expect(rec.sessions, hasLength(2));
+        fresh.result(const SpeechHeard(['all is calm'], isFinal: true));
+        fresh.done();
+        await settleIo(tester);
+        expect(find.text('100'), findsOneWidget);
+        expect(
+          events.where((e) => e.type == LearningEventType.pronunciationScored),
+          hasLength(1),
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'hidden during preparation discards its late permission response',
+    (tester) async {
+      final permission = Completer<MicPermission>();
+      final rec = _Recognizer()..permissionResponse = permission.future;
+      await pump(tester, rec);
+      await tapMic(tester);
+
+      await background(tester, state: AppLifecycleState.hidden);
+      permission.complete(MicPermission.granted);
+      await settleIo(tester);
+      expect(rec.cancelRequests, 1);
+      expect(rec.initializeRequests, 0);
+      expect(rec.sessions, isEmpty);
+    },
+  );
+
   testWidgets(
     'background contains a late stop failure before retry',
     (tester) async {
