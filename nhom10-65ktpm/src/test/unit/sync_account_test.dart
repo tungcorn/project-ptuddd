@@ -28,7 +28,11 @@ class RulesRemote extends FakeRemote {
   Future<void> Function(String path)? gate;
 
   @override
-  Future<void> upsert(String path, Map<String, dynamic> data) async {
+  Future<void> upsert(
+    String path,
+    Map<String, dynamic> data, {
+    DocMerge? merge,
+  }) async {
     attempts.add(path);
     if (!online) throw const SocketException('offline');
     final parts = path.split('/');
@@ -41,7 +45,7 @@ class RulesRemote extends FakeRemote {
     }
     final g = gate;
     if (g != null) await g(path);
-    await super.upsert(path, data);
+    await super.upsert(path, data, merge: merge);
   }
 }
 

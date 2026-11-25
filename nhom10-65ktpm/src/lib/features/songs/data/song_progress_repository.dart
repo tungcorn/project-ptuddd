@@ -10,6 +10,7 @@ class SongProgress {
     this.bestPronunciationScore = 0,
     this.lineBestScores = const {},
     this.favorite = false,
+    this.favoriteAt = 0,
     this.lastStudiedAt = 0,
     this.updatedAt = 0,
   });
@@ -26,6 +27,10 @@ class SongProgress {
   /// Best pronunciation score per lyric line index.
   final Map<int, int> lineBestScores;
   final bool favorite;
+
+  /// When [favorite] was last changed (ms), 0 if never: merging devices
+  /// keeps the latest change instead of the default of a new install.
+  final int favoriteAt;
   final int lastStudiedAt;
   final int updatedAt;
 
@@ -43,9 +48,47 @@ class SongProgress {
             int.parse(e.key.toString()): (e.value as num).toInt(),
         },
         favorite: j['favorite'] as bool? ?? false,
+        favoriteAt: (j['favoriteAt'] as num?)?.toInt() ?? 0,
         lastStudiedAt: (j['lastStudiedAt'] as num?)?.toInt() ?? 0,
         updatedAt: (j['updatedAt'] as num?)?.toInt() ?? 0,
       );
+
+  /// Combines two versions of the same song progress from different devices
+  /// (sync merge rule of `users/{uid}/songProgress`), so progress made on a
+  /// new device before its first download never lowers the cloud progress:
+  /// counters, best scores and dates take the highest value, per lyric line
+  /// too; `favorite` follows the later toggle ([favoriteAt]; set on either
+  /// side when both changed in the same instant or never).
+  ///
+  /// Listens made offline on two devices are not added up: the larger count
+  /// is kept. Order-independent and idempotent.
+  static Map<String, dynamic> mergeJson(
+    Map<String, dynamic> current,
+    Map<String, dynamic> incoming,
+  ) {
+    final a = SongProgress.fromJson(current);
+    final b = SongProgress.fromJson(incoming);
+    int max(int x, int y) => x > y ? x : y;
+    return SongProgress(
+      songId: a.songId,
+      listens: max(a.listens, b.listens),
+      bestExerciseScore: max(a.bestExerciseScore, b.bestExerciseScore),
+      bestPronunciationScore: max(
+        a.bestPronunciationScore,
+        b.bestPronunciationScore,
+      ),
+      lineBestScores: {
+        for (final line in {...a.lineBestScores.keys, ...b.lineBestScores.keys})
+          line: max(a.lineBestScores[line] ?? 0, b.lineBestScores[line] ?? 0),
+      },
+      favorite: a.favoriteAt == b.favoriteAt
+          ? a.favorite || b.favorite
+          : (a.favoriteAt > b.favoriteAt ? a.favorite : b.favorite),
+      favoriteAt: max(a.favoriteAt, b.favoriteAt),
+      lastStudiedAt: max(a.lastStudiedAt, b.lastStudiedAt),
+      updatedAt: max(a.updatedAt, b.updatedAt),
+    ).toJson();
+  }
 
   Map<String, dynamic> toJson() => {
         'id': songId,
@@ -56,6 +99,7 @@ class SongProgress {
           for (final e in lineBestScores.entries) e.key.toString(): e.value,
         },
         'favorite': favorite,
+        'favoriteAt': favoriteAt,
         'lastStudiedAt': lastStudiedAt,
         'updatedAt': updatedAt,
       };
@@ -98,7 +142,12 @@ class SongProgressRepository {
   }
 
   Future<SongProgress> toggleFavorite(String songId) =>
-      _update(songId, (c) => c..['favorite'] = !(c['favorite'] as bool? ?? false));
+      _update(
+        songId,
+        (c) => c
+          ..['favorite'] = !(c['favorite'] as bool? ?? false)
+          ..['favoriteAt'] = DateTime.now().millisecondsSinceEpoch,
+      );
 
   Future<SongProgress> recordListen(String songId) => _update(
         songId,

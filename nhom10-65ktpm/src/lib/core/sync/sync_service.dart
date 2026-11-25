@@ -4,22 +4,50 @@ import 'package:uuid/uuid.dart';
 
 import '../storage/local_store.dart';
 
+/// Combines the stored version of a document with an [incoming] one, e.g.
+/// keeping the learning history of both devices. Must be deterministic and
+/// idempotent: merging a result again with either input changes nothing.
+typedef DocMerge = Map<String, dynamic> Function(
+  Map<String, dynamic> current,
+  Map<String, dynamic> incoming,
+);
+
 /// Remote document store used for synchronisation (Cloud Firestore in cloud
 /// mode; an in-memory fake in tests).
 abstract class RemoteStore {
-  /// Creates or replaces the document at [path] (e.g. `users/u1/words/w1`).
-  Future<void> upsert(String path, Map<String, dynamic> data);
+  /// Field holding the server time of the last write of a document, set by
+  /// [upsert]. Pulls page on it instead of the device clock (`updatedAt`),
+  /// so a write sent late from another device is never skipped.
+  static const syncedAtField = 'syncedAt';
 
-  /// Documents of [collectionPath] whose `updatedAt` is greater than
-  /// [sinceMs]. Each map must contain its document id under `id`.
+  /// Creates or replaces the document at [path] (e.g. `users/u1/words/w1`)
+  /// and stamps it with the server time under [syncedAtField].
+  ///
+  /// With [merge], the stored document becomes `merge(stored, data)` in one
+  /// atomic step (just [data] when nothing is stored), so a device never
+  /// overwrites what another device wrote without combining it.
+  Future<void> upsert(
+    String path,
+    Map<String, dynamic> data, {
+    DocMerge? merge,
+  });
+
+  /// Documents of [collectionPath] written at or after [syncedSinceMs]
+  /// (server time, inclusive so documents sharing that instant are not
+  /// lost); every document when it is null, including ones written before
+  /// [syncedAtField] existed. Each map holds its document id under `id` and,
+  /// when known, its server write time in milliseconds under [syncedAtField].
   ///
   /// [RemoteFetch.fromServer] must be false when the result was not
   /// confirmed by the server (e.g. Firestore answering from its offline
   /// cache), so callers never treat a cached answer as current data.
-  Future<RemoteFetch> fetchUpdatedSince(String collectionPath, int sinceMs);
+  Future<RemoteFetch> fetchChangedSince(
+    String collectionPath,
+    int? syncedSinceMs,
+  );
 }
 
-/// Result of [RemoteStore.fetchUpdatedSince].
+/// Result of [RemoteStore.fetchChangedSince].
 class RemoteFetch {
   const RemoteFetch(this.docs, {required this.fromServer});
 
@@ -47,8 +75,11 @@ class StaleRemoteReadException implements Exception {
 /// * writes go to Hive first, then are queued in `pending_ops`;
 /// * [flush] pushes queued operations in order when the network is back and
 ///   removes each one only after the remote write succeeded;
-/// * [pull] fetches documents changed since the last pull and merges them with
-///   last-write-wins on `updatedAt`; deletes are `isDeleted: true` tombstones.
+/// * [pull] fetches documents written to the server since the last pull (by
+///   server time, see [RemoteStore.syncedAtField]) and merges them with
+///   last-write-wins on `updatedAt`; deletes are `isDeleted: true` tombstones;
+/// * collections given a [DocMerge] in `mergers` are combined instead of
+///   replaced, both on the server when sent and locally when pulled.
 ///
 /// One queue serves every account of the device. Given an `account` source,
 /// only the signed-in account's writes are sent (see [flush]).
@@ -58,6 +89,7 @@ class SyncService {
     this._remote, {
     String? Function()? account,
     this.writeTimeout = const Duration(seconds: 10),
+    this._mergers = const {},
   }) : _session = account;
 
   static const pendingBox = 'pending_ops';
@@ -76,6 +108,10 @@ class SyncService {
   /// and stopping. Firestore does not complete a write while offline, so
   /// without a limit one write could hold the queue for every account.
   final Duration writeTimeout;
+
+  /// Merge rule per collection name (`words` for `users/{uid}/words/...`).
+  /// Collections without one use whole-document last-write-wins.
+  final Map<String, DocMerge> _mergers;
 
   Future<int>? _running;
   Future<int>? _next;
@@ -105,6 +141,14 @@ class SyncService {
       // waits for that account instead of blocking the next one.
       if (author != null && ownerOf(path) == null) 'by': author,
     });
+  }
+
+  /// Merge rule of the collection holding [path] (a document or collection
+  /// path), or null for last-write-wins.
+  DocMerge? _mergerFor(String path, {required bool document}) {
+    final parts = path.split('/');
+    final index = parts.length - (document ? 2 : 1);
+    return index < 0 ? null : _mergers[parts[index]];
   }
 
   /// Account that owns a document path: `uid` for `users/{uid}/...`, null
@@ -215,6 +259,7 @@ class SyncService {
       final write = remote.upsert(
         path,
         Map<String, dynamic>.from(op['data'] as Map),
+        merge: _mergerFor(path, document: true),
       );
       try {
         await write.timeout(writeTimeout);
@@ -259,8 +304,17 @@ class SyncService {
         .ignore();
   }
 
-  /// Pulls [collectionPath] into [localBox] using last-write-wins.
-  /// Returns the number of local documents changed.
+  /// Pulls [collectionPath] into [localBox]: last-write-wins on `updatedAt`,
+  /// or the collection's [DocMerge]. Returns the number of local documents
+  /// changed.
+  ///
+  /// The cursor is the latest server write time seen, never the device clock:
+  /// a document written offline on another device carries an old `updatedAt`
+  /// but a new server time, so it is fetched once it reaches the server.
+  /// Documents at the cursor instant are fetched again (merging them again
+  /// changes nothing), so several documents written in the same instant are
+  /// not lost. The first pull of a collection with this cursor reads it whole,
+  /// which also picks up documents written before server times were stored.
   ///
   /// Throws [StaleRemoteReadException] when the remote could not confirm the
   /// result with the server; nothing is merged and the cursor stays put, so
@@ -269,26 +323,48 @@ class SyncService {
     final remote = _remote;
     if (remote == null) return 0;
     final metaKey = 'pull:$collectionPath';
-    final since =
-        ((await _store.get(_metaBox, metaKey))?['since'] as int?) ?? 0;
-    final fetch = await remote.fetchUpdatedSince(collectionPath, since);
+    // `synced`: server-time cursor. An older `since` (device-clock cursor)
+    // is ignored: it may have skipped documents sent late.
+    final since = (await _store.get(_metaBox, metaKey))?['synced'] as int?;
+    final fetch = await remote.fetchChangedSince(collectionPath, since);
     if (!fetch.fromServer) throw StaleRemoteReadException(collectionPath);
-    final docs = fetch.docs;
+    final merge = _mergerFor(collectionPath, document: false);
     var changed = 0;
-    var maxSeen = since;
-    for (final doc in docs) {
+    var cursor = since ?? 0;
+    for (final fetched in fetch.docs) {
+      final doc = Map<String, dynamic>.from(fetched);
+      final syncedAt = (doc.remove(RemoteStore.syncedAtField) as num?)?.toInt();
+      if (syncedAt != null && syncedAt > cursor) cursor = syncedAt;
       final id = doc['id'] as String;
-      final remoteAt = (doc['updatedAt'] as num?)?.toInt() ?? 0;
-      if (remoteAt > maxSeen) maxSeen = remoteAt;
       final local = await _store.get(localBox, id);
-      final localAt = (local?['updatedAt'] as num?)?.toInt() ?? -1;
-      if (remoteAt > localAt) {
-        await _store.put(localBox, id, doc);
+      final next = local == null
+          ? doc
+          : merge == null
+          ? resolve(local, doc)
+          : merge(local, doc);
+      if (local == null || !_sameData(next, local)) {
+        await _store.put(localBox, id, next);
         changed++;
       }
     }
-    await _store.put(_metaBox, metaKey, {'since': maxSeen});
+    await _store.put(_metaBox, metaKey, {'synced': cursor});
     return changed;
+  }
+
+  /// Deep equality of JSON-like values.
+  static bool _sameData(Object? a, Object? b) {
+    if (a is Map && b is Map) {
+      return a.length == b.length &&
+          a.keys.every((k) => b.containsKey(k) && _sameData(a[k], b[k]));
+    }
+    if (a is List && b is List) {
+      if (a.length != b.length) return false;
+      for (var i = 0; i < a.length; i++) {
+        if (!_sameData(a[i], b[i])) return false;
+      }
+      return true;
+    }
+    return a == b;
   }
 
   /// Merge helper exposed for tests and repositories: returns the winner of

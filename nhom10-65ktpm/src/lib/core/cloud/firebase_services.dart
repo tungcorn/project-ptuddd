@@ -17,25 +17,66 @@ class FirestoreRemoteStore implements RemoteStore {
 
   final FirebaseFirestore _db;
 
+  /// A plain write is queued by Firestore while offline. A [merge] write
+  /// reads the stored document in a transaction, which needs the server:
+  /// offline it fails and the op stays in the sync queue for the next try.
   @override
-  Future<void> upsert(String path, Map<String, dynamic> data) =>
-      _db.doc(path).set(data);
+  Future<void> upsert(
+    String path,
+    Map<String, dynamic> data, {
+    DocMerge? merge,
+  }) {
+    final ref = _db.doc(path);
+    if (merge == null) return ref.set(_stamped(data));
+    return _db.runTransaction<void>((tx) async {
+      final stored = (await tx.get(ref)).data();
+      tx.set(ref, _stamped(stored == null ? data : merge(stored, data)));
+    });
+  }
+
+  static Map<String, dynamic> _stamped(Map<String, dynamic> data) => {
+    ...data,
+    RemoteStore.syncedAtField: FieldValue.serverTimestamp(),
+  };
 
   /// Reads from the server only: the default `get()` falls back to the
   /// offline cache, which may miss writes from other devices. Offline, this
   /// throws (`unavailable`) instead of answering from the cache.
+  ///
+  /// Single-field range on [RemoteStore.syncedAtField]: covered by the
+  /// automatic index, no composite index needed.
   @override
-  Future<RemoteFetch> fetchUpdatedSince(
+  Future<RemoteFetch> fetchChangedSince(
     String collectionPath,
-    int sinceMs,
+    int? syncedSinceMs,
   ) async {
-    final snap = await _db
-        .collection(collectionPath)
-        .where('updatedAt', isGreaterThan: sinceMs)
-        .get(const GetOptions(source: Source.server));
+    Query<Map<String, dynamic>> query = _db.collection(collectionPath);
+    if (syncedSinceMs != null) {
+      query = query.where(
+        RemoteStore.syncedAtField,
+        isGreaterThanOrEqualTo: Timestamp.fromMillisecondsSinceEpoch(
+          syncedSinceMs,
+        ),
+      );
+    }
+    final snap = await query.get(const GetOptions(source: Source.server));
     return RemoteFetch([
-      for (final d in snap.docs) {...d.data(), 'id': d.id},
+      for (final d in snap.docs) _withServerTime(d.data(), d.id),
     ], fromServer: !snap.metadata.isFromCache);
+  }
+
+  /// Document data with its id and the server write time as milliseconds
+  /// (absent for documents written before it was stored).
+  static Map<String, dynamic> _withServerTime(
+    Map<String, dynamic> data,
+    String id,
+  ) {
+    final doc = {...data, 'id': id};
+    final at = doc.remove(RemoteStore.syncedAtField);
+    if (at is Timestamp) {
+      doc[RemoteStore.syncedAtField] = at.millisecondsSinceEpoch;
+    }
+    return doc;
   }
 }
 
