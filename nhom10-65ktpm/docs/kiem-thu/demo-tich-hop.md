@@ -1,8 +1,8 @@
 # SingLearn — rehearsal Android và checklist bàn giao
 
-Liên quan [#23 – nghiệm thu tích hợp](https://github.com/tungcorn/project-ptuddd/issues/23). Cập nhật 25/11/2026. **Luồng học cốt lõi đã chạy trên điện thoại. Chưa chốt nghiệm thu cuối hoặc nộp bài.**
+Liên quan [#23 – nghiệm thu tích hợp](https://github.com/tungcorn/project-ptuddd/issues/23). Cập nhật 27/11/2026. **Luồng học cốt lõi đã chạy trên điện thoại với `94e1ee3`; bản tích hợp `be084f3` đã qua kiểm tra nhanh riêng. Chưa nộp bài.**
 
-## Bản đã chạy
+## Luồng học cốt lõi trên `94e1ee3`
 
 - Nguồn: `94e1ee37ffc9541d0839b832779218f08ebdc8f7` trên nhánh nhóm, tree `1904817e58706b903bd22edec9a58e17fe38428d` (đã có #27, #28, #29; chưa có #30).
 - Android 16 / API 36, điện thoại thật, USB. APK **debug/local**, không truyền Firebase defines; SHA-256 `E028AC8F4D3554B32633A7236981E06C2A13B718DA4626C8163F557A693715B8`, đối chiếu với APK đã cài trên máy.
@@ -22,16 +22,23 @@ Liên quan [#23 – nghiệm thu tích hợp](https://github.com/tungcorn/projec
 
 - **Unit/widget:** [bản ghép cùng tree của #27/#28/#29](https://github.com/tungcorn/project-ptuddd/issues/23#issuecomment-7161238548) đã được reviewer chạy độc lập 29/29 test hồi quy. Nhóm báo analyze sạch và 223/223 unit/widget trên cùng tree. Đây là kết quả đã ghi nhận trước rehearsal, không phải một lượt chạy mới và không phải test plugin Android.
 - **Firebase Android, cùng nguồn `94e1ee3`, APK khác:** [lượt thử đã ghi trên #23](https://github.com/tungcorn/project-ptuddd/issues/23#issuecomment-7162001411), SHA-256 `FB465390AF97C925D1320A92603947A38D3EDC0863D4C71496C30F04503CD3B2`. Đăng ký tài khoản thử, đối chiếu hồ sơ từ server. Lưu `calm`, đồng bộ thủ công 4 → 0 thao tác chờ, server có `syncedAt`. Mở lại còn phiên, từ và 10 XP; đăng xuất về màn đăng nhập. Không chứng minh hai thiết bị, gửi offline muộn hay đổi tài khoản.
-- **Google, APK ứng viên `681478c`:** [PR #30](https://github.com/tungcorn/project-ptuddd/pull/30) chưa merge tại thời điểm ghi. [Đã xác nhận đến màn xếp trình độ](https://github.com/tungcorn/project-ptuddd/issues/23#issuecomment-7162603086); thao tác đăng xuất/đăng nhập lại do nhóm trưởng báo. Không đưa Google vào demo của SHA tích hợp hay coi nó thay cho kiểm thử email/mật khẩu.
+- **Google, APK thử từ `681478c`:** [đã xác nhận đến màn xếp trình độ](https://github.com/tungcorn/project-ptuddd/issues/23#issuecomment-7162603086); thao tác đăng xuất/đăng nhập lại do nhóm trưởng báo. [PR #30](https://github.com/tungcorn/project-ptuddd/pull/30) đã merge tại `be084f3`; mã app và cấu hình mẫu Firebase sau merge khớp nội dung đã kiểm tra từ PR. Đây không phải ca OAuth trên APK local `be084f3` hoặc trên bản ký release, và không thay kiểm thử email/mật khẩu.
+
+## Kiểm tra nhanh trên `be084f3`
+
+| Ca | Bản cài và môi trường | Kết quả và giới hạn |
+| --- | --- | --- |
+| Mở app → Khách → phát/tạm dừng Silent Night | Điện thoại Android 16 / API 36, Wi-Fi ADB. Build `flutter build apk --debug --no-pub`, không Firebase defines. SHA-256 APK đã đối chiếu: `4C5056B212661EF3CB4AC7E10B934145BE824057CAE1F8D5BE2233AF1808C6E8`. | Mở app sau khi cài, vào Trang chủ với lời chào Khách. Media session của bài chuyển `PLAYING` → `PAUSED` ở 3867 ms; lời và điều khiển hiển thị. Không chạy lại ôn thẻ, điền từ, runner E2E hay Firebase/Google trong lượt này. |
+| Home khi đang nhận dạng | Giả lập Android 17 / API 37, APK local riêng cùng commit. SHA-256 theo [báo cáo của Đình trên #22](https://github.com/tungcorn/project-ptuddd/issues/22#issuecomment-7195030116): `B914CB8CAB5AF3ABAA8C07B2C74A8A5F878D64EFCD34BB62B5BC00CFDFEA5ED8`. | Đạt ca Home trên giả lập: log `onPause` → `onStop` → `onResume`, ở nền khoảng 12,5 giây. Lượt cũ không tự chấm hoặc báo không nhận được tiếng, điểm cao nhất không đổi; lượt mới hoạt động. Không xác nhận mic phần cứng đã tắt và không thay ca bấm Dừng. |
 
 ## Còn mở theo issue
 
 | Issue | Đã có | Cần bổ sung trước khi đóng |
 | --- | --- | --- |
-| #3 / #20 — Ninh | SM-2 và khôi phục local trong rehearsal; gửi Firestore một máy trong lượt riêng; hồi quy queue theo phiên, `syncedAt` và merge tiến độ ở #19/#25/#28 | Đối chiếu các ô tiêu chí với bằng chứng M2, bổ sung hai Android với gửi muộn từ máy offline; kiểm tra queue theo tài khoản và không nhân đôi XP ở phạm vi nghiệm thu. |
-| #4 / #22 — Đình | Test lifecycle đã merge #29; [một lượt thiết bị thật trên nguồn cũ](M3.md) quan sát quyền mic/thử lại/chấm điểm | Ca Dừng khi đang nghe và Home/chuyển nền trên đúng APK có #29; xác nhận phiên cũ không chấm ngoài dự kiến và lượt mới nghe được. Không suy ra mic phần cứng đã tắt từ Future hoàn thành. |
+| #3 / #20 — Ninh | SM-2 và khôi phục local trong rehearsal; gửi Firestore một máy trên APK `94e1ee3`; [chạy lại trên nguồn `be084f3`](M2.md#chạy-lại-hồi-quy-20-trên-bản-tích-hợp-27112026): 56/56 Flutter unit/widget và 3/3 Firestore Emulator (JS SDK). | Chưa chạy ca Firebase trên hai Android: máy A học offline rồi gửi muộn, máy B pull nhận đủ và không nhân đôi XP. Đổi tài khoản/queue mới kiểm tra ở tầng Flutter test, chưa xác nhận với Firebase Auth trên Android. |
+| #4 / #22 — Đình | Test lifecycle đã merge #29; [một lượt thiết bị thật trên nguồn cũ](M3.md) quan sát quyền mic/thử lại/chấm điểm; ca Home đạt trên giả lập `be084f3` | Chưa có kết quả ca bấm Dừng khi đang nghe trên cùng APK. Phân biệt bằng chứng giả lập với micro trên điện thoại thật. |
 | #5 / #21 — Bách | Một app/container chạy A → B → A → khách trong widget test #27; một phiên Firebase đã khôi phục và logout trên Android thật | Kiểm tra tiến độ **theo bài hát** khi đổi tài khoản trên Android; tách yêu cầu reset được server chấp nhận khỏi email thực sự đến, chỉ dùng hộp thư được phép. |
-| #23 — Tùng | Đối chiếu trên; rehearsal local và bằng chứng Firebase riêng theo SHA; câu hỏi luyện vấn đáp bên dưới | Nhận kết quả còn thiếu hoặc ghi giới hạn đã thống nhất; chốt báo cáo và hồ sơ nộp theo yêu cầu học phần; review và tích hợp tài liệu. Issue giữ In progress. |
+| #23 — Tùng | Luồng học local và lượt Firebase riêng trên `94e1ee3`; kiểm tra nhanh bản tích hợp `be084f3` trên điện thoại; câu hỏi luyện vấn đáp bên dưới | Ghi các ca chưa kiểm chứng nếu chưa có kết quả, chốt báo cáo và hồ sơ nộp theo yêu cầu học phần. Issue giữ In progress. |
 
 #2/#8 không mở lại. Không đưa nhắc học/thông báo lên lịch, tải mô hình dịch ML Kit hoặc chọn file quản trị vào kịch bản chính khi chưa kiểm chứng trên bản demo. Không gộp nhắc học với notification điều khiển nhạc. Phát nền/media key có [smoke cũ](M1.md), không phải nghiệm thu dài hạn hay chạm nút trực tiếp khi khóa trên bản này. Storage, FCM, Functions và ký release không cần cho kịch bản học cốt lõi.
 

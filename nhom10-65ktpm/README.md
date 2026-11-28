@@ -8,9 +8,10 @@
 - **Mẫu PR nội bộ nhóm:** [PR template](docs/PR_TEMPLATE.md) — dành cho nhánh tính năng → `nhom10-65ktpm`; sao chép thủ công hoặc dùng `--body-file`, không tự điền trên GitHub.
 - **Phân công đợt hoàn thiện:** [Nhiệm vụ, ranh giới file và giao tiếp mô-đun](docs/PHAN_CONG_HOAN_THIEN.md) — đọc trước khi nhận việc hoặc dùng AI sửa code.
 - **Quản lý tiến độ:** [Project board](https://github.com/users/tungcorn/projects/2/views/2) (riêng tư, thành viên đã được cấp quyền cập nhật) · [Issues](https://github.com/tungcorn/project-ptuddd/issues).
-- **Đề cương, phân công chi tiết và kế hoạch:** [TH4 – SingLearn](docs/TH4_DeCuong_Project_SingLearn.md) · [Bản Word](docs/TH4_DeCuong_Project_SingLearn.docx).
+- **Báo cáo cuối kỳ (DOCX):** [SingLearn – Nhóm 10 · 65KTPM](docs/BaoCaoCuoiKy_SingLearn_Nhom10_65KTPM.docx).
+- **Đề cương, phân công chi tiết và kế hoạch:** [TH4 – SingLearn](docs/TH4_DeCuong_Project_SingLearn.md).
 
-## 1. Giới thiệu và trạng thái (cập nhật 25/11/2026)
+## 1. Giới thiệu và trạng thái (cập nhật 27/11/2026)
 
 SingLearn giúp người Việt học tiếng Anh qua bài hát. Thư viện gồm **8 bài kinh điển giữ nguyên và 3 đoạn học pop/acoustic của Josh Woodward**, với giọng hát thật, lời LRC và bản dịch tiếng Việt. Tám bài cũ dùng nguồn thuộc phạm vi công cộng; ba đoạn mới dùng tác phẩm và bản thu **CC BY 4.0**, ghi rõ tác giả, nguồn, giấy phép và phần chỉnh sửa — không trình bày đoạn trích là toàn bộ bài.
 
@@ -24,14 +25,15 @@ Bảng dưới ghi các chức năng đã triển khai và mức kiểm chứng 
 | Tra từ (IPA, nghĩa, ví dụ), lưu flashcard kèm câu hát, +10 XP | ✅ | ✅ | ✅ emulator + Chrome |
 | Ôn flashcard SM-2 | ✅ | ✅ | ✅ Android thật, local `94e1ee3`: nhớ 1/1, +5 XP, lịch ôn còn sau mở lại |
 | Điền từ 3 mức, sắp xếp câu, sắp xếp từ, trắc nghiệm nghĩa | ✅ | ✅ | ✅ Android thật, local `94e1ee3`: điền từ Dễ 3/3; các dạng khác đã mở trên Chrome |
-| Luyện phát âm (điểm xấp xỉ 0–100 từ kết quả nhận dạng văn bản) | ✅ | ✅ với bộ nhận dạng giả lập | ⚠️ Đã thử micro thật trên bản cũ; chưa chốt Dừng/Home trên bản tích hợp có #29 |
+| Luyện phát âm (điểm xấp xỉ 0–100 từ kết quả nhận dạng văn bản) | ✅ | ✅ với bộ nhận dạng giả lập | ⚠️ Đã thử micro thật trên bản cũ; Home đạt trên giả lập `be084f3`, chưa chốt nút Dừng trên cùng bản |
 | XP, cấp, streak, huy hiệu, biểu đồ 7 ngày | ✅ | ✅ | ✅ Chrome; XP và streak còn sau khi mở lại app Android `94e1ee3` |
 | Bảng xếp hạng tuần, bạn bè, thử thách đoán bài (cục bộ) | ✅ | ✅ | ✅ Chrome (bảng xếp hạng); bạn bè/thử thách mới qua widget test |
 | Quản trị bài hát, căn lại mốc thời gian lời | ✅ | ✅ | ✅ Chrome (danh sách bài hát); chưa thử chọn file thật trên bản demo |
 | Phát nền và điều khiển nhạc | ✅ | Test hành vi player | ⚠️ [Đã thử phát nền, media key và nút notification trên bản cũ](docs/kiem-thu/M1.md); chưa chốt điều khiển trực tiếp trên giao diện khóa/Doze dài hạn |
 | Nhắc học hằng ngày và tải mô hình dịch ML Kit | ✅ | Chưa có bằng chứng native | ⚠️ Chưa kiểm chứng trên bản demo, không đưa vào kịch bản chính |
 | Firebase Auth email/mật khẩu, Firestore và Rules | ✅ project riêng, không liên kết billing | ✅ kiểm thử rules trên Firestore Emulator, hồi quy sync unit/widget | ✅ Android thật, Firebase `94e1ee3`: đăng ký, lưu và đồng bộ từ lên server, khôi phục phiên, logout. Chưa chốt hai máy và đổi tài khoản |
-| Google sign-in, email quên mật khẩu, Storage, FCM | Không thuộc luồng học cốt lõi | Chưa kiểm chứng đầy đủ | Google đã thử trên bản ứng viên [#30](https://github.com/tungcorn/project-ptuddd/pull/30), chưa thuộc `94e1ee3`; chưa thử gửi email reset; Storage/FCM chưa triển khai |
+| Đăng nhập Google trên Android | ✅ [#30](https://github.com/tungcorn/project-ptuddd/pull/30) đã merge tại `be084f3`; cần cấu hình Firebase và OAuth phù hợp | Test Auth/config/UI; không thay kiểm thử OAuth | ✅ Bản có Google từ `681478c` đã đăng nhập đến màn xếp trình độ trên điện thoại; APK local `be084f3` không bật Google |
+| Email quên mật khẩu, Storage, FCM | Ngoài luồng học cốt lõi | Chưa kiểm chứng đầy đủ | Chưa thử gửi email reset; Storage/FCM chưa triển khai |
 
 ### Lưu ý về nội dung
 
@@ -95,7 +97,7 @@ flutter test integration_test/app_e2e_test.dart -d <android-device-id>
 
 **Android giả lập:** nhóm có script mở AVD đã thiết lập sẵn, test ba đoạn học và driver integration chuẩn. Từ `src/`, chạy `..\tools\start_android_emulator.ps1` rồi `flutter run --no-pub -d emulator-5554`. Đường dẫn ổ D/AVD là cấu hình tham chiếu, có thể truyền tham số theo máy; script không tự cài SDK hay tạo AVD. Xem [hướng dẫn giả lập](docs/chay-android-gia-lap.md) để biết lệnh test, tác động dữ liệu local và giới hạn bằng chứng. Smoke lịch sử không thay thế kết quả integration runner trên bản mới.
 
-**Chế độ Firebase:** project riêng `singlearn-nhom10-65ktpm` dùng Auth email/mật khẩu và Firestore tại Singapore, không liên kết billing. Từ `src/`, chạy `flutter run --dart-define-from-file=firebase.env.json -d <android-device-id>`. Máy khác sao chép `../firebase/firebase.env.example.json` thành `firebase.env.json` rồi điền cấu hình ứng dụng Android. Không commit tệp cấu hình cục bộ. Storage, Functions, FCM chưa triển khai; audio/LRC/ảnh vẫn nằm trong assets. Google đã bật provider nhưng cơ chế đăng nhập Android mới thuộc bản ứng viên #30, không phải APK tích hợp `94e1ee3`. Xem [hướng dẫn Firebase](firebase/README.md).
+**Chế độ Firebase:** project riêng `singlearn-nhom10-65ktpm` dùng Auth email/mật khẩu và Firestore tại Singapore, không liên kết billing. Từ `src/`, chạy `flutter run --dart-define-from-file=firebase.env.json -d <android-device-id>`. Máy khác sao chép `../firebase/firebase.env.example.json` thành `firebase.env.json` rồi điền cấu hình ứng dụng Android. Không commit tệp cấu hình cục bộ. Storage, Functions, FCM chưa triển khai; audio/LRC/ảnh vẫn nằm trong assets. Đăng nhập Google trên Android đã tích hợp qua #30 từ `be084f3`; cần bật cờ Google và đặt Web OAuth client ID phù hợp với cấu hình Android. APK local không bật Firebase hoặc Google. Xem [hướng dẫn Firebase](firebase/README.md).
 
 **Chạy bản build web:** sau `flutter build web`, dùng `python tools/serve_web.py` rồi mở http://127.0.0.1:8765. Không dùng `python -m http.server` vì server này không hỗ trợ HTTP Range, khiến Chrome không tua được nhạc và tự quay về 0:00.
 
@@ -105,7 +107,12 @@ flutter test integration_test/app_e2e_test.dart -d <android-device-id>
 
 - **Local, Android 16 / API 36:** Silent Night → phát và lời song ngữ → lưu và ôn `calm` → điền từ 3/3 → 35 XP, streak 1. Mở lại app vẫn còn thẻ/lịch ôn, XP và điểm bài tập. Đây là lượt thao tác thủ công, không phải kết quả của runner `integration_test`.
 - **Firebase, APK khác trên cùng SHA:** đăng ký tài khoản thử, lưu `calm`, đồng bộ 4 thao tác chờ và đọc lại dữ liệu từ Firestore server. Khôi phục phiên và logout đã thử riêng trên một điện thoại.
-- [Biên bản, SHA APK và kịch bản demo của nhóm](docs/kiem-thu/demo-tich-hop.md) ghi rõ phần đã kiểm chứng và phần còn thiếu.
+
+### Kiểm tra nhanh bản tích hợp `be084f3` (đã gồm #30)
+
+- **Local, điện thoại Android 16 / API 36:** build và cài APK từ đúng commit, đối chiếu SHA-256. Mở app → vào Khách → Trang chủ → phát và tạm dừng Silent Night, có lời bài hát. Không chạy lại toàn bộ luồng học hoặc Google trên APK local này.
+- **Home khi đang nhận dạng, giả lập Android 17 / API 37:** [Đình báo ca đạt](https://github.com/tungcorn/project-ptuddd/issues/22#issuecomment-7195030116), có log vòng đời và thử được lượt mới; không phải kiểm tra mic trên điện thoại thật.
+- [Biên bản, SHA APK và checklist bàn giao](docs/kiem-thu/demo-tich-hop.md) ghi riêng kết quả từng bản và phần chưa kiểm chứng.
 
 ### Kết quả kiểm tra lịch sử (16/11/2026)
 
@@ -132,11 +139,11 @@ Mỗi người phụ trách cả giao diện, logic, dữ liệu, kiểm thử v
 - Nhánh và thư mục nộp bài: **`nhom10-65ktpm`**; chỉ thay đổi trong thư mục nhóm. Nộp theo quy trình Fork/PR trong [README học phần](../README.md).
 - Không đưa APK/AAB, thư mục build/cache, `firebase.env.json`, khóa bí mật, service-account hoặc keystore vào kho.
 
-**Chưa kiểm chứng hoặc đang bị chặn (cần nhóm tự làm):**
+**Giới hạn kiểm thử và việc bàn giao:**
 
-1. Bổ sung nghiệm thu Firebase hai Android với thao tác offline gửi muộn (#20), và đổi tài khoản để kiểm tra tiến độ theo bài hát (#21). Kiểm tra reset mật khẩu chỉ khi có hộp thư được phép; chưa gửi email trong rehearsal.
-2. Chạy ca Dừng/Home khi đang nhận dạng trên đúng APK có #29 (#22). Nhắc học, tải mô hình ML Kit, chọn file quản trị và điều khiển trực tiếp trên màn hình khóa không nằm trong kịch bản chính và chưa kiểm chứng trên bản demo.
-3. Chạy lại `integration_test/app_e2e_test.dart` trên thiết bị kiểm thử riêng. Luồng flashcard thủ công trên `94e1ee3` đã đạt; runner chưa có kết quả trên SHA này.
+1. Chưa có kết quả Firebase hai Android với thao tác offline gửi muộn (#20), đổi tài khoản để kiểm tra tiến độ theo từng bài (#21) hoặc gửi email reset vào hộp thư được phép.
+2. Ca Home đã đạt trên giả lập `be084f3`; chưa có kết quả riêng cho nút Dừng khi đang nhận dạng trên cùng APK (#22). Nhắc học, tải mô hình ML Kit, chọn file quản trị và điều khiển trực tiếp trên màn hình khóa chưa kiểm chứng trên bản demo và không thuộc kịch bản chính.
+3. Luồng flashcard thủ công trên `94e1ee3` đã đạt; chưa chạy lại runner `integration_test/app_e2e_test.dart` trên bản tích hợp. Không đồng nhất hai kết quả.
 4. Hoàn thành báo cáo cuối kỳ và chuẩn bị vấn đáp theo [checklist bàn giao](docs/kiem-thu/demo-tich-hop.md); xác nhận danh sách nhóm và tỷ lệ đóng góp thực tế. Đối chiếu yêu cầu nộp slide/video riêng. Bản ký release chỉ cần khi phát hành, không phải điều kiện demo debug.
 
 ## 6. Quy trình Git nội bộ nhóm
