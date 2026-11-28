@@ -1,6 +1,6 @@
 # SingLearn — rehearsal Android và checklist bàn giao
 
-Liên quan [#23 – nghiệm thu tích hợp](https://github.com/tungcorn/project-ptuddd/issues/23). Cập nhật 27/11/2026. **Luồng học cốt lõi đã chạy trên điện thoại với `94e1ee3`; bản tích hợp `be084f3` đã qua kiểm tra nhanh riêng. Chưa nộp bài.**
+Liên quan [#23 – nghiệm thu tích hợp](https://github.com/tungcorn/project-ptuddd/issues/23). Cập nhật 28/11/2026. **Luồng học cốt lõi đã chạy trên điện thoại với `94e1ee3`; bản tích hợp `be084f3` đã qua kiểm tra nhanh riêng. Chưa nộp bài.**
 
 ## Luồng học cốt lõi trên `94e1ee3`
 
@@ -36,7 +36,7 @@ Liên quan [#23 – nghiệm thu tích hợp](https://github.com/tungcorn/projec
 | Issue | Đã có | Cần bổ sung trước khi đóng |
 | --- | --- | --- |
 | #3 / #20 — Ninh | SM-2 và khôi phục local trong rehearsal; gửi Firestore một máy trên APK `94e1ee3`; [chạy lại trên nguồn `be084f3`](M2.md#chạy-lại-hồi-quy-20-trên-bản-tích-hợp-27112026): 56/56 Flutter unit/widget và 3/3 Firestore Emulator (JS SDK). | Chưa chạy ca Firebase trên hai Android: máy A học offline rồi gửi muộn, máy B pull nhận đủ và không nhân đôi XP. Đổi tài khoản/queue mới kiểm tra ở tầng Flutter test, chưa xác nhận với Firebase Auth trên Android. |
-| #4 / #22 — Đình | Test lifecycle đã merge #29; [một lượt thiết bị thật trên nguồn cũ](M3.md) quan sát quyền mic/thử lại/chấm điểm; ca Home đạt trên giả lập `be084f3` | Chưa có kết quả ca bấm Dừng khi đang nghe trên cùng APK. Phân biệt bằng chứng giả lập với micro trên điện thoại thật. |
+| #4 / #22 — Đình | Test lifecycle đã merge #29; [một lượt thiết bị thật trên nguồn cũ](M3.md) quan sát quyền mic/thử lại/chấm điểm; ca Home đạt trên giả lập `be084f3`. [Cập nhật 28/11](M3-ket-qua-Android-2026-11-28.md): Đình báo Dừng khi đang nghe vẫn nhận kết quả phần đã nói và chấm điểm thành công trên giả lập. | Còn đối chiếu SHA/APK của lượt Dừng; chưa xác nhận cùng APK với ca Home. Báo cáo mới không bổ sung ca Dừng yên lặng hoặc phép đo event/XP. Phân biệt giả lập với micro trên điện thoại thật; #22/#4 chờ review trước khi đóng. |
 | #5 / #21 — Bách | Một app/container chạy A → B → A → khách trong widget test #27; một phiên Firebase đã khôi phục và logout trên Android thật | Kiểm tra tiến độ **theo bài hát** khi đổi tài khoản trên Android; tách yêu cầu reset được server chấp nhận khỏi email thực sự đến, chỉ dùng hộp thư được phép. |
 | #23 — Tùng | Luồng học local và lượt Firebase riêng trên `94e1ee3`; kiểm tra nhanh bản tích hợp `be084f3` trên điện thoại; câu hỏi luyện vấn đáp bên dưới | Ghi các ca chưa kiểm chứng nếu chưa có kết quả, chốt báo cáo và hồ sơ nộp theo yêu cầu học phần. Issue giữ In progress. |
 
