@@ -171,8 +171,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             leading: Icon(Icons.info_outline),
             title: Text('SingLearn – Nhóm 10 · 65KTPM'),
             subtitle: Text(
-              'Lời bài hát thuộc phạm vi công cộng. Bản ghi do nhóm tự tạo '
-              '(nhạc nền tổng hợp + giọng đọc TTS), phát hành CC BY 4.0.',
+              'Xem nguồn bản thu, lời bài hát và giấy phép trong trình phát '
+              'của từng bài.',
             ),
           ),
           ListTile(
